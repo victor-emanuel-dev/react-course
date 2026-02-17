@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>React Masterclass - 100 Capítulos</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
     <style>
       .progress-fill {
         transition: width 0.3s ease;
@@ -42,6 +44,7 @@
       }
     </style>
   </head>
+
   <body>
     <div id="root"></div>
 
@@ -54,6 +57,8 @@
         const [searchTerm, setSearchTerm] = useState("");
         const [theme, setTheme] = useState("dark");
 
+        const STORAGE_KEY = "completedChapters";
+
         useEffect(() => {
           const savedTheme = localStorage.getItem("theme") || "dark";
           setTheme(savedTheme);
@@ -63,36 +68,455 @@
               : "bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen";
         }, []);
 
+        // Load chapters and sync with localStorage
         useEffect(() => {
+          loadChapters();
+
+          // Listen for storage changes (in case user completes chapter in another tab)
+          const handleStorageChange = (e) => {
+            if (e.key === STORAGE_KEY) {
+              loadChapters();
+            }
+          };
+
+          window.addEventListener("storage", handleStorageChange);
+
+          // Also check periodically when window gets focus (for same-tab updates)
+          const handleFocus = () => {
+            loadChapters();
+          };
+
+          window.addEventListener("focus", handleFocus);
+
+          return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("focus", handleFocus);
+          };
+        }, []);
+
+        const loadChapters = () => {
+          const completed = JSON.parse(
+            localStorage.getItem(STORAGE_KEY) || "[]",
+          );
+
+          // Definição dos capítulos com títulos e descrições
+          const chapterData = {
+            // INICIANTE (1-31)
+            1: {
+              title: "Introdução ao React",
+              description: "O que é React, instalação e primeiro componente",
+            },
+            2: {
+              title: "JSX Fundamentals",
+              description: "Entendendo JSX: a sintaxe especial do React",
+            },
+            3: {
+              title: "Componentes Funcionais",
+              description: "Criando e exportando componentes funcionais",
+            },
+            4: {
+              title: "Props: Passando Dados",
+              description: "Como passar e receber props entre componentes",
+            },
+            5: {
+              title: "Props Children",
+              description:
+                "Usando a prop especial children para conteúdo dinâmico",
+            },
+            6: {
+              title: "Renderização Condicional",
+              description: "Mostrando componentes baseado em condições",
+            },
+            7: {
+              title: "Renderização de Listas",
+              description: "Usando map() para renderizar arrays de dados",
+            },
+            8: {
+              title: "Keys em Listas",
+              description: "Por que e como usar keys em listas",
+            },
+            9: {
+              title: "Eventos em React",
+              description: "Lidando com cliques, submits e outros eventos",
+            },
+            10: {
+              title: "useState: Seu Primeiro Hook",
+              description: "Gerenciando estado em componentes funcionais",
+            },
+            11: {
+              title: "useState com Objetos",
+              description: "Gerenciando estados mais complexos",
+            },
+            12: {
+              title: "useState com Arrays",
+              description: "Adicionando, removendo e atualizando itens",
+            },
+            13: {
+              title: "Formulários Controlados",
+              description: "Criando inputs controlados pelo React",
+            },
+            14: {
+              title: "Múltiplos Inputs",
+              description: "Gerenciando formulários com vários campos",
+            },
+            15: {
+              title: "useEffect: Efeitos Colaterais",
+              description: "Executando código após renderização",
+            },
+            16: {
+              title: "useEffect com Dependências",
+              description: "Controlando quando efeitos são executados",
+            },
+            17: {
+              title: "Limpeza de useEffect",
+              description: "Cleanup functions e prevenção de memory leaks",
+            },
+            18: {
+              title: "Fetch de APIs",
+              description: "Consumindo APIs REST com fetch",
+            },
+            19: {
+              title: "Loading States",
+              description: "Implementando estados de carregamento",
+            },
+            20: {
+              title: "Tratamento de Erros",
+              description: "Lidando com erros em requisições",
+            },
+            21: {
+              title: "CSS em React",
+              description: "Diferentes formas de estilizar componentes",
+            },
+            22: {
+              title: "CSS Modules",
+              description: "Escopo local para seus estilos",
+            },
+            23: {
+              title: "Styled Components Básico",
+              description: "CSS-in-JS com styled-components",
+            },
+            24: {
+              title: "Tailwind CSS",
+              description: "Utility-first CSS no React",
+            },
+            25: {
+              title: "Componente de Layout",
+              description: "Criando layouts reutilizáveis",
+            },
+            26: {
+              title: "Composição de Componentes",
+              description: "Construindo UIs através de composição",
+            },
+            27: {
+              title: "Props Drilling Problema",
+              description: "Entendendo as limitações de passar props",
+            },
+            28: {
+              title: "useRef Hook",
+              description: "Acessando elementos DOM diretamente",
+            },
+            29: {
+              title: "useRef para Valores Mutáveis",
+              description: "Guardando valores que não causam re-render",
+            },
+            30: {
+              title: "Custom Hooks Introdução",
+              description: "Criando seus próprios hooks reutilizáveis",
+            },
+            31: {
+              title: "Projeto Prático Iniciante",
+              description: "Todo List completo aplicando tudo que aprendeu",
+            },
+
+            // INTERMEDIÁRIO (32-70)
+            32: {
+              title: "React Router: Instalação",
+              description: "Configurando navegação no seu app React",
+            },
+            33: {
+              title: "Routes e Paths",
+              description: "Definindo rotas e caminhos da aplicação",
+            },
+            34: {
+              title: "Link e NavLink",
+              description: "Navegação sem recarregar a página",
+            },
+            35: {
+              title: "Rotas Dinâmicas",
+              description: "URLs com parâmetros dinâmicos",
+            },
+            36: {
+              title: "useParams Hook",
+              description: "Acessando parâmetros da URL",
+            },
+            37: {
+              title: "useNavigate Hook",
+              description: "Navegação programática",
+            },
+            38: {
+              title: "Rotas Aninhadas",
+              description: "Criando hierarquia de rotas",
+            },
+            39: {
+              title: "Layout Routes",
+              description: "Compartilhando layouts entre rotas",
+            },
+            40: {
+              title: "404 Not Found",
+              description: "Tratando rotas inexistentes",
+            },
+            41: {
+              title: "Context API: Introdução",
+              description: "Estado global sem props drilling",
+            },
+            42: {
+              title: "createContext e Provider",
+              description: "Criando e fornecendo contexto",
+            },
+            43: {
+              title: "useContext Hook",
+              description: "Consumindo dados do contexto",
+            },
+            44: {
+              title: "Context API Patterns",
+              description: "Padrões e boas práticas",
+            },
+            45: {
+              title: "useReducer Hook",
+              description: "Gerenciando estado complexo",
+            },
+            46: {
+              title: "Reducer Pattern",
+              description: "Actions, reducers e dispatch",
+            },
+            47: {
+              title: "useReducer vs useState",
+              description: "Quando usar cada um",
+            },
+            48: {
+              title: "Context + useReducer",
+              description: "Combinando para estado global robusto",
+            },
+            49: {
+              title: "useMemo Hook",
+              description: "Memorizando valores computados",
+            },
+            50: {
+              title: "useCallback Hook",
+              description: "Memorizando funções",
+            },
+            51: {
+              title: "React.memo",
+              description: "Otimizando re-renders de componentes",
+            },
+            52: {
+              title: "Performance Profiling",
+              description: "Medindo performance com DevTools",
+            },
+            53: {
+              title: "Code Splitting",
+              description: "Lazy loading de componentes",
+            },
+            54: {
+              title: "React.lazy e Suspense",
+              description: "Carregamento assíncrono",
+            },
+            55: {
+              title: "Error Boundaries",
+              description: "Capturando erros em componentes",
+            },
+            56: {
+              title: "Portal API",
+              description: "Renderizando fora da hierarquia",
+            },
+            57: {
+              title: "Forward Refs",
+              description: "Passando refs para componentes filhos",
+            },
+            58: {
+              title: "useImperativeHandle",
+              description: "Customizando refs expostas",
+            },
+            59: {
+              title: "Formulários Avançados",
+              description: "Validação complexa e máscaras",
+            },
+            60: {
+              title: "React Hook Form",
+              description: "Biblioteca para formulários performáticos",
+            },
+            61: {
+              title: "Yup Validation",
+              description: "Esquemas de validação declarativos",
+            },
+            62: {
+              title: "Autenticação: JWT",
+              description: "Implementando login e logout",
+            },
+            63: {
+              title: "Protected Routes",
+              description: "Rotas que exigem autenticação",
+            },
+            64: {
+              title: "Axios Interceptors",
+              description: "Interceptando requisições HTTP",
+            },
+            65: {
+              title: "React Query Intro",
+              description: "Gerenciamento de estado servidor",
+            },
+            66: {
+              title: "Queries e Mutations",
+              description: "Buscando e modificando dados",
+            },
+            67: {
+              title: "Cache e Invalidação",
+              description: "Otimizando requisições",
+            },
+            68: { title: "Infinite Scroll", description: "Paginação infinita" },
+            69: {
+              title: "Debounce e Throttle",
+              description: "Otimizando inputs e buscas",
+            },
+            70: {
+              title: "Projeto E-commerce",
+              description: "App completo de loja virtual",
+            },
+
+            // AVANÇADO (71-100)
+            71: {
+              title: "TypeScript Setup",
+              description: "Configurando TypeScript no React",
+            },
+            72: {
+              title: "Tipos Básicos",
+              description: "Tipando props e estado",
+            },
+            73: {
+              title: "Generics em React",
+              description: "Componentes genéricos tipados",
+            },
+            74: {
+              title: "Tipos Avançados",
+              description: "Union, Intersection e Utility types",
+            },
+            75: {
+              title: "TypeScript Patterns",
+              description: "Padrões avançados de tipagem",
+            },
+            76: {
+              title: "Testing: Jest Setup",
+              description: "Configurando testes unitários",
+            },
+            77: {
+              title: "Testing Library",
+              description: "Testando componentes React",
+            },
+            78: {
+              title: "User Interactions",
+              description: "Testando eventos e interações",
+            },
+            79: {
+              title: "Mocking APIs",
+              description: "Simulando requisições em testes",
+            },
+            80: {
+              title: "Integration Tests",
+              description: "Testes de integração",
+            },
+            81: { title: "E2E com Cypress", description: "Testes end-to-end" },
+            82: {
+              title: "Redux Toolkit Intro",
+              description: "Estado global com Redux moderno",
+            },
+            83: {
+              title: "Slices e Reducers",
+              description: "Organizando estado Redux",
+            },
+            84: {
+              title: "Redux Thunks",
+              description: "Ações assíncronas no Redux",
+            },
+            85: {
+              title: "Redux vs Context",
+              description: "Quando usar cada ferramenta",
+            },
+            86: {
+              title: "Zustand State",
+              description: "Alternativa leve ao Redux",
+            },
+            87: {
+              title: "Jotai Atoms",
+              description: "Estado atômico primitivo",
+            },
+            88: { title: "Server Components", description: "Next.js e RSC" },
+            89: {
+              title: "SSR vs SSG vs ISR",
+              description: "Diferentes estratégias de rendering",
+            },
+            90: {
+              title: "Next.js App Router",
+              description: "Nova arquitetura do Next.js",
+            },
+            91: {
+              title: "Animation Libraries",
+              description: "Framer Motion e React Spring",
+            },
+            92: {
+              title: "Micro Frontends",
+              description: "Arquitetura de micro apps",
+            },
+            93: {
+              title: "Monorepos",
+              description: "Gerenciando múltiplos projetos",
+            },
+            94: {
+              title: "Design Systems",
+              description: "Criando biblioteca de componentes",
+            },
+            95: { title: "Storybook", description: "Documentando componentes" },
+            96: {
+              title: "Acessibilidade (a11y)",
+              description: "Tornando apps acessíveis",
+            },
+            97: {
+              title: "Internacionalização (i18n)",
+              description: "Suporte multi-idiomas",
+            },
+            98: { title: "PWA com React", description: "Progressive Web Apps" },
+            99: {
+              title: "React Native Intro",
+              description: "React para mobile",
+            },
+            100: {
+              title: "Projeto Final Full-Stack",
+              description: "App completo com backend e deploy",
+            },
+          };
+
           const generatedChapters = Array.from({ length: 100 }, (_, i) => {
-            const num = i + 1;
+            const id = i + 1;
+
             let difficulty = "beginner";
-            if (num > 30 && num <= 70) difficulty = "intermediate";
-            if (num > 70) difficulty = "advanced";
+            if (id > 31 && id <= 70) difficulty = "intermediate";
+            if (id > 70) difficulty = "advanced";
 
-            // Títulos personalizados para os primeiros capítulos
-            const titles = {
-              1: "Introdução ao React",
-              2: "Capítulo 2",
-              3: "Capítulo 3",
-            };
-
-            const descriptions = {
-              1: "O que é React, instalação e seu primeiro Hello World",
-              2: "Conteúdo a ser desenvolvido",
-              3: "Conteúdo a ser desenvolvido",
+            const chapter = chapterData[id] || {
+              title: `Capítulo ${id}`,
+              description: "Conteúdo a ser desenvolvido",
             };
 
             return {
-              id: num,
-              title: titles[num] || `Capítulo ${num}`,
-              description: descriptions[num] || "Conteúdo a ser desenvolvido",
+              id,
+              title: chapter.title,
+              description: chapter.description,
               difficulty,
-              completed: false,
+              completed: completed.includes(id),
             };
           });
+
           setChapters(generatedChapters);
-        }, []);
+        };
 
         const toggleTheme = () => {
           const newTheme = theme === "dark" ? "light" : "dark";
@@ -104,18 +528,23 @@
           localStorage.setItem("theme", newTheme);
         };
 
-        const toggleComplete = (id) => {
-          // Se for o capítulo 1, navega para a página
+        const openChapter = (id) => {
           if (id === 1) {
             window.location.href = "capitulo-01.html";
-            return;
+          } else {
+            alert(`Capítulo ${id} em desenvolvimento`);
           }
+        };
 
-          setChapters(
-            chapters.map((ch) =>
-              ch.id === id ? { ...ch, completed: !ch.completed } : ch,
-            ),
-          );
+        const resetProgress = () => {
+          if (
+            confirm(
+              "Tem certeza que deseja resetar todo o seu progresso? Esta ação não pode ser desfeita.",
+            )
+          ) {
+            localStorage.removeItem(STORAGE_KEY);
+            loadChapters();
+          }
         };
 
         const filteredChapters = chapters.filter((ch) => {
@@ -132,7 +561,8 @@
         });
 
         const completedCount = chapters.filter((ch) => ch.completed).length;
-        const progressPercent = (completedCount / chapters.length) * 100;
+        const progressPercent =
+          chapters.length > 0 ? (completedCount / chapters.length) * 100 : 0;
 
         const difficultyLabels = {
           beginner: "Iniciante",
@@ -152,30 +582,33 @@
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 gap-4">
-                  {/* Logo e Título */}
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <img
-                      src="/img/React_logo_wordmark.png"
-                      alt="React Logo"
-                      className="h-8 w-auto"
-                      style={{
-                        filter:
-                          theme === "dark"
-                            ? "none"
-                            : "brightness(0) saturate(100%) invert(21%) sepia(11%) saturate(1929%) hue-rotate(181deg) brightness(95%) contrast(92%)",
-                      }}
-                    />
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="img/React_logo_wordmark.png"
+                        alt="React Logo"
+                        className="h-8 w-auto"
+                      />
+                      <span
+                        className={`text-xl font-bold ${
+                          theme === "dark" ? "text-white" : "text-slate-900"
+                        }`}
+                      >
+                        Masterclass
+                      </span>
+                    </div>
                     <span
-                      className={`text-xl font-bold hidden sm:block ${
-                        theme === "dark" ? "text-white" : "text-slate-900"
+                      className={`hidden md:inline px-3 py-1 rounded-full text-xs font-semibold ${
+                        theme === "dark"
+                          ? "bg-blue-500/20 text-blue-300"
+                          : "bg-blue-100 text-blue-700"
                       }`}
                     >
-                      Masterclass
+                      {completedCount}/{chapters.length} concluídos
                     </span>
                   </div>
 
-                  {/* Links de Navegação */}
-                  <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+                  <div className="hidden lg:flex items-center gap-2">
                     {[
                       { key: "all", label: "Todos" },
                       { key: "beginner", label: "Iniciante" },
@@ -201,47 +634,72 @@
                     ))}
                   </div>
 
-                  {/* Busca e Toggle */}
                   <div className="flex items-center gap-3">
                     <input
                       type="text"
                       placeholder="🔍 Buscar..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`hidden md:block w-48 lg:w-64 px-4 py-2 rounded-full text-sm border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      className={`hidden md:block w-48 px-4 py-2 rounded-full text-sm ${
                         theme === "dark"
-                          ? "bg-white/5 border-white/10 text-white placeholder-white/40"
-                          : "bg-black/5 border-black/10 text-slate-900 placeholder-slate-400"
+                          ? "bg-white/5 text-white placeholder-white/40"
+                          : "bg-black/5 text-slate-900"
                       }`}
                     />
+
+                    {completedCount > 0 && (
+                      <button
+                        onClick={resetProgress}
+                        className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          theme === "dark"
+                            ? "bg-red-500/10 text-red-300 hover:bg-red-500/20"
+                            : "bg-red-50 text-red-600 hover:bg-red-100"
+                        }`}
+                        title="Resetar progresso"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
+                        Reset
+                      </button>
+                    )}
+
                     <button
                       onClick={toggleTheme}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         theme === "dark"
-                          ? "bg-white/10 border-2 border-white/20 hover:bg-white/20"
-                          : "bg-black/5 border-2 border-black/10 hover:bg-black/10"
-                      }`}
+                          ? "bg-white/10 border-white/20"
+                          : "bg-black/5 border-black/10"
+                      } border-2`}
                     >
-                      <span className="text-lg">
-                        {theme === "dark" ? "🌙" : "☀️"}
-                      </span>
+                      {theme === "dark" ? "🌙" : "☀️"}
                     </button>
                   </div>
                 </div>
 
                 {/* Mobile filters */}
-                <div className="lg:hidden flex gap-2 pb-3 overflow-x-auto">
+                <div className="lg:hidden pb-3 flex gap-2 overflow-x-auto">
                   {[
                     { key: "all", label: "Todos" },
                     { key: "beginner", label: "Iniciante" },
                     { key: "intermediate", label: "Intermediário" },
                     { key: "advanced", label: "Avançado" },
-                    { key: "completed", label: "✓" },
+                    { key: "completed", label: "✓ Concluídos" },
                   ].map(({ key, label }) => (
                     <button
                       key={key}
                       onClick={() => setFilter(key)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
                         filter === key
                           ? theme === "dark"
                             ? "bg-white text-slate-900"
@@ -258,138 +716,99 @@
               </div>
             </nav>
 
-            {/* Barra de Progresso */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-8">
+            {/* Progress Bar */}
+            <div className="max-w-7xl mx-auto px-4 mt-6 mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <span
+                  className={`text-sm font-medium ${theme === "dark" ? "text-slate-300" : "text-slate-700"}`}
+                >
+                  Progresso do Curso
+                </span>
+                <span
+                  className={`text-sm font-bold ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`}
+                >
+                  {progressPercent.toFixed(1)}%
+                </span>
+              </div>
               <div
-                className={`h-2 rounded-full overflow-hidden ${
+                className={`h-3 rounded-full overflow-hidden ${
                   theme === "dark" ? "bg-white/10" : "bg-black/10"
                 }`}
               >
                 <div
-                  className="progress-fill h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                  className="progress-fill h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
             </div>
 
-            {/* Cards Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-                {filteredChapters.map((chapter) => (
-                  <div
-                    key={chapter.id}
-                    onClick={() => toggleComplete(chapter.id)}
-                    className={`card relative rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-2 ${
-                      theme === "dark"
-                        ? chapter.completed
-                          ? "bg-green-500/10 border border-green-500/30"
-                          : "bg-white/5 border border-white/10 hover:bg-white/10"
-                        : chapter.completed
-                          ? "bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200"
-                          : "bg-white border border-black/10 hover:shadow-xl"
-                    } ${chapter.completed ? "completed" : ""}`}
-                  >
+            {/* Cards */}
+            <div className="max-w-7xl mx-auto px-4 pb-12">
+              {filteredChapters.length === 0 ? (
+                <div
+                  className={`text-center py-12 ${theme === "dark" ? "text-slate-400" : "text-slate-600"}`}
+                >
+                  <p className="text-lg">Nenhum capítulo encontrado</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredChapters.map((chapter) => (
                     <div
-                      className={`text-xs font-bold uppercase tracking-wider mb-3 ${
-                        chapter.completed ? "text-green-500" : "text-blue-500"
+                      key={chapter.id}
+                      onClick={() => openChapter(chapter.id)}
+                      className={`card relative rounded-2xl p-6 cursor-pointer transition-all hover:-translate-y-2 ${
+                        chapter.completed
+                          ? "completed bg-green-500/10 border border-green-500/30"
+                          : theme === "dark"
+                            ? "bg-white/5 border border-white/10 hover:bg-white/10"
+                            : "bg-white border border-black/10 hover:shadow-lg"
                       }`}
                     >
-                      Capítulo {chapter.id}
-                    </div>
+                      <div
+                        className={`text-xs font-bold uppercase mb-3 ${
+                          chapter.completed ? "text-green-500" : "text-blue-500"
+                        }`}
+                      >
+                        Capítulo {chapter.id}
+                      </div>
 
-                    <h3
-                      className={`text-lg font-bold mb-2 ${
-                        theme === "dark" ? "text-slate-100" : "text-slate-900"
-                      }`}
-                    >
-                      {chapter.title}
-                    </h3>
+                      <h3
+                        className={`text-lg font-bold mb-2 ${
+                          theme === "dark" ? "text-slate-100" : "text-slate-900"
+                        }`}
+                      >
+                        {chapter.title}
+                      </h3>
 
-                    <p
-                      className={`text-sm mb-4 ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-600"
-                      }`}
-                    >
-                      {chapter.description}
-                    </p>
+                      <p
+                        className={`text-sm mb-4 ${
+                          theme === "dark" ? "text-slate-400" : "text-slate-600"
+                        }`}
+                      >
+                        {chapter.description}
+                      </p>
 
-                    <div className="flex items-center justify-between mt-auto">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          chapter.difficulty === "beginner"
-                            ? theme === "dark"
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            theme === "dark"
                               ? "bg-blue-500/20 text-blue-300"
                               : "bg-blue-100 text-blue-700"
-                            : chapter.difficulty === "intermediate"
-                              ? theme === "dark"
-                                ? "bg-yellow-500/20 text-yellow-300"
-                                : "bg-yellow-100 text-yellow-700"
-                              : theme === "dark"
-                                ? "bg-red-500/20 text-red-300"
-                                : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {difficultyLabels[chapter.difficulty]}
-                      </span>
+                          }`}
+                        >
+                          {difficultyLabels[chapter.difficulty]}
+                        </span>
 
-                      <div
-                        className={`w-6 h-6 rounded-full border-3 flex items-center justify-center transition-all ${
-                          chapter.completed
-                            ? "bg-green-500 border-green-500"
-                            : theme === "dark"
-                              ? "border-white/30"
-                              : "border-slate-300"
-                        }`}
-                      >
                         {chapter.completed && (
-                          <span className="text-white text-xs font-bold">
+                          <span className="text-green-400 font-bold text-xl">
                             ✓
                           </span>
                         )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap gap-4 justify-center">
-                {[
-                  { label: "Concluídos", value: completedCount },
-                  {
-                    label: "Restantes",
-                    value: chapters.length - completedCount,
-                  },
-                  {
-                    label: "Progresso",
-                    value: `${Math.round(progressPercent)}%`,
-                  },
-                ].map(({ label, value }) => (
-                  <div
-                    key={label}
-                    className={`min-w-[160px] px-8 py-6 rounded-2xl backdrop-blur-xl border text-center transition-all ${
-                      theme === "dark"
-                        ? "bg-white/5 border-white/10"
-                        : "bg-white border-black/10 shadow-lg"
-                    }`}
-                  >
-                    <div
-                      className={`text-4xl font-extrabold mb-2 ${
-                        theme === "dark" ? "text-white" : "text-slate-900"
-                      }`}
-                    >
-                      {value}
-                    </div>
-                    <div
-                      className={`text-sm font-medium ${
-                        theme === "dark" ? "text-white/70" : "text-slate-600"
-                      }`}
-                    >
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         );
