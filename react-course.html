@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Masterclass - 100 Capítulos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+      .progress-fill {
+        transition: width 0.3s ease;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .card.completed::before {
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+        transform: scaleX(1);
+      }
+
+      body {
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [chapters, setChapters] = useState([]);
+        const [filter, setFilter] = useState("all");
+        const [searchTerm, setSearchTerm] = useState("");
+        const [theme, setTheme] = useState("dark");
+
+        useEffect(() => {
+          const savedTheme = localStorage.getItem("theme") || "dark";
+          setTheme(savedTheme);
+          document.body.className =
+            savedTheme === "dark"
+              ? "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"
+              : "bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen";
+        }, []);
+
+        useEffect(() => {
+          const generatedChapters = Array.from({ length: 100 }, (_, i) => {
+            const num = i + 1;
+            let difficulty = "beginner";
+            if (num > 30 && num <= 70) difficulty = "intermediate";
+            if (num > 70) difficulty = "advanced";
+
+            // Títulos personalizados para os primeiros capítulos
+            const titles = {
+              1: "Introdução ao React",
+              2: "Capítulo 2",
+              3: "Capítulo 3",
+            };
+
+            const descriptions = {
+              1: "O que é React, instalação e seu primeiro Hello World",
+              2: "Conteúdo a ser desenvolvido",
+              3: "Conteúdo a ser desenvolvido",
+            };
+
+            return {
+              id: num,
+              title: titles[num] || `Capítulo ${num}`,
+              description: descriptions[num] || "Conteúdo a ser desenvolvido",
+              difficulty,
+              completed: false,
+            };
+          });
+          setChapters(generatedChapters);
+        }, []);
+
+        const toggleTheme = () => {
+          const newTheme = theme === "dark" ? "light" : "dark";
+          setTheme(newTheme);
+          document.body.className =
+            newTheme === "dark"
+              ? "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"
+              : "bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen";
+          localStorage.setItem("theme", newTheme);
+        };
+
+        const toggleComplete = (id) => {
+          // Se for o capítulo 1, navega para a página
+          if (id === 1) {
+            window.location.href = "capitulo-01.html";
+            return;
+          }
+
+          setChapters(
+            chapters.map((ch) =>
+              ch.id === id ? { ...ch, completed: !ch.completed } : ch,
+            ),
+          );
+        };
+
+        const filteredChapters = chapters.filter((ch) => {
+          const matchesFilter =
+            filter === "all" ||
+            (filter === "completed" && ch.completed) ||
+            filter === ch.difficulty;
+
+          const matchesSearch =
+            ch.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            ch.id.toString().includes(searchTerm);
+
+          return matchesFilter && matchesSearch;
+        });
+
+        const completedCount = chapters.filter((ch) => ch.completed).length;
+        const progressPercent = (completedCount / chapters.length) * 100;
+
+        const difficultyLabels = {
+          beginner: "Iniciante",
+          intermediate: "Intermediário",
+          advanced: "Avançado",
+        };
+
+        return (
+          <>
+            {/* Navbar */}
+            <nav
+              className={`sticky top-0 z-50 backdrop-blur-xl border-b ${
+                theme === "dark"
+                  ? "bg-slate-900/80 border-white/10"
+                  : "bg-white/80 border-black/10"
+              }`}
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16 gap-4">
+                  {/* Logo e Título */}
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <img
+                      src="/img/React_logo_wordmark.png"
+                      alt="React Logo"
+                      className="h-8 w-auto"
+                      style={{
+                        filter:
+                          theme === "dark"
+                            ? "none"
+                            : "brightness(0) saturate(100%) invert(21%) sepia(11%) saturate(1929%) hue-rotate(181deg) brightness(95%) contrast(92%)",
+                      }}
+                    />
+                    <span
+                      className={`text-xl font-bold hidden sm:block ${
+                        theme === "dark" ? "text-white" : "text-slate-900"
+                      }`}
+                    >
+                      Masterclass
+                    </span>
+                  </div>
+
+                  {/* Links de Navegação */}
+                  <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+                    {[
+                      { key: "all", label: "Todos" },
+                      { key: "beginner", label: "Iniciante" },
+                      { key: "intermediate", label: "Intermediário" },
+                      { key: "advanced", label: "Avançado" },
+                      { key: "completed", label: "✓ Concluídos" },
+                    ].map(({ key, label }) => (
+                      <button
+                        key={key}
+                        onClick={() => setFilter(key)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          filter === key
+                            ? theme === "dark"
+                              ? "bg-white text-slate-900"
+                              : "bg-slate-900 text-white"
+                            : theme === "dark"
+                              ? "text-white/80 hover:bg-white/10"
+                              : "text-slate-700 hover:bg-black/5"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Busca e Toggle */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      placeholder="🔍 Buscar..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={`hidden md:block w-48 lg:w-64 px-4 py-2 rounded-full text-sm border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        theme === "dark"
+                          ? "bg-white/5 border-white/10 text-white placeholder-white/40"
+                          : "bg-black/5 border-black/10 text-slate-900 placeholder-slate-400"
+                      }`}
+                    />
+                    <button
+                      onClick={toggleTheme}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
+                        theme === "dark"
+                          ? "bg-white/10 border-2 border-white/20 hover:bg-white/20"
+                          : "bg-black/5 border-2 border-black/10 hover:bg-black/10"
+                      }`}
+                    >
+                      <span className="text-lg">
+                        {theme === "dark" ? "🌙" : "☀️"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mobile filters */}
+                <div className="lg:hidden flex gap-2 pb-3 overflow-x-auto">
+                  {[
+                    { key: "all", label: "Todos" },
+                    { key: "beginner", label: "Iniciante" },
+                    { key: "intermediate", label: "Intermediário" },
+                    { key: "advanced", label: "Avançado" },
+                    { key: "completed", label: "✓" },
+                  ].map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setFilter(key)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                        filter === key
+                          ? theme === "dark"
+                            ? "bg-white text-slate-900"
+                            : "bg-slate-900 text-white"
+                          : theme === "dark"
+                            ? "text-white/80 bg-white/5"
+                            : "text-slate-700 bg-black/5"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </nav>
+
+            {/* Barra de Progresso */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-8">
+              <div
+                className={`h-2 rounded-full overflow-hidden ${
+                  theme === "dark" ? "bg-white/10" : "bg-black/10"
+                }`}
+              >
+                <div
+                  className="progress-fill h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Cards Grid */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                {filteredChapters.map((chapter) => (
+                  <div
+                    key={chapter.id}
+                    onClick={() => toggleComplete(chapter.id)}
+                    className={`card relative rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:-translate-y-2 ${
+                      theme === "dark"
+                        ? chapter.completed
+                          ? "bg-green-500/10 border border-green-500/30"
+                          : "bg-white/5 border border-white/10 hover:bg-white/10"
+                        : chapter.completed
+                          ? "bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200"
+                          : "bg-white border border-black/10 hover:shadow-xl"
+                    } ${chapter.completed ? "completed" : ""}`}
+                  >
+                    <div
+                      className={`text-xs font-bold uppercase tracking-wider mb-3 ${
+                        chapter.completed ? "text-green-500" : "text-blue-500"
+                      }`}
+                    >
+                      Capítulo {chapter.id}
+                    </div>
+
+                    <h3
+                      className={`text-lg font-bold mb-2 ${
+                        theme === "dark" ? "text-slate-100" : "text-slate-900"
+                      }`}
+                    >
+                      {chapter.title}
+                    </h3>
+
+                    <p
+                      className={`text-sm mb-4 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-600"
+                      }`}
+                    >
+                      {chapter.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-auto">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          chapter.difficulty === "beginner"
+                            ? theme === "dark"
+                              ? "bg-blue-500/20 text-blue-300"
+                              : "bg-blue-100 text-blue-700"
+                            : chapter.difficulty === "intermediate"
+                              ? theme === "dark"
+                                ? "bg-yellow-500/20 text-yellow-300"
+                                : "bg-yellow-100 text-yellow-700"
+                              : theme === "dark"
+                                ? "bg-red-500/20 text-red-300"
+                                : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {difficultyLabels[chapter.difficulty]}
+                      </span>
+
+                      <div
+                        className={`w-6 h-6 rounded-full border-3 flex items-center justify-center transition-all ${
+                          chapter.completed
+                            ? "bg-green-500 border-green-500"
+                            : theme === "dark"
+                              ? "border-white/30"
+                              : "border-slate-300"
+                        }`}
+                      >
+                        {chapter.completed && (
+                          <span className="text-white text-xs font-bold">
+                            ✓
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-4 justify-center">
+                {[
+                  { label: "Concluídos", value: completedCount },
+                  {
+                    label: "Restantes",
+                    value: chapters.length - completedCount,
+                  },
+                  {
+                    label: "Progresso",
+                    value: `${Math.round(progressPercent)}%`,
+                  },
+                ].map(({ label, value }) => (
+                  <div
+                    key={label}
+                    className={`min-w-[160px] px-8 py-6 rounded-2xl backdrop-blur-xl border text-center transition-all ${
+                      theme === "dark"
+                        ? "bg-white/5 border-white/10"
+                        : "bg-white border-black/10 shadow-lg"
+                    }`}
+                  >
+                    <div
+                      className={`text-4xl font-extrabold mb-2 ${
+                        theme === "dark" ? "text-white" : "text-slate-900"
+                      }`}
+                    >
+                      {value}
+                    </div>
+                    <div
+                      className={`text-sm font-medium ${
+                        theme === "dark" ? "text-white/70" : "text-slate-600"
+                      }`}
+                    >
+                      {label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        );
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
