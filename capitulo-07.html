@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 7 - Renderização de Listas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-theme .text-white {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155 !important;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569 !important;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b !important;
+      }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-theme .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+      }
+      body.light-theme .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      body.light-theme .bg-slate-700 {
+        background-color: #cbd5e1 !important;
+      }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+      }
+      body.light-theme a {
+        color: #2563eb !important;
+      }
+      body.light-theme a:hover {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .text-green-300 {
+        color: #15803d !important;
+      }
+      body.light-theme .bg-green-500\/10 {
+        background-color: rgba(34, 197, 94, 0.15) !important;
+      }
+      body.light-theme .bg-green-500\/20 {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        color: #15803d !important;
+      }
+      body.light-theme .border-green-500\/30 {
+        border-color: rgba(34, 197, 94, 0.3) !important;
+      }
+      body.light-theme .text-blue-400 {
+        color: #2563eb !important;
+      }
+      body.light-theme .text-blue-300 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .bg-blue-500\/20 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-500 {
+        color: #2563eb !important;
+      }
+      body.light-theme .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-700 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme code:not(pre code) {
+        color: #1e293b !important;
+      }
+      body.light-theme .codebox-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      body.light-theme .copy-btn {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .copy-btn:hover {
+        background-color: rgba(59, 130, 246, 0.5) !important;
+      }
+      body.light-theme .text-yellow-300 {
+        color: #a16207 !important;
+      }
+      body.light-theme .bg-yellow-500\/10 {
+        background-color: rgba(234, 179, 8, 0.15) !important;
+      }
+      body.light-theme .border-yellow-500\/30 {
+        border-color: rgba(234, 179, 8, 0.3) !important;
+      }
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+      body.light-theme .text-red-300 {
+        color: #b91c1c !important;
+      }
+      body.light-theme .bg-red-500\/10 {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+      }
+      body.light-theme .border-red-500\/30 {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+
+      .codebox {
+        position: relative;
+        margin: 1.5rem 0;
+      }
+
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .copy-btn:hover {
+        transform: scale(1.05);
+      }
+
+      pre {
+        margin: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+      }
+
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+      }
+
+      .complete-btn.completed {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        cursor: default;
+      }
+
+      .complete-btn.completed:hover {
+        transform: none;
+        box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="react-course.html"
+            class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+
+          <div class="flex items-center gap-3">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
+              ✓ Concluído
+            </div>
+            <button
+              id="themeToggle"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"
+            >
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
+          >
+            Capítulo 7
+          </span>
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+          >
+            Iniciante
+          </span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          Renderização de Listas
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda a usar o poderoso método
+          <code class="bg-slate-700 px-2 py-1 rounded text-lg">.map()</code>
+          para transformar arrays de dados em elementos JSX dinamicamente
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Por que Renderizar Listas?
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Em quase toda aplicação real você vai trabalhar com coleções de
+              dados — lista de produtos, usuários, posts, notificações,
+              comentários... Em vez de criar um componente para cada item
+              manualmente, o React permite gerar todos eles de forma dinâmica a
+              partir de um array.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              A ferramenta central para isso é o método JavaScript
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code
+              >, que percorre cada item de um array e retorna um novo array — no
+              nosso caso, um array de elementos JSX.
+            </p>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Lembre-se:</strong> O JSX aceita arrays de elementos!
+              Quando você retorna um array de JSX dentro de
+              <code class="bg-blue-500/20 px-2 py-1 rounded">{"{...}"}</code>, o
+              React renderiza cada item na sequência automaticamente.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O Método .map() no React
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Veja a diferença entre escrever tudo manualmente e usar
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code>:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Sem .map() — repetitivo e não escalável</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function ListaFrutas() {
+  return (
+    &lt;ul&gt;
+      &lt;li&gt;🍎 Maçã&lt;/li&gt;
+      &lt;li&gt;🍌 Banana&lt;/li&gt;
+      &lt;li&gt;🍇 Uva&lt;/li&gt;
+      &lt;li&gt;🍊 Laranja&lt;/li&gt;
+      {/* E se tiver 100 frutas? 😱 */}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>✅ Com .map() — dinâmico e escalável</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">const frutas = ["🍎 Maçã", "🍌 Banana", "🍇 Uva", "🍊 Laranja"];
+
+function ListaFrutas() {
+  return (
+    &lt;ul&gt;
+      {frutas.map((fruta, index) => (
+        &lt;li key={index}&gt;{fruta}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default ListaFrutas;</code></pre>
+          </div>
+
+          <p class="text-slate-300 leading-relaxed mt-2 mb-6">
+            Agora, independente de quantas frutas existirem no array, o
+            componente as renderiza todas. Adicione ou remova frutas do array —
+            o JSX não precisa mudar!
+          </p>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-white mb-3">
+              Como o .map() funciona
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Anatomia do .map()</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">array.map((item, index) => {
+  // item  → o elemento atual do array
+  // index → a posição do elemento (0, 1, 2...)
+  return &lt;ElementoJSX /&gt;; // retorna JSX para cada item
+})
+
+// Com parênteses (retorno implícito — mais comum)
+array.map((item) => (
+  &lt;ElementoJSX /&gt;
+))</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Renderizando Arrays de Objetos
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Na prática, você raramente vai mapear arrays de strings. O mais
+            comum é trabalhar com arrays de
+            <strong class="text-white">objetos</strong>
+            vindos de uma API ou banco de dados:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/ListaUsuarios.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">const usuarios = [
+  { id: 1, nome: "Ana Silva",    cargo: "Desenvolvedora",  ativo: true  },
+  { id: 2, nome: "Bruno Costa",  cargo: "Designer",        ativo: true  },
+  { id: 3, nome: "Carla Mendes", cargo: "Product Manager", ativo: false },
+  { id: 4, nome: "Diego Santos", cargo: "DevOps",          ativo: true  },
+];
+
+function ListaUsuarios() {
+  return (
+    &lt;div className="lista"&gt;
+      &lt;h2&gt;Time da Empresa&lt;/h2&gt;
+
+      {usuarios.map((usuario) => (
+        &lt;div key={usuario.id} className="card-usuario"&gt;
+          &lt;h3&gt;{usuario.nome}&lt;/h3&gt;
+          &lt;p&gt;{usuario.cargo}&lt;/p&gt;
+          &lt;span className={usuario.ativo ? "ativo" : "inativo"}&gt;
+            {usuario.ativo ? "✅ Ativo" : "⛔ Inativo"}
+          &lt;/span&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+
+export default ListaUsuarios;</code></pre>
+          </div>
+
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-green-300">
+              ✅ <strong>Boas práticas:</strong> Use a desestruturação do
+              JavaScript dentro do
+              <code class="bg-green-500/20 px-2 py-1 rounded">.map()</code>
+              para tornar o código ainda mais limpo:
+            </p>
+            <div class="codebox mt-4">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Com desestruturação</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">{usuarios.map(({ id, nome, cargo, ativo }) => (
+  &lt;div key={id} className="card-usuario"&gt;
+    &lt;h3&gt;{nome}&lt;/h3&gt;
+    &lt;p&gt;{cargo}&lt;/p&gt;
+    &lt;span&gt;{ativo ? "✅ Ativo" : "⛔ Inativo"}&lt;/span&gt;
+  &lt;/div&gt;
+))}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Extraindo para um Componente Filho
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando o JSX dentro do
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code>
+            começa a crescer, é hora de extrair para um componente separado.
+            Isso mantém o código organizado e reutilizável:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/CardUsuario.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">// Componente filho — responsável por renderizar UM usuário
+function CardUsuario({ id, nome, cargo, ativo }) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;div className="avatar"&gt;
+        {nome.charAt(0).toUpperCase()}
+      &lt;/div&gt;
+      &lt;div className="info"&gt;
+        &lt;h3&gt;{nome}&lt;/h3&gt;
+        &lt;p&gt;{cargo}&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;span className={`badge ${ativo ? 'badge-verde' : 'badge-cinza'}`}&gt;
+        {ativo ? "Ativo" : "Inativo"}
+      &lt;/span&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default CardUsuario;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/ListaUsuarios.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import CardUsuario from './CardUsuario';
+
+const usuarios = [
+  { id: 1, nome: "Ana Silva",    cargo: "Desenvolvedora",  ativo: true  },
+  { id: 2, nome: "Bruno Costa",  cargo: "Designer",        ativo: true  },
+  { id: 3, nome: "Carla Mendes", cargo: "Product Manager", ativo: false },
+];
+
+function ListaUsuarios() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Time da Empresa&lt;/h2&gt;
+
+      {/* .map() agora fica super limpo! */}
+      {usuarios.map((usuario) => (
+        &lt;CardUsuario
+          key={usuario.id}
+          {...usuario}
+        /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+
+export default ListaUsuarios;</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Filtrando Listas com .filter()
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Muitas vezes você precisa mostrar apenas parte dos dados — só
+            usuários ativos, só produtos disponíveis, só posts de uma categoria.
+            Combine
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+              >.filter()</code
+            >
+            com
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code>:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Filtrando antes de mapear</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">const produtos = [
+  { id: 1, nome: "Notebook",   preco: 3499, disponivel: true  },
+  { id: 2, nome: "Teclado",    preco: 349,  disponivel: true  },
+  { id: 3, nome: "Monitor",    preco: 1299, disponivel: false },
+  { id: 4, nome: "Mouse",      preco: 199,  disponivel: true  },
+  { id: 5, nome: "Headset",    preco: 289,  disponivel: false },
+];
+
+function ListaProdutos() {
+  // 1. Filtra apenas os disponíveis
+  const disponiveis = produtos.filter((p) => p.disponivel);
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Produtos disponíveis ({disponiveis.length})&lt;/h2&gt;
+
+      {/* 2. Mapeia apenas os filtrados */}
+      {disponiveis.map(({ id, nome, preco }) => (
+        &lt;div key={id}&gt;
+          &lt;span&gt;{nome}&lt;/span&gt;
+          &lt;span&gt;R$ {preco.toFixed(2)}&lt;/span&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <p class="text-slate-300 leading-relaxed mb-4">
+            Você também pode encadear diretamente — tudo em uma só expressão:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>.filter().map() encadeado</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">{produtos
+  .filter((p) => p.disponivel)
+  .map(({ id, nome, preco }) => (
+    &lt;div key={id}&gt;
+      &lt;span&gt;{nome}&lt;/span&gt;
+      &lt;span&gt;R$ {preco.toFixed(2)}&lt;/span&gt;
+    &lt;/div&gt;
+  ))
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Lista com Estado Vazio
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Sempre considere o caso em que a lista está vazia. Mostrar uma
+            mensagem amigável é muito melhor do que exibir uma tela em branco:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/ListaTarefas.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function ListaTarefas({ tarefas }) {
+  // Lista vazia — estado de "empty state"
+  if (tarefas.length === 0) {
+    return (
+      &lt;div className="empty-state"&gt;
+        &lt;span className="icone"&gt;📭&lt;/span&gt;
+        &lt;h3&gt;Nenhuma tarefa encontrada&lt;/h3&gt;
+        &lt;p&gt;Adicione sua primeira tarefa acima!&lt;/p&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;ul className="lista-tarefas"&gt;
+      {tarefas.map(({ id, texto, concluida }) => (
+        &lt;li
+          key={id}
+          className={concluida ? "concluida" : "pendente"}
+        &gt;
+          &lt;span&gt;{concluida ? "✅" : "⬜"}&lt;/span&gt;
+          &lt;span&gt;{texto}&lt;/span&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default ListaTarefas;</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-purple-300">
+              💡 <strong>UX dica:</strong> O "empty state" é um padrão de design
+              essencial. Nunca deixe o usuário olhando para uma área em branco
+              sem entender o que está acontecendo. Dê contexto e, se possível,
+              uma ação para ele tomar!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Ordenando Listas com .sort()
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Além de filtrar, você pode ordenar os dados antes de renderizar com
+            o método
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">.sort()</code>:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Ordenando por diferentes critérios</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">const produtos = [
+  { id: 1, nome: "Notebook",  preco: 3499 },
+  { id: 2, nome: "Teclado",   preco: 349  },
+  { id: 3, nome: "Monitor",   preco: 1299 },
+  { id: 4, nome: "Mouse",     preco: 199  },
+];
+
+function ListaOrdenada({ ordenarPor }) {
+  // Cria uma cópia antes de ordenar (sort() muta o array original!)
+  const produtosOrdenados = [...produtos].sort((a, b) => {
+    if (ordenarPor === "preco-asc")  return a.preco - b.preco;
+    if (ordenarPor === "preco-desc") return b.preco - a.preco;
+    if (ordenarPor === "nome")       return a.nome.localeCompare(b.nome);
+    return 0;
+  });
+
+  return (
+    &lt;ul&gt;
+      {produtosOrdenados.map(({ id, nome, preco }) => (
+        &lt;li key={id}&gt;
+          {nome} — R$ {preco.toFixed(2)}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-yellow-300">
+              ⚠️ <strong>Importante:</strong> O método
+              <code class="bg-yellow-500/20 px-2 py-1 rounded">.sort()</code>
+              modifica o array original! Sempre faça uma cópia antes de ordenar
+              usando spread (<code class="bg-yellow-500/20 px-2 py-1 rounded"
+                >[...array]</code
+              >) ou
+              <code class="bg-yellow-500/20 px-2 py-1 rounded"
+                >array.slice()</code
+              >. Mutar o estado diretamente causa bugs difíceis de detectar no
+              React.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Tabela de Produtos com Filtro
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos combinar tudo — lista, filtro, estado vazio e componente filho
+            — em um exemplo prático completo:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Exemplo completo</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const produtos = [
+  { id: 1, nome: "Notebook Pro",    categoria: "Computadores", preco: 4999, disponivel: true  },
+  { id: 2, nome: "Teclado Mecânico",categoria: "Periféricos",  preco: 349,  disponivel: true  },
+  { id: 3, nome: "Monitor 4K",      categoria: "Computadores", preco: 2499, disponivel: false },
+  { id: 4, nome: "Mouse Gamer",     categoria: "Periféricos",  preco: 199,  disponivel: true  },
+  { id: 5, nome: "Headset BT",      categoria: "Periféricos",  preco: 289,  disponivel: false },
+];
+
+function CardProduto({ nome, categoria, preco, disponivel }) {
+  return (
+    &lt;div className={`card ${!disponivel ? 'esgotado' : ''}`}&gt;
+      &lt;span className="categoria"&gt;{categoria}&lt;/span&gt;
+      &lt;h3&gt;{nome}&lt;/h3&gt;
+      &lt;p className="preco"&gt;R$ {preco.toFixed(2)}&lt;/p&gt;
+      &lt;button disabled={!disponivel}&gt;
+        {disponivel ? "🛒 Comprar" : "❌ Esgotado"}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  const [filtro, setFiltro] = useState("Todos");
+
+  const categorias = ["Todos", "Computadores", "Periféricos"];
+
+  // Filtra por categoria selecionada
+  const produtosFiltrados = filtro === "Todos"
+    ? produtos
+    : produtos.filter((p) => p.categoria === filtro);
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Loja Tech 🛒&lt;/h1&gt;
+
+      {/* Botões de filtro */}
+      &lt;div className="filtros"&gt;
+        {categorias.map((cat) => (
+          &lt;button
+            key={cat}
+            onClick={() => setFiltro(cat)}
+            className={filtro === cat ? "ativo" : ""}
+          &gt;
+            {cat}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Estado vazio */}
+      {produtosFiltrados.length === 0 ? (
+        &lt;p&gt;📭 Nenhum produto nesta categoria.&lt;/p&gt;
+      ) : (
+        &lt;div className="grid"&gt;
+          {produtosFiltrados.map((produto) => (
+            &lt;CardProduto key={produto.id} {...produto} /&gt;
+          ))}
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div
+            class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-orange-300">
+              🔥 <strong>Perceba:</strong> Os próprios botões de filtro também
+              são renderizados com
+              <code class="bg-orange-500/20 px-2 py-1 rounded">.map()</code>!
+              Qualquer coisa que seja uma lista no código pode — e deve — ser
+              gerada dinamicamente. Isso inclui menus de navegação, abas,
+              breadcrumbs e muito mais.
+            </p>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div
+            class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8"
+          >
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou a renderização de listas no React! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>
+                Como usar o método
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >.map()</code
+                >
+                para transformar arrays em JSX
+              </li>
+              <li>Como renderizar arrays de objetos com desestruturação</li>
+              <li>Como extrair o item da lista para um componente filho</li>
+              <li>
+                Como combinar
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >.filter()</code
+                >
+                e
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >.map()</code
+                >
+                para filtrar dados
+              </li>
+              <li>Como tratar o estado vazio com uma mensagem amigável</li>
+              <li>
+                Como ordenar listas com
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >.sort()</code
+                >
+                sem mutar o array original
+              </li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprofundar em
+              <strong>Keys em Listas</strong>
+              — por que o React precisa delas, como escolher a key certa e os
+              erros comuns que você deve evitar!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div
+          class="flex justify-between items-center pt-8 border-t border-white/10"
+        >
+          <a
+            href="capitulo-06.html"
+            class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+          >
+            ← Capítulo Anterior
+          </a>
+          <a
+            href="react-course.html"
+            class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30"
+          >
+            Voltar ao índice
+          </a>
+          <a
+            href="capitulo-08.html"
+            class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
+          >
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className =
+            "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className =
+            "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 7;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion()) {
+          completeButtonContainer.classList.remove("hidden");
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

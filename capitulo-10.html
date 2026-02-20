@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 10 - useState: Seu Primeiro Hook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-theme .text-white {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155 !important;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569 !important;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b !important;
+      }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-theme .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+      }
+      body.light-theme .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      body.light-theme .bg-slate-700 {
+        background-color: #cbd5e1 !important;
+      }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+      }
+      body.light-theme a {
+        color: #2563eb !important;
+      }
+      body.light-theme a:hover {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .text-green-300 {
+        color: #15803d !important;
+      }
+      body.light-theme .bg-green-500\/10 {
+        background-color: rgba(34, 197, 94, 0.15) !important;
+      }
+      body.light-theme .bg-green-500\/20 {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        color: #15803d !important;
+      }
+      body.light-theme .border-green-500\/30 {
+        border-color: rgba(34, 197, 94, 0.3) !important;
+      }
+      body.light-theme .text-blue-400 {
+        color: #2563eb !important;
+      }
+      body.light-theme .text-blue-300 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .bg-blue-500\/20 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-500 {
+        color: #2563eb !important;
+      }
+      body.light-theme .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-700 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme code:not(pre code) {
+        color: #1e293b !important;
+      }
+      body.light-theme .codebox-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      body.light-theme .copy-btn {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .copy-btn:hover {
+        background-color: rgba(59, 130, 246, 0.5) !important;
+      }
+      body.light-theme .text-yellow-300 {
+        color: #a16207 !important;
+      }
+      body.light-theme .bg-yellow-500\/10 {
+        background-color: rgba(234, 179, 8, 0.15) !important;
+      }
+      body.light-theme .border-yellow-500\/30 {
+        border-color: rgba(234, 179, 8, 0.3) !important;
+      }
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+      body.light-theme .text-red-300 {
+        color: #b91c1c !important;
+      }
+      body.light-theme .bg-red-500\/10 {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+      }
+      body.light-theme .border-red-500\/30 {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+
+      .codebox {
+        position: relative;
+        margin: 1.5rem 0;
+      }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover {
+        transform: scale(1.05);
+      }
+      pre {
+        margin: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+      }
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+      }
+      .complete-btn.completed {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        cursor: default;
+      }
+      .complete-btn.completed:hover {
+        transform: none;
+        box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="react-course.html"
+            class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
+              ✓ Concluído
+            </div>
+            <button
+              id="themeToggle"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"
+            >
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
+            >Capítulo 10</span
+          >
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+            >Iniciante</span
+          >
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          useState: Seu Primeiro Hook
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda o hook mais fundamental do React — o que dá
+          <em>memória</em> aos seus componentes e faz a interface reagir às
+          ações do usuário
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O Problema: Componentes Sem Memória
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Até agora, nossos componentes exibem dados estáticos ou recebidos
+              por props. Mas e se o usuário clicar em um botão e a tela precisar
+              mudar? Veja o que acontece quando tentamos usar uma variável
+              normal:
+            </p>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>❌ Variável comum não funciona</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">function Contador() {
+  let contador = 0; // variável comum
+
+  const incrementar = () => {
+    contador = contador + 1;
+    console.log(contador); // muda no console...
+    // ...mas a tela NÃO atualiza! 😱
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Contagem: {contador}&lt;/p&gt; {/* sempre mostra 0 */}
+      &lt;button onClick={incrementar}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+            <p class="text-slate-300 leading-relaxed mt-4">
+              O problema: variáveis locais são recriadas do zero a cada render.
+              O React não sabe que
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >contador</code
+              >
+              mudou e, portanto, não re-renderiza o componente.
+            </p>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>A solução é o useState!</strong> O React precisa de um
+              mecanismo especial para "lembrar" valores entre renders e, ao
+              mesmo tempo, saber quando precisa atualizar a tela. O hook
+              <code class="bg-blue-500/20 px-2 py-1 rounded">useState</code>
+              faz exatamente isso.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Anatomia do useState
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code>
+            é uma função que retorna um array com exatamente dois elementos.
+            Usamos desestruturação para nomeá-los:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Anatomia completa do useState</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function MeuComponente() {
+  //    ↓ valor atual   ↓ função para atualizar    ↓ valor inicial
+  const [contador,      setContador]             = useState(0);
+  //     (state)        (setter)                   (initialState)
+
+  // Você pode ter quantos estados quiser:
+  const [nome, setNome]           = useState("");
+  const [ativo, setAtivo]         = useState(false);
+  const [lista, setLista]         = useState([]);
+  const [dados, setDados]         = useState(null);
+
+  return &lt;div&gt;{contador}&lt;/div&gt;;
+}</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              Os dois elementos do useState
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <span
+                  class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded font-mono text-sm whitespace-nowrap"
+                  >estado</span
+                >
+                <p class="text-slate-300 text-sm">
+                  O <strong class="text-white">valor atual</strong> do estado. É
+                  o que você usa no JSX para exibir dados. Começa com o valor
+                  passado ao
+                  <code class="bg-slate-700 px-1 rounded text-xs"
+                    >useState(valorInicial)</code
+                  >
+                  e é atualizado sempre que o setter é chamado.
+                </p>
+              </div>
+              <div class="flex items-start gap-4">
+                <span
+                  class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded font-mono text-sm whitespace-nowrap"
+                  >setEstado</span
+                >
+                <p class="text-slate-300 text-sm">
+                  A <strong class="text-white">função de atualização</strong>.
+                  Quando chamada com um novo valor, o React atualiza o estado,
+                  salva o valor para o próximo render e
+                  <strong class="text-white"
+                    >agenda uma nova renderização</strong
+                  >
+                  do componente automaticamente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Seu Primeiro useState: Contador
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos resolver o problema do contador usando
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code
+            >:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Contador.jsx — ✅ Com useState</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function Contador() {
+  const [contador, setContador] = useState(0); // começa em 0
+
+  const incrementar = () => setContador(contador + 1);
+  const decrementar = () => setContador(contador - 1);
+  const resetar     = () => setContador(0);
+
+  return (
+    &lt;div&gt;
+      {/* O valor é reativo — atualiza automaticamente */}
+      &lt;h2&gt;Contagem: {contador}&lt;/h2&gt;
+
+      &lt;button onClick={decrementar}&gt;➖&lt;/button&gt;
+      &lt;button onClick={resetar}&gt;🔄 Resetar&lt;/button&gt;
+      &lt;button onClick={incrementar}&gt;➕&lt;/button&gt;
+
+      {/* Renderização condicional baseada no estado */}
+      {contador &gt; 10 &amp;&amp; &lt;p&gt;🔥 Uau, passou de 10!&lt;/p&gt;}
+      {contador &lt; 0  &amp;&amp; &lt;p&gt;❄️ Negativo!&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}
+
+export default Contador;</code></pre>
+          </div>
+
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-green-300">
+              ✅
+              <strong
+                >O que acontece ao chamar
+                <code class="bg-green-500/20 px-2 py-1 rounded"
+                  >setContador(1)</code
+                >:</strong
+              >
+              o React salva o novo valor (1), agenda uma re-renderização do
+              componente, e na próxima renderização
+              <code class="bg-green-500/20 px-2 py-1 rounded">contador</code>
+              vale 1. A tela é atualizada automaticamente — sem manipular o DOM
+              diretamente!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Atualizações Baseadas no Estado Anterior
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando o novo estado depende do estado anterior, use a forma
+            <strong class="text-white">funcional</strong> do setter. Isso
+            garante que você sempre usa o valor mais recente — especialmente
+            importante em atualizações rápidas consecutivas:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Forma direta vs. forma funcional</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">// ⚠️ Forma direta — pode ter problemas em atualizações rápidas
+const incrementar = () => {
+  setContador(contador + 1); // usa o "contador" do closure atual
+};
+
+// ✅ Forma funcional — sempre usa o valor mais recente
+const incrementar = () => {
+  setContador((valorAnterior) => valorAnterior + 1);
+};
+
+// A diferença fica clara neste exemplo:
+const incrementarTresVezes = () => {
+  // ⚠️ Resultado: +1 (não +3), porque "contador" não mudou ainda
+  setContador(contador + 1);
+  setContador(contador + 1);
+  setContador(contador + 1);
+
+  // ✅ Resultado: +3, cada chamada recebe o valor mais atual
+  setContador((prev) => prev + 1);
+  setContador((prev) => prev + 1);
+  setContador((prev) => prev + 1);
+};</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-purple-300">
+              💡 <strong>Convenção:</strong> O parâmetro da função costuma ser
+              chamado de
+              <code class="bg-purple-500/20 px-2 py-1 rounded">prev</code>,
+              <code class="bg-purple-500/20 px-2 py-1 rounded">prevState</code>
+              ou a inicial do estado (ex:
+              <code class="bg-purple-500/20 px-2 py-1 rounded">c</code>
+              para contador). Use a forma funcional sempre que o novo valor
+              depender do anterior.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Múltiplos Estados em um Componente
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Um componente pode ter quantos estados precisar. Cada
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code>
+            é independente dos outros:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/PerfilEditor.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function PerfilEditor() {
+  // Cada estado é independente
+  const [nome, setNome]           = useState("Ana Silva");
+  const [bio, setBio]             = useState("");
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [salvo, setSalvo]         = useState(false);
+
+  const salvar = () => {
+    setModoEdicao(false);
+    setSalvo(true);
+
+    // Remove o aviso de "salvo" depois de 3 segundos
+    setTimeout(() => setSalvo(false), 3000);
+  };
+
+  return (
+    &lt;div className="perfil"&gt;
+      {salvo &amp;&amp; &lt;div className="toast"&gt;✅ Perfil salvo!&lt;/div&gt;}
+
+      {modoEdicao ? (
+        &lt;div className="form-edicao"&gt;
+          &lt;input
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Seu nome"
+          /&gt;
+          &lt;textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Escreva uma bio..."
+          /&gt;
+          &lt;button onClick={salvar}&gt;Salvar ✅&lt;/button&gt;
+          &lt;button onClick={() => setModoEdicao(false)}&gt;Cancelar&lt;/button&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;div className="visualizacao"&gt;
+          &lt;h2&gt;{nome}&lt;/h2&gt;
+          &lt;p&gt;{bio || "Sem bio ainda..."}&lt;/p&gt;
+          &lt;button onClick={() => setModoEdicao(true)}&gt;✏️ Editar&lt;/button&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default PerfilEditor;</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Tipos de Valor Inicial
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O valor inicial do
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code>
+            pode ser qualquer tipo de dado JavaScript:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Todos os tipos de estado inicial</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function Exemplos() {
+  // Primitivos
+  const [numero, setNumero]     = useState(0);
+  const [texto, setTexto]       = useState("");
+  const [ativo, setAtivo]       = useState(false);
+
+  // Nulo (dado ainda não carregado)
+  const [usuario, setUsuario]   = useState(null);
+
+  // Array (lista de itens)
+  const [itens, setItens]       = useState([]);
+
+  // Objeto (múltiplos campos relacionados)
+  const [form, setForm]         = useState({
+    nome: "",
+    email: "",
+    senha: "",
+  });
+
+  // Inicialização custosa (usa função para calcular apenas uma vez)
+  const [dados, setDados]       = useState(() => {
+    const salvo = localStorage.getItem("dados");
+    return salvo ? JSON.parse(salvo) : { tema: "dark", idioma: "pt-BR" };
+  });
+
+  return &lt;div&gt;...&lt;/div&gt;;
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-orange-300">
+              🔥 <strong>Inicialização lazy (preguiçosa):</strong> Quando o
+              valor inicial requer um cálculo pesado — como ler do
+              <code class="bg-orange-500/20 px-2 py-1 rounded"
+                >localStorage</code
+              >
+              — passe uma <strong>função</strong> ao invés do valor direto:
+              <code class="bg-orange-500/20 px-2 py-1 rounded"
+                >useState(() => calcular())</code
+              >. Assim o cálculo ocorre apenas no primeiro render, não em todos
+              os seguintes.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Regras dos Hooks — Muito Importante!
+          </h2>
+
+          <div
+            class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-6"
+          >
+            <h3 class="text-lg font-bold text-red-300 mb-4">
+              🚨 Regras que você NUNCA pode quebrar
+            </h3>
+            <div class="space-y-5">
+              <div>
+                <h4 class="text-white font-semibold mb-2">
+                  1. Só use hooks no nível superior do componente
+                </h4>
+                <div class="codebox">
+                  <div class="codebox-header bg-slate-800 text-slate-300">
+                    <span>❌ Errado vs. ✅ Correto</span>
+                    <button
+                      class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                      onclick="copyCode(this)"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <pre><code class="language-jsx">function Componente({ condicao }) {
+  // ❌ NUNCA use hooks dentro de if, for, while ou funções aninhadas
+  if (condicao) {
+    const [valor, setValor] = useState(0); // ERRO!
+  }
+
+  // ✅ SEMPRE no nível superior, antes de qualquer return
+  const [valor, setValor] = useState(0);
+
+  if (condicao) {
+    // use o estado aqui, mas declare fora
+  }
+}</code></pre>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-white font-semibold mb-2">
+                  2. Só use hooks em componentes React ou custom hooks
+                </h4>
+                <div class="codebox">
+                  <div class="codebox-header bg-slate-800 text-slate-300">
+                    <span>Onde hooks podem ser usados</span>
+                    <button
+                      class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                      onclick="copyCode(this)"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <pre><code class="language-jsx">// ✅ Componente funcional React
+function MeuComponente() {
+  const [estado, setEstado] = useState(0); // OK
+  return &lt;div&gt;{estado}&lt;/div&gt;;
+}
+
+// ✅ Custom hook (nome começa com "use")
+function useContador(inicial = 0) {
+  const [count, setCount] = useState(inicial); // OK
+  return { count, incrementar: () => setCount(c => c + 1) };
+}
+
+// ❌ Função JavaScript comum — não funciona!
+function calcularAlgo() {
+  const [valor, setValor] = useState(0); // ERRO!
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Por que essas regras existem?</strong> O React
+              identifica cada
+              <code class="bg-blue-500/20 px-2 py-1 rounded">useState</code>
+              pela <strong>ordem em que é chamado</strong>. Se você usar hooks
+              dentro de condicionais, a ordem pode mudar entre renders — e o
+              React não consegue associar cada hook ao seu estado correto,
+              causando bugs impossíveis de debugar.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Semáforo Interativo
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos aplicar tudo que aprendemos em um exemplo divertido — um
+            semáforo que muda de cor com cada clique, usando estado e
+            renderização condicional juntos:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Semaforo.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const CORES = ["vermelho", "amarelo", "verde"];
+
+const CONFIG = {
+  vermelho: { emoji: "🔴", mensagem: "PARE!",    bg: "#dc2626" },
+  amarelo:  { emoji: "🟡", mensagem: "ATENÇÃO!", bg: "#d97706" },
+  verde:    { emoji: "🟢", mensagem: "SIGA!",    bg: "#16a34a" },
+};
+
+function Semaforo() {
+  const [indice, setIndice] = useState(0);
+  const [automatico, setAutomatico] = useState(false);
+  const [intervalo, setIntervalo]   = useState(null);
+
+  const corAtual = CORES[indice];
+  const config   = CONFIG[corAtual];
+
+  // Avança manualmente para a próxima cor
+  const proximaCor = () => {
+    setIndice((prev) => (prev + 1) % CORES.length);
+  };
+
+  // Liga/desliga modo automático
+  const toggleAutomatico = () => {
+    if (automatico) {
+      clearInterval(intervalo);
+      setIntervalo(null);
+      setAutomatico(false);
+    } else {
+      const id = setInterval(() => {
+        setIndice((prev) => (prev + 1) % CORES.length);
+      }, 1500);
+      setIntervalo(id);
+      setAutomatico(true);
+    }
+  };
+
+  return (
+    &lt;div style={{ textAlign: "center", padding: "2rem" }}&gt;
+      {/* Semáforo visual */}
+      &lt;div style={{
+        background: "#1e293b",
+        display: "inline-flex",
+        flexDirection: "column",
+        gap: "1rem",
+        padding: "1.5rem",
+        borderRadius: "1rem",
+        marginBottom: "1.5rem",
+      }}&gt;
+        {CORES.map((cor) => (
+          &lt;div
+            key={cor}
+            style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              background: cor === corAtual ? CONFIG[cor].bg : "#374151",
+              transition: "background 0.3s ease",
+              boxShadow: cor === corAtual
+                ? `0 0 30px ${CONFIG[cor].bg}`
+                : "none",
+            }}
+          /&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Mensagem atual */}
+      &lt;h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}&gt;
+        {config.emoji} {config.mensagem}
+      &lt;/h2&gt;
+
+      {/* Controles */}
+      &lt;div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}&gt;
+        &lt;button
+          onClick={proximaCor}
+          disabled={automatico}
+        &gt;
+          Próxima cor ➡️
+        &lt;/button&gt;
+
+        &lt;button onClick={toggleAutomatico}&gt;
+          {automatico ? "⏹️ Parar" : "▶️ Automático"}
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;p style={{ marginTop: "1rem", opacity: 0.6 }}&gt;
+        Cor atual: {corAtual} (índice {indice})
+      &lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Semaforo;</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-purple-300">
+              💡 <strong>Perceba:</strong> O componente usa dois estados —
+              <code class="bg-purple-500/20 px-2 py-1 rounded">indice</code>
+              (qual cor está ativa) e
+              <code class="bg-purple-500/20 px-2 py-1 rounded">automatico</code>
+              (se está no modo automático). A forma funcional
+              <code class="bg-purple-500/20 px-2 py-1 rounded"
+                >(prev) => (prev + 1) % CORES.length</code
+              >
+              garante a sequência correta mesmo no
+              <code class="bg-purple-500/20 px-2 py-1 rounded">setInterval</code
+              >, que poderia capturar um valor desatualizado de
+              <code class="bg-purple-500/20 px-2 py-1 rounded">indice</code>.
+            </p>
+          </div>
+        </section>
+
+        <!-- Resumo visual -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Resumo: Como Pensar em Estado
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">🤔</span>
+                <div>
+                  <h3 class="text-white font-bold">O que deve ser estado?</h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Qualquer dado que, quando muda, precisa atualizar a
+                    interface — como o valor de um input, se um modal está
+                    aberto, itens de uma lista ou dados carregados de uma API.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">🚫</span>
+                <div>
+                  <h3 class="text-white font-bold">
+                    O que NÃO deve ser estado?
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Valores que podem ser calculados a partir do estado
+                    existente (derive-os no render), props recebidas ou
+                    constantes que nunca mudam.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">⚡</span>
+                <div>
+                  <h3 class="text-white font-bold">
+                    Quando usar a forma funcional do setter?
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Sempre que o novo valor depender do valor anterior:
+                    <code class="bg-slate-700 px-1 rounded text-xs"
+                      >setCount(prev => prev + 1)</code
+                    >. É a forma mais segura e deve ser seu padrão padrão.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div
+            class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8"
+          >
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou o
+              <code class="bg-white/10 px-2 py-1 rounded">useState</code>
+              — o hook mais importante do React! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>
+                Por que variáveis comuns não funcionam para estado reativo
+              </li>
+              <li>A anatomia do useState: estado, setter e valor inicial</li>
+              <li>
+                Como usar a forma funcional do setter para atualizações seguras
+              </li>
+              <li>
+                Como usar múltiplos estados independentes em um componente
+              </li>
+              <li>
+                Os diferentes tipos de valor inicial (primitivos, arrays,
+                objetos, lazy)
+              </li>
+              <li>
+                As duas regras fundamentais dos hooks — e por que elas existem
+              </li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprofundar o
+              <strong>useState com Objetos</strong>
+              — como gerenciar estados mais complexos sem cometer os erros de
+              imutabilidade que pegam todo mundo de surpresa!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div
+          class="flex justify-between items-center pt-8 border-t border-white/10"
+        >
+          <a
+            href="capitulo-09.html"
+            class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+          >
+            ← Capítulo Anterior
+          </a>
+          <a
+            href="react-course.html"
+            class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30"
+          >
+            Voltar ao índice
+          </a>
+          <a
+            href="capitulo-11.html"
+            class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
+          >
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className =
+            "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className =
+            "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 10;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion())
+          completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

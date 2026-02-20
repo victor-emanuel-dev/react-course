@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 9 - Eventos em React</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-theme .text-white {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155 !important;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569 !important;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b !important;
+      }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-theme .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+      }
+      body.light-theme .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      body.light-theme .bg-slate-700 {
+        background-color: #cbd5e1 !important;
+      }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+      }
+      body.light-theme a {
+        color: #2563eb !important;
+      }
+      body.light-theme a:hover {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .text-green-300 {
+        color: #15803d !important;
+      }
+      body.light-theme .bg-green-500\/10 {
+        background-color: rgba(34, 197, 94, 0.15) !important;
+      }
+      body.light-theme .bg-green-500\/20 {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        color: #15803d !important;
+      }
+      body.light-theme .border-green-500\/30 {
+        border-color: rgba(34, 197, 94, 0.3) !important;
+      }
+      body.light-theme .text-blue-400 {
+        color: #2563eb !important;
+      }
+      body.light-theme .text-blue-300 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .bg-blue-500\/20 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-500 {
+        color: #2563eb !important;
+      }
+      body.light-theme .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-700 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme code:not(pre code) {
+        color: #1e293b !important;
+      }
+      body.light-theme .codebox-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      body.light-theme .copy-btn {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .copy-btn:hover {
+        background-color: rgba(59, 130, 246, 0.5) !important;
+      }
+      body.light-theme .text-yellow-300 {
+        color: #a16207 !important;
+      }
+      body.light-theme .bg-yellow-500\/10 {
+        background-color: rgba(234, 179, 8, 0.15) !important;
+      }
+      body.light-theme .border-yellow-500\/30 {
+        border-color: rgba(234, 179, 8, 0.3) !important;
+      }
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+      body.light-theme .text-red-300 {
+        color: #b91c1c !important;
+      }
+      body.light-theme .bg-red-500\/10 {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+      }
+      body.light-theme .border-red-500\/30 {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+
+      .codebox {
+        position: relative;
+        margin: 1.5rem 0;
+      }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover {
+        transform: scale(1.05);
+      }
+      pre {
+        margin: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+      }
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+      }
+      .complete-btn.completed {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        cursor: default;
+      }
+      .complete-btn.completed:hover {
+        transform: none;
+        box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="react-course.html"
+            class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
+              ✓ Concluído
+            </div>
+            <button
+              id="themeToggle"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"
+            >
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
+            >Capítulo 9</span
+          >
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+            >Iniciante</span
+          >
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          Eventos em React
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda a lidar com cliques, teclado, formulários e outros eventos do
+          usuário — o que torna sua interface verdadeiramente interativa
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Eventos no React vs. HTML Puro
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              No HTML tradicional, você adiciona eventos diretamente nas tags
+              com atributos como
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">onclick</code
+              >,
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >onchange</code
+              >
+              etc. O React tem um sistema de eventos próprio — os
+              <strong class="text-white">Synthetic Events</strong> — que
+              funciona de forma semelhante, mas com algumas diferenças
+              importantes.
+            </p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              HTML vs. React — as diferenças
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>HTML puro vs. JSX</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// HTML puro — string, minúsculo
+&lt;button onclick="handleClick()"&gt;Clique&lt;/button&gt;
+
+// React JSX — camelCase, função (não string!)
+&lt;button onClick={handleClick}&gt;Clique&lt;/button&gt;
+
+// Outras diferenças:
+// HTML: onchange → React: onChange
+// HTML: onsubmit → React: onSubmit
+// HTML: onkeydown → React: onKeyDown
+// HTML: onmouseover → React: onMouseOver</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Synthetic Events:</strong> O React envolve os eventos
+              nativos do browser em um objeto chamado <em>SyntheticEvent</em>.
+              Isso garante que o comportamento dos eventos seja consistente em
+              todos os browsers — você não precisa se preocupar com diferenças
+              entre Chrome, Firefox e Safari!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Evento de Clique: onClick
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O evento mais comum em qualquer aplicação. Veja as diferentes formas
+            de usá-lo:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Botoes.jsx — formas de usar onClick</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function Botoes() {
+
+  // Forma 1: Função declarada separadamente (recomendado)
+  const handleClick = () => {
+    alert("Botão clicado! 🎉");
+  };
+
+  // Forma 2: Função com parâmetros
+  const handleClickComNome = (nome) => {
+    alert(`Olá, ${nome}!`);
+  };
+
+  // Forma 3: Acessando o objeto de evento
+  const handleClickEvento = (event) => {
+    console.log("Tipo do evento:", event.type);
+    console.log("Elemento clicado:", event.target);
+    console.log("Posição X:", event.clientX);
+    console.log("Posição Y:", event.clientY);
+  };
+
+  return (
+    &lt;div&gt;
+      {/* Forma 1: Referência direta à função */}
+      &lt;button onClick={handleClick}&gt;
+        Clique aqui
+      &lt;/button&gt;
+
+      {/* Forma 2: Arrow function inline para passar parâmetros */}
+      &lt;button onClick={() => handleClickComNome("Ana")}&gt;
+        Saudar Ana
+      &lt;/button&gt;
+
+      {/* Forma 3: Recebendo o evento */}
+      &lt;button onClick={handleClickEvento}&gt;
+        Ver info do evento
+      &lt;/button&gt;
+
+      {/* ❌ ERRADO — chama a função imediatamente ao renderizar! */}
+      {/* &lt;button onClick={handleClick()}&gt;Errado&lt;/button&gt; */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-red-300">
+              🚨 <strong>Erro clássico de iniciante!</strong> Nunca coloque
+              parênteses ao passar uma função para um evento:
+              <code class="bg-red-500/20 px-2 py-1 rounded"
+                >onClick={"{handleClick()}"}</code
+              >
+              chama a função imediatamente durante o render, não quando o
+              usuário clicar! Use sempre
+              <code class="bg-red-500/20 px-2 py-1 rounded"
+                >onClick={"{handleClick}"}</code
+              >
+              (sem parênteses) ou
+              <code class="bg-red-500/20 px-2 py-1 rounded"
+                >onClick={() => handleClick()}</code
+              >
+              (arrow function inline).
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Eventos de Teclado: onKeyDown, onKeyUp, onKeyPress
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Eventos de teclado são essenciais para atalhos, navegação e inputs.
+            O mais usado é o
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">onKeyDown</code
+            >:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/InputBusca.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function InputBusca() {
+  const [texto, setTexto] = useState("");
+
+  const handleKeyDown = (event) => {
+    // event.key retorna o nome da tecla pressionada
+    if (event.key === "Enter") {
+      alert(`Buscando por: "${texto}"`);
+    }
+
+    if (event.key === "Escape") {
+      setTexto(""); // Limpa o campo com Esc
+    }
+
+    // Combinações de teclas
+    if (event.ctrlKey &amp;&amp; event.key === "k") {
+      event.preventDefault(); // Previne ação padrão do browser
+      alert("Atalho Ctrl+K ativado!");
+    }
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;input
+        type="text"
+        value={texto}
+        onChange={(e) => setTexto(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Digite e pressione Enter..."
+      /&gt;
+      &lt;p&gt;Você digitou: {texto}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default InputBusca;</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-4">
+            <h3 class="text-xl font-bold text-white mb-3">
+              Teclas mais usadas no event.key
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"Enter"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"Escape"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"ArrowUp"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"ArrowDown"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"ArrowLeft"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"ArrowRight"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"Backspace"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"Tab"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"Delete"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >" " (Espaço)</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"a" ... "z"</code
+              >
+              <code class="bg-slate-700 px-3 py-2 rounded text-slate-300"
+                >"0" ... "9"</code
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Eventos de Formulário: onSubmit e onChange
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Dois dos eventos mais importantes para formulários React são o
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">onSubmit</code>
+            (quando o formulário é enviado) e o
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">onChange</code>
+            (quando um campo muda):
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/FormLogin.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function FormLogin() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const handleSubmit = (event) => {
+    // SEMPRE previna o comportamento padrão do form
+    // (que recarregaria a página)
+    event.preventDefault();
+
+    // Validação básica
+    if (!email || !senha) {
+      alert("Preencha todos os campos!");
+      return;
+    }
+
+    console.log("Dados enviados:", { email, senha });
+    alert(`Login realizado com: ${email}`);
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;div&gt;
+        &lt;label&gt;Email:&lt;/label&gt;
+        &lt;input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="seu@email.com"
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label&gt;Senha:&lt;/label&gt;
+        &lt;input
+          type="password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          placeholder="Sua senha..."
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;button type="submit"&gt;Entrar&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormLogin;</code></pre>
+          </div>
+
+          <div
+            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-yellow-300">
+              ⚠️
+              <strong
+                >Sempre use
+                <code class="bg-yellow-500/20 px-2 py-1 rounded"
+                  >event.preventDefault()</code
+                >
+                no onSubmit!</strong
+              >
+              Sem isso, o browser vai recarregar a página toda vez que o
+              formulário for enviado — apagando todo o estado do React. Isso é
+              uma das armadilhas mais comuns para quem está começando.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Eventos de Mouse: onMouseEnter, onMouseLeave e outros
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Eventos de mouse permitem criar interações ricas como tooltips,
+            efeitos de hover e drag-and-drop:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/CartaoInterativo.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function CartaoInterativo() {
+  const [hover, setHover] = useState(false);
+  const [posicao, setPosicao] = useState({ x: 0, y: 0 });
+  const [cliques, setCliques] = useState(0);
+
+  const handleMouseMove = (event) => {
+    // Posição do mouse relativa ao elemento
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPosicao({
+      x: Math.round(event.clientX - rect.left),
+      y: Math.round(event.clientY - rect.top),
+    });
+  };
+
+  return (
+    &lt;div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onMouseMove={handleMouseMove}
+      onClick={() => setCliques(c => c + 1)}
+      onDoubleClick={() => setCliques(0)}
+      style={{
+        background: hover ? "#1e40af" : "#1e293b",
+        padding: "2rem",
+        borderRadius: "1rem",
+        cursor: "pointer",
+        transition: "background 0.2s",
+      }}
+    &gt;
+      &lt;p&gt;{hover ? "🖱️ Mouse dentro!" : "Passe o mouse aqui"}&lt;/p&gt;
+      &lt;p&gt;Posição: X={posicao.x}, Y={posicao.y}&lt;/p&gt;
+      &lt;p&gt;Cliques: {cliques} (duplo clique para resetar)&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default CartaoInterativo;</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-4">
+            <h3 class="text-xl font-bold text-white mb-3">
+              Principais eventos de mouse
+            </h3>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-300"
+            >
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onClick</code> —
+                clique simples
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded"
+                  >onDoubleClick</code
+                >
+                — clique duplo
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onMouseEnter</code>
+                — mouse entra no elemento
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onMouseLeave</code>
+                — mouse sai do elemento
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onMouseMove</code>
+                — mouse se move
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onMouseDown</code>
+                — botão pressionado
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded">onMouseUp</code> —
+                botão solto
+              </div>
+              <div>
+                <code class="bg-slate-700 px-2 py-1 rounded"
+                  >onContextMenu</code
+                >
+                — clique direito
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Propagação de Eventos: Bubbling e stopPropagation
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando você clica em um elemento filho, o evento "sobe" pelos
+            elementos pai — isso se chama
+            <strong class="text-white">event bubbling</strong>. Às vezes esse
+            comportamento não é o que você quer:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Problema do bubbling</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function CartaoComBotao() {
+  const handleCardClick = () => {
+    console.log("Card clicado!");
+  };
+
+  const handleBotaoClick = (event) => {
+    // Sem stopPropagation, o clique no botão também
+    // dispara o handleCardClick do div pai!
+    event.stopPropagation(); // ✅ Para o bubbling aqui
+
+    console.log("Botão clicado!");
+  };
+
+  return (
+    &lt;div onClick={handleCardClick} className="card"&gt;
+      &lt;h3&gt;Meu Card&lt;/h3&gt;
+      &lt;p&gt;Clique no card para abrir detalhes.&lt;/p&gt;
+
+      {/* Sem stopPropagation, clicar aqui dispara os DOIS eventos */}
+      &lt;button onClick={handleBotaoClick}&gt;
+        Ação rápida ⚡
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+            <h3 class="text-xl font-bold text-white mb-3">
+              preventDefault vs. stopPropagation
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-start gap-3">
+                <code
+                  class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm whitespace-nowrap"
+                  >preventDefault()</code
+                >
+                <p class="text-slate-300 text-sm">
+                  Cancela o comportamento padrão do browser para aquele evento —
+                  como recarregar a página num submit de form, ou seguir um link
+                  num clique em
+                  <code class="bg-slate-700 px-1 rounded text-xs"
+                    >&lt;a&gt;</code
+                  >. O evento ainda se propaga normalmente.
+                </p>
+              </div>
+              <div class="flex items-start gap-3">
+                <code
+                  class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded text-sm whitespace-nowrap"
+                  >stopPropagation()</code
+                >
+                <p class="text-slate-300 text-sm">
+                  Para o evento de subir para os elementos pai (interrompe o
+                  bubbling). O comportamento padrão do browser ainda acontece
+                  normalmente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Outros Eventos Importantes
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">onFocus e onBlur</h3>
+            <p class="text-slate-300 mb-4">
+              Disparados quando o elemento ganha ou perde o foco:
+            </p>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Focus e Blur em inputs</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">import { useState } from 'react';
+
+function InputComFoco() {
+  const [focado, setFocado] = useState(false);
+
+  return (
+    &lt;div&gt;
+      &lt;input
+        onFocus={() => setFocado(true)}   // ganhou foco
+        onBlur={() => setFocado(false)}   // perdeu foco
+        style={{
+          border: focado
+            ? "2px solid #3b82f6"
+            : "2px solid #334155",
+          outline: "none",
+          transition: "border 0.2s",
+        }}
+        placeholder="Clique aqui..."
+      /&gt;
+      &lt;p&gt;{focado ? "✏️ Campo ativo" : "⬜ Campo inativo"}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              onScroll e onWheel
+            </h3>
+            <p class="text-slate-300 mb-4">
+              Para detectar rolagem da página ou do scroll do mouse:
+            </p>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Detectando scroll</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">import { useState } from 'react';
+
+function ListaComScroll() {
+  const [scrollPos, setScrollPos] = useState(0);
+
+  const handleScroll = (event) => {
+    setScrollPos(event.currentTarget.scrollTop);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Posição do scroll: {scrollPos}px&lt;/p&gt;
+
+      {/* onScroll no elemento com overflow */}
+      &lt;div
+        onScroll={handleScroll}
+        style={{ height: "200px", overflowY: "scroll" }}
+      &gt;
+        {Array.from({ length: 20 }, (_, i) => (
+          &lt;p key={i}&gt;Item {i + 1}&lt;/p&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Painel Interativo
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos combinar vários eventos em um exemplo real — um painel de
+            controle que usa clique, teclado, foco e mouse juntos:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Painel interativo completo</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function App() {
+  const [mensagens, setMensagens] = useState([]);
+  const [texto, setTexto] = useState("");
+  const [inputFocado, setInputFocado] = useState(false);
+
+  // Envia mensagem — usado pelo botão E pelo teclado
+  const enviarMensagem = () => {
+    if (!texto.trim()) return;
+
+    setMensagens([
+      ...mensagens,
+      {
+        id: crypto.randomUUID(),
+        texto,
+        hora: new Date().toLocaleTimeString("pt-BR"),
+      },
+    ]);
+    setTexto("");
+  };
+
+  // Envia com Enter, nova linha com Shift+Enter
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" &amp;&amp; !event.shiftKey) {
+      event.preventDefault();
+      enviarMensagem();
+    }
+  };
+
+  // Remove mensagem com duplo clique
+  const removerMensagem = (id) => {
+    setMensagens(mensagens.filter((m) => m.id !== id));
+  };
+
+  return (
+    &lt;div className="chat"&gt;
+      &lt;h1&gt;💬 Chat Simples&lt;/h1&gt;
+
+      {/* Lista de mensagens */}
+      &lt;div className="mensagens"&gt;
+        {mensagens.length === 0 ? (
+          &lt;p className="vazio"&gt;Nenhuma mensagem ainda...&lt;/p&gt;
+        ) : (
+          mensagens.map(({ id, texto, hora }) => (
+            &lt;div
+              key={id}
+              className="mensagem"
+              onDoubleClick={() => removerMensagem(id)}
+              title="Duplo clique para remover"
+            &gt;
+              &lt;span className="hora"&gt;{hora}&lt;/span&gt;
+              &lt;p&gt;{texto}&lt;/p&gt;
+            &lt;/div&gt;
+          ))
+        )}
+      &lt;/div&gt;
+
+      {/* Input de nova mensagem */}
+      &lt;div className={`input-area ${inputFocado ? "focado" : ""}`}&gt;
+        &lt;textarea
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setInputFocado(true)}
+          onBlur={() => setInputFocado(false)}
+          placeholder="Digite sua mensagem... (Enter para enviar)"
+          rows={2}
+        /&gt;
+        &lt;button
+          onClick={enviarMensagem}
+          onMouseEnter={(e) => e.currentTarget.style.background = "#1d4ed8"}
+          onMouseLeave={(e) => e.currentTarget.style.background = "#2563eb"}
+          disabled={!texto.trim()}
+        &gt;
+          Enviar ✉️
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;p className="dica"&gt;
+        {inputFocado
+          ? "💡 Enter para enviar • Shift+Enter para nova linha"
+          : "Clique no campo para começar a digitar"}
+      &lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div
+            class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-orange-300">
+              🔥 <strong>Perceba como os eventos colaboram:</strong>
+              <code class="bg-orange-500/20 px-2 py-1 rounded">onChange</code>
+              atualiza o texto,
+              <code class="bg-orange-500/20 px-2 py-1 rounded">onKeyDown</code>
+              envia com Enter,
+              <code class="bg-orange-500/20 px-2 py-1 rounded"
+                >onFocus/onBlur</code
+              >
+              muda o estilo do campo,
+              <code class="bg-orange-500/20 px-2 py-1 rounded">onClick</code>
+              envia pelo botão e
+              <code class="bg-orange-500/20 px-2 py-1 rounded"
+                >onDoubleClick</code
+              >
+              remove mensagens. Cada evento tem sua responsabilidade clara!
+            </p>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div
+            class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8"
+          >
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou os eventos em React! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>
+                A diferença entre eventos HTML e React (camelCase, funções vs.
+                strings)
+              </li>
+              <li>
+                Como usar
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >onClick</code
+                >
+                corretamente — e o erro clássico de chamar a função na hora
+                errada
+              </li>
+              <li>
+                Eventos de teclado com
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >onKeyDown</code
+                >
+                e o objeto
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >event.key</code
+                >
+              </li>
+              <li>
+                Eventos de formulário:
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >onSubmit</code
+                >
+                com
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >preventDefault()</code
+                >
+              </li>
+              <li>Eventos de mouse para interações ricas</li>
+              <li>
+                Event bubbling e como usar
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >stopPropagation()</code
+                >
+              </li>
+              <li>
+                Eventos de foco (<code
+                  class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >onFocus</code
+                >,
+                <code class="bg-white/10 px-2 py-1 rounded text-sm">onBlur</code
+                >) e scroll
+              </li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre o
+              <strong>useState</strong> — o hook que adiciona memória aos seus
+              componentes e é a base de toda interatividade no React!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div
+          class="flex justify-between items-center pt-8 border-t border-white/10"
+        >
+          <a
+            href="capitulo-08.html"
+            class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+          >
+            ← Capítulo Anterior
+          </a>
+          <a
+            href="react-course.html"
+            class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30"
+          >
+            Voltar ao índice
+          </a>
+          <a
+            href="capitulo-10.html"
+            class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
+          >
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className =
+            "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className =
+            "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 9;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion())
+          completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

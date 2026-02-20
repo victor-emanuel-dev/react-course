@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Capítulo 2 - JSX Fundamentals</title>
+    <title>Capítulo 5 - Props Children</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -74,10 +74,6 @@
         color: #1d4ed8 !important;
       }
 
-      body.light-theme .bg-green-500\/10 {
-        background-color: rgba(34, 197, 94, 0.1) !important;
-      }
-
       body.light-theme .text-green-300 {
         color: #15803d !important;
       }
@@ -145,6 +141,30 @@
         border-color: rgba(234, 179, 8, 0.3) !important;
       }
 
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+
       .codebox {
         position: relative;
         margin: 1.5rem 0;
@@ -184,7 +204,6 @@
         line-height: 1.6;
       }
 
-      /* Floating complete button */
       .complete-btn-container {
         position: fixed;
         bottom: 2rem;
@@ -264,7 +283,6 @@
           </a>
 
           <div class="flex items-center gap-3">
-            <!-- Chapter status badge -->
             <div
               id="statusBadge"
               class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
@@ -291,7 +309,7 @@
           <span
             class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
           >
-            Capítulo 2
+            Capítulo 5
           </span>
           <span
             class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
@@ -300,11 +318,12 @@
           </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
-          JSX Fundamentals
+          Props Children
         </h1>
         <p class="text-xl text-slate-300">
-          Entendendo JSX: a sintaxe especial do React que mistura JavaScript com
-          HTML
+          Conheça a prop especial
+          <code class="bg-slate-700 px-2 py-1 rounded text-lg">children</code> —
+          o segredo para criar componentes de layout flexíveis e reutilizáveis
         </p>
       </div>
 
@@ -312,185 +331,61 @@
       <article class="prose prose-invert prose-lg max-w-none">
         <!-- Section 1 -->
         <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">O que é JSX?</h2>
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O que é a Prop Children?
+          </h2>
 
           <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
             <p class="text-slate-300 leading-relaxed mb-4">
-              JSX (JavaScript XML) é uma extensão de sintaxe para JavaScript que
-              permite escrever código que parece HTML diretamente no JavaScript.
-              É a forma como escrevemos a interface do usuário no React.
+              Toda vez que você usa uma tag HTML como
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >&lt;div&gt;conteúdo&lt;/div&gt;</code
+              >, o texto "conteúdo" fica entre a tag de abertura e fechamento. O
+              React oferece o mesmo padrão para seus componentes através da prop
+              especial
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >children</code
+              >.
             </p>
+            <p class="text-slate-300 leading-relaxed">
+              Tudo que você colocar
+              <strong class="text-white"
+                >entre as tags de abertura e fechamento</strong
+              >
+              de um componente será automaticamente disponível como
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >props.children</code
+              >
+              dentro dele — sem precisar declarar nada extra!
+            </p>
+          </div>
 
-            <h3 class="text-xl font-bold text-white mb-3">Por que JSX?</h3>
-            <ul class="text-slate-300 space-y-2 list-disc list-inside">
-              <li>
-                <strong class="text-white">Mais legível:</strong> Combina
-                marcação e lógica no mesmo lugar
-              </li>
-              <li>
-                <strong class="text-white">Type-safe:</strong> Erros são
-                detectados em tempo de compilação
-              </li>
-              <li>
-                <strong class="text-white">Power do JavaScript:</strong> Você
-                pode usar expressões JS diretamente
-              </li>
-              <li>
-                <strong class="text-white">Familiar:</strong> Se você conhece
-                HTML, já conhece 90% do JSX
-              </li>
-            </ul>
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Analogia:</strong> Pense em um envelope. O componente é
+              o envelope e o
+              <code class="bg-blue-500/20 px-2 py-1 rounded">children</code> é a
+              carta que você coloca dentro. O envelope não precisa saber qual é
+              o conteúdo — ele apenas o carrega e exibe onde for necessário.
+            </p>
           </div>
         </section>
 
         <!-- Section 2 -->
         <section class="mb-12">
           <h2 class="text-3xl font-bold text-white mb-6">
-            JSX vs HTML: As Diferenças
+            Seu Primeiro Componente com Children
           </h2>
 
           <p class="text-slate-300 leading-relaxed mb-6">
-            Embora JSX pareça HTML, existem algumas diferenças importantes:
-          </p>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-            <h3 class="text-xl font-bold text-white mb-4">
-              1. className ao invés de class
-            </h3>
-            <p class="text-slate-300 mb-4">
-              Como
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm">class</code>
-              é uma palavra reservada em JavaScript, usamos
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
-                >className</code
-              >:
-            </p>
-
-            <div class="codebox">
-              <div class="codebox-header bg-slate-800 text-slate-300">
-                <span>JSX</span>
-                <button
-                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                  onclick="copyCode(this)"
-                >
-                  Copiar
-                </button>
-              </div>
-              <pre><code class="language-jsx">// ❌ Errado
-&lt;div class="container"&gt;Hello&lt;/div&gt;
-
-// ✅ Correto
-&lt;div className="container"&gt;Hello&lt;/div&gt;</code></pre>
-            </div>
-          </div>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-            <h3 class="text-xl font-bold text-white mb-4">
-              2. htmlFor ao invés de for
-            </h3>
-            <p class="text-slate-300 mb-4">
-              Em labels, usamos
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm">htmlFor</code
-              >:
-            </p>
-
-            <div class="codebox">
-              <div class="codebox-header bg-slate-800 text-slate-300">
-                <span>JSX</span>
-                <button
-                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                  onclick="copyCode(this)"
-                >
-                  Copiar
-                </button>
-              </div>
-              <pre><code class="language-jsx">// ❌ Errado
-&lt;label for="email"&gt;Email:&lt;/label&gt;
-
-// ✅ Correto
-&lt;label htmlFor="email"&gt;Email:&lt;/label&gt;</code></pre>
-            </div>
-          </div>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-            <h3 class="text-xl font-bold text-white mb-4">
-              3. Todas as tags devem ser fechadas
-            </h3>
-            <p class="text-slate-300 mb-4">
-              No HTML, algumas tags como
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
-                >&lt;img&gt;</code
-              >
-              não precisam ser fechadas. No JSX, TODAS as tags precisam ser
-              fechadas:
-            </p>
-
-            <div class="codebox">
-              <div class="codebox-header bg-slate-800 text-slate-300">
-                <span>JSX</span>
-                <button
-                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                  onclick="copyCode(this)"
-                >
-                  Copiar
-                </button>
-              </div>
-              <pre><code class="language-jsx">// ❌ Errado
-&lt;img src="foto.jpg"&gt;
-&lt;input type="text"&gt;
-&lt;br&gt;
-
-// ✅ Correto
-&lt;img src="foto.jpg" /&gt;
-&lt;input type="text" /&gt;
-&lt;br /&gt;</code></pre>
-            </div>
-          </div>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-            <h3 class="text-xl font-bold text-white mb-4">
-              4. CamelCase para atributos
-            </h3>
-            <p class="text-slate-300 mb-4">
-              Atributos com hífen viram camelCase:
-            </p>
-
-            <div class="codebox">
-              <div class="codebox-header bg-slate-800 text-slate-300">
-                <span>JSX</span>
-                <button
-                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                  onclick="copyCode(this)"
-                >
-                  Copiar
-                </button>
-              </div>
-              <pre><code class="language-jsx">// HTML: onclick, tabindex, maxlength
-// JSX: onClick, tabIndex, maxLength
-
-&lt;button onClick={handleClick} tabIndex={0}&gt;
-  Clique aqui
-&lt;/button&gt;</code></pre>
-            </div>
-          </div>
-        </section>
-
-        <!-- Section 3 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">
-            Expressões JavaScript em JSX
-          </h2>
-
-          <p class="text-slate-300 leading-relaxed mb-6">
-            A verdadeira magia do JSX está em poder usar JavaScript diretamente.
-            Use chaves
-            <code class="bg-slate-700 px-2 py-1 rounded text-sm">{}</code>
-            para inserir expressões JavaScript:
+            Veja a diferença entre um componente
+            <strong class="text-white">sem</strong> e
+            <strong class="text-white">com</strong> children:
           </p>
 
           <div class="codebox">
             <div class="codebox-header bg-slate-800 text-slate-300">
-              <span>App.jsx</span>
+              <span>❌ Sem children — conteúdo fixo</span>
               <button
                 class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
                 onclick="copyCode(this)"
@@ -498,59 +393,18 @@
                 Copiar
               </button>
             </div>
-            <pre><code class="language-jsx">function App() {
-  const nome = "Maria";
-  const idade = 25;
-  const aprovado = true;
-
+            <pre><code class="language-jsx">function Caixa() {
   return (
-    &lt;div&gt;
-      {/* Variáveis */}
-      &lt;h1&gt;Olá, {nome}!&lt;/h1&gt;
-      
-      {/* Expressões matemáticas */}
-      &lt;p&gt;Ano de nascimento: {2024 - idade}&lt;/p&gt;
-      
-      {/* Operador ternário */}
-      &lt;p&gt;Status: {aprovado ? "Aprovado" : "Reprovado"}&lt;/p&gt;
-      
-      {/* Métodos de string */}
-      &lt;p&gt;Nome em maiúsculas: {nome.toUpperCase()}&lt;/p&gt;
-      
-      {/* Operações com arrays */}
-      &lt;p&gt;Números: {[1, 2, 3].join(", ")}&lt;/p&gt;
+    &lt;div className="caixa"&gt;
+      &lt;p&gt;Este conteúdo é sempre o mesmo. 😐&lt;/p&gt;
     &lt;/div&gt;
   );
 }</code></pre>
           </div>
 
-          <div
-            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-6"
-          >
-            <p class="text-yellow-300">
-              ⚠️ <strong>Importante:</strong> Você só pode usar
-              <strong>expressões</strong>, não statements. Isso significa que
-              <code class="bg-yellow-500/20 px-2 py-1 rounded">if</code>,
-              <code class="bg-yellow-500/20 px-2 py-1 rounded">for</code>,
-              <code class="bg-yellow-500/20 px-2 py-1 rounded">while</code>
-              não funcionam dentro de
-              <code class="bg-yellow-500/20 px-2 py-1 rounded">{}</code>. Use
-              operadores ternários ou mova a lógica para fora do JSX!
-            </p>
-          </div>
-        </section>
-
-        <!-- Section 4 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">JSX Multiline</h2>
-
-          <p class="text-slate-300 leading-relaxed mb-6">
-            Quando seu JSX tem múltiplas linhas, envolva-o em parênteses:
-          </p>
-
           <div class="codebox">
             <div class="codebox-header bg-slate-800 text-slate-300">
-              <span>App.jsx</span>
+              <span>✅ Com children — conteúdo flexível</span>
               <button
                 class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
                 onclick="copyCode(this)"
@@ -558,224 +412,21 @@
                 Copiar
               </button>
             </div>
-            <pre><code class="language-jsx">function App() {
+            <pre><code class="language-jsx">// Recebemos "children" como qualquer outra prop
+function Caixa({ children }) {
   return (
-    &lt;div className="container"&gt;
-      &lt;header&gt;
-        &lt;h1&gt;Meu Site&lt;/h1&gt;
-        &lt;nav&gt;
-          &lt;a href="/"&gt;Home&lt;/a&gt;
-          &lt;a href="/sobre"&gt;Sobre&lt;/a&gt;
-        &lt;/nav&gt;
-      &lt;/header&gt;
-      &lt;main&gt;
-        &lt;p&gt;Conteúdo principal aqui&lt;/p&gt;
-      &lt;/main&gt;
+    &lt;div className="caixa"&gt;
+      {children}
     &lt;/div&gt;
-  );
-}</code></pre>
-          </div>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
-            <h3 class="text-xl font-bold text-white mb-3">
-              Regra Importante: Elemento Único
-            </h3>
-            <p class="text-slate-300 mb-4">
-              Um componente React só pode retornar UM elemento raiz. Se você
-              precisa retornar múltiplos elementos, envolva-os em uma tag pai:
-            </p>
-
-            <div class="codebox">
-              <div class="codebox-header bg-slate-800 text-slate-300">
-                <span>Exemplo</span>
-                <button
-                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                  onclick="copyCode(this)"
-                >
-                  Copiar
-                </button>
-              </div>
-              <pre><code class="language-jsx">// ❌ Errado - múltiplos elementos raiz
-function App() {
-  return (
-    &lt;h1&gt;Título&lt;/h1&gt;
-    &lt;p&gt;Parágrafo&lt;/p&gt;
   );
 }
 
-// ✅ Correto - envolvido em div
-function App() {
-  return (
-    &lt;div&gt;
-      &lt;h1&gt;Título&lt;/h1&gt;
-      &lt;p&gt;Parágrafo&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-            </div>
+export default Caixa;</code></pre>
           </div>
-        </section>
-
-        <!-- Section 5 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">
-            Fragmentos: React.Fragment e &lt;&gt;
-          </h2>
 
           <p class="text-slate-300 leading-relaxed mb-6">
-            Às vezes você não quer adicionar uma
-            <code class="bg-slate-700 px-2 py-1 rounded text-sm"
-              >&lt;div&gt;</code
-            >
-            extra só para satisfazer a regra do elemento único. Para isso, use
-            Fragmentos:
-          </p>
-
-          <div class="codebox">
-            <div class="codebox-header bg-slate-800 text-slate-300">
-              <span>App.jsx</span>
-              <button
-                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                onclick="copyCode(this)"
-              >
-                Copiar
-              </button>
-            </div>
-            <pre><code class="language-jsx">// Sintaxe completa
-import { Fragment } from 'react';
-
-function App() {
-  return (
-    &lt;Fragment&gt;
-      &lt;h1&gt;Título&lt;/h1&gt;
-      &lt;p&gt;Parágrafo&lt;/p&gt;
-    &lt;/Fragment&gt;
-  );
-}
-
-// Sintaxe curta (mais comum) - sem import necessário!
-function App() {
-  return (
-    &lt;&gt;
-      &lt;h1&gt;Título&lt;/h1&gt;
-      &lt;p&gt;Parágrafo&lt;/p&gt;
-    &lt;/&gt;
-  );
-}</code></pre>
-          </div>
-
-          <div
-            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-6"
-          >
-            <p class="text-green-300">
-              ✅ <strong>Vantagem dos Fragmentos:</strong> Eles não criam
-              elementos extras no DOM! É como se os elementos filhos fossem
-              renderizados diretamente, sem um container pai.
-            </p>
-          </div>
-        </section>
-
-        <!-- Section 6 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">Comentários em JSX</h2>
-
-          <p class="text-slate-300 leading-relaxed mb-6">
-            Comentários em JSX são diferentes do JavaScript normal:
-          </p>
-
-          <div class="codebox">
-            <div class="codebox-header bg-slate-800 text-slate-300">
-              <span>Comentários</span>
-              <button
-                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                onclick="copyCode(this)"
-              >
-                Copiar
-              </button>
-            </div>
-            <pre><code class="language-jsx">function App() {
-  // Comentário JavaScript normal (fora do JSX)
-  
-  return (
-    &lt;div&gt;
-      {/* Comentário dentro do JSX - use chaves + /* */ */}
-      &lt;h1&gt;Título&lt;/h1&gt;
-      
-      {/* 
-        Comentário
-        com múltiplas
-        linhas
-      */}
-      &lt;p&gt;Parágrafo&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-          </div>
-        </section>
-
-        <!-- Section 7 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">
-            Estilos Inline em JSX
-          </h2>
-
-          <p class="text-slate-300 leading-relaxed mb-6">
-            No JSX, estilos inline são objetos JavaScript, não strings:
-          </p>
-
-          <div class="codebox">
-            <div class="codebox-header bg-slate-800 text-slate-300">
-              <span>App.jsx</span>
-              <button
-                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                onclick="copyCode(this)"
-              >
-                Copiar
-              </button>
-            </div>
-            <pre><code class="language-jsx">function App() {
-  // Estilo como objeto
-  const estilo = {
-    color: 'red',           // propriedades em camelCase
-    fontSize: '20px',        // valores são strings
-    backgroundColor: 'blue',
-    padding: '10px'
-  };
-
-  return (
-    &lt;div&gt;
-      {/* Inline com objeto */}
-      &lt;h1 style={estilo}&gt;Título Vermelho&lt;/h1&gt;
-      
-      {/* Inline direto */}
-      &lt;p style={{ color: 'green', fontWeight: 'bold' }}&gt;
-        Texto Verde
-      &lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-          </div>
-
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
-            <h3 class="text-xl font-bold text-white mb-3">
-              Por que duas chaves {{}}?
-            </h3>
-            <p class="text-slate-300">
-              A primeira chave
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm">{</code>
-              indica "JavaScript aqui". A segunda
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm">{</code>
-              é o início do objeto JavaScript!
-            </p>
-          </div>
-        </section>
-
-        <!-- Section 8 -->
-        <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">Exercício Prático</h2>
-
-          <p class="text-slate-300 leading-relaxed mb-6">
-            Vamos criar um componente que usa tudo que aprendemos:
+            Agora você pode usar o componente passando qualquer conteúdo entre
+            as tags:
           </p>
 
           <div class="codebox">
@@ -788,59 +439,482 @@ function App() {
                 Copiar
               </button>
             </div>
-            <pre><code class="language-jsx">function App() {
-  // Dados do usuário
-  const usuario = {
-    nome: "João Silva",
-    idade: 28,
-    cidade: "São Paulo",
-    premium: true
-  };
+            <pre><code class="language-jsx">import Caixa from './components/Caixa';
 
-  // Array de hobbies
-  const hobbies = ["Fotografia", "Ciclismo", "Leitura"];
-
-  // Função para calcular ano de nascimento
-  const anoNascimento = () => 2024 - usuario.idade;
-
+function App() {
   return (
-    &lt;&gt;
-      {/* Cabeçalho */}
-      &lt;header style={{ 
-        backgroundColor: '#1e293b', 
-        padding: '20px',
-        color: 'white' 
-      }}&gt;
-        &lt;h1&gt;Perfil de {usuario.nome}&lt;/h1&gt;
-      &lt;/header&gt;
+    &lt;div&gt;
+      {/* Passando texto simples */}
+      &lt;Caixa&gt;
+        &lt;p&gt;Olá! Sou um parágrafo dentro da caixa. 🎁&lt;/p&gt;
+      &lt;/Caixa&gt;
 
-      {/* Conteúdo principal */}
-      &lt;main className="container"&gt;
-        {/* Informações básicas */}
-        &lt;div&gt;
-          &lt;p&gt;Idade: {usuario.idade} anos&lt;/p&gt;
-          &lt;p&gt;Nascido em: {anoNascimento()}&lt;/p&gt;
-          &lt;p&gt;Cidade: {usuario.cidade}&lt;/p&gt;
-        &lt;/div&gt;
+      {/* Passando vários elementos */}
+      &lt;Caixa&gt;
+        &lt;h2&gt;Título&lt;/h2&gt;
+        &lt;p&gt;Descrição aqui...&lt;/p&gt;
+        &lt;button&gt;Clique aqui&lt;/button&gt;
+      &lt;/Caixa&gt;
 
-        {/* Status Premium */}
-        &lt;div&gt;
-          &lt;p&gt;
-            Conta: {usuario.premium ? "✨ Premium" : "Gratuita"}
-          &lt;/p&gt;
-        &lt;/div&gt;
+      {/* Passando outro componente */}
+      &lt;Caixa&gt;
+        &lt;OutroComponente /&gt;
+      &lt;/Caixa&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
 
-        {/* Lista de hobbies */}
-        &lt;div&gt;
-          &lt;h2&gt;Hobbies&lt;/h2&gt;
-          &lt;p&gt;{hobbies.join(" • ")}&lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/main&gt;
-    &lt;/&gt;
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Combinando Children com Outras Props
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O poder real aparece quando você combina
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">children</code>
+            com outras props para criar componentes de layout altamente
+            configuráveis:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Card.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function Card({ titulo, subtitulo, children, destaque = false }) {
+  return (
+    &lt;div className={`card ${destaque ? 'card-destaque' : ''}`}&gt;
+      {/* Cabeçalho vem das props normais */}
+      &lt;div className="card-header"&gt;
+        &lt;h2&gt;{titulo}&lt;/h2&gt;
+        {subtitulo &amp;&amp; &lt;p className="subtitulo"&gt;{subtitulo}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      {/* Conteúdo vem do children */}
+      &lt;div className="card-body"&gt;
+        {children}
+      &lt;/div&gt;
+    &lt;/div&gt;
   );
 }
 
-export default App;</code></pre>
+export default Card;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function App() {
+  return (
+    &lt;div&gt;
+      &lt;Card titulo="Bem-vindo!" subtitulo="Introdução ao curso"&gt;
+        &lt;p&gt;Este é o melhor curso de React do Brasil! 🚀&lt;/p&gt;
+        &lt;a href="/matricular"&gt;Matricule-se agora&lt;/a&gt;
+      &lt;/Card&gt;
+
+      &lt;Card titulo="Preço" destaque&gt;
+        &lt;p className="preco"&gt;R$ 97,00&lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;✅ 100 capítulos&lt;/li&gt;
+          &lt;li&gt;✅ Certificado&lt;/li&gt;
+          &lt;li&gt;✅ Suporte vitalício&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;button&gt;Comprar agora&lt;/button&gt;
+      &lt;/Card&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-6"
+          >
+            <p class="text-green-300">
+              ✅ <strong>Vantagem:</strong> O mesmo componente
+              <code class="bg-green-500/20 px-2 py-1 rounded">Card</code>
+              funciona para conteúdos completamente diferentes. Você controla a
+              estrutura (título, subtítulo, destaque) via props e o conteúdo via
+              children. Esse é o padrão de <strong>composição</strong> em React!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Componentes de Layout com Children
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O caso de uso mais comum para
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">children</code>
+            é criar componentes de layout — estruturas que envolvem o conteúdo
+            da página:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/PageLayout.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">// Componente de layout geral da página
+function PageLayout({ children }) {
+  return (
+    &lt;div className="page"&gt;
+      &lt;header className="header"&gt;
+        &lt;nav&gt;{/* menu de navegação */}&lt;/nav&gt;
+      &lt;/header&gt;
+
+      &lt;main className="main-content"&gt;
+        {children} {/* conteúdo específico de cada página */}
+      &lt;/main&gt;
+
+      &lt;footer className="footer"&gt;
+        &lt;p&gt;© 2024 React Masterclass&lt;/p&gt;
+      &lt;/footer&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default PageLayout;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/pages/Home.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import PageLayout from '../components/PageLayout';
+
+function Home() {
+  return (
+    &lt;PageLayout&gt;
+      &lt;h1&gt;Página Inicial&lt;/h1&gt;
+      &lt;p&gt;Bem-vindo à plataforma! 👋&lt;/p&gt;
+    &lt;/PageLayout&gt;
+  );
+}
+
+// Em outra página, o mesmo layout, conteúdo diferente:
+function Sobre() {
+  return (
+    &lt;PageLayout&gt;
+      &lt;h1&gt;Sobre Nós&lt;/h1&gt;
+      &lt;p&gt;Somos uma plataforma de ensino de React.&lt;/p&gt;
+    &lt;/PageLayout&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+            <h3 class="text-xl font-bold text-white mb-3">
+              📁 Estrutura recomendada
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Organização de pastas</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-bash">src/
+├── components/
+│   ├── layout/
+│   │   ├── PageLayout.jsx   ← usa children
+│   │   ├── Sidebar.jsx      ← usa children
+│   │   └── Modal.jsx        ← usa children
+│   └── ui/
+│       ├── Card.jsx         ← usa children
+│       └── Button.jsx
+└── pages/
+    ├── Home.jsx
+    └── Sobre.jsx</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Children com Valor Padrão e Verificação
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Às vezes o usuário pode esquecer de passar conteúdo. Podemos lidar
+            com isso de forma elegante:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Caixa.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function Caixa({ children, mensagemVazia = "Nenhum conteúdo aqui ainda." }) {
+  return (
+    &lt;div className="caixa"&gt;
+      {/* Se children existir, exibe; senão, exibe a mensagem padrão */}
+      {children ? children : &lt;p className="vazio"&gt;{mensagemVazia}&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}
+
+export default Caixa;</code></pre>
+          </div>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Você também pode verificar com o operador lógico
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">&&</code>
+            para renderizar algo apenas se children existir:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Verificando existência de children</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function Secao({ titulo, children }) {
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;{titulo}&lt;/h2&gt;
+
+      {/* Só renderiza o wrapper se houver conteúdo */}
+      {children &amp;&amp; (
+        &lt;div className="conteudo"&gt;
+          {children}
+        &lt;/div&gt;
+      )}
+    &lt;/section&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-6"
+          >
+            <p class="text-yellow-300">
+              ⚠️ <strong>Atenção:</strong>
+              <code class="bg-yellow-500/20 px-2 py-1 rounded">children</code>
+              pode ser de qualquer tipo: uma string, um número, um único
+              elemento JSX, um array de elementos ou até
+              <code class="bg-yellow-500/20 px-2 py-1 rounded">undefined</code>.
+              Sempre considere esses casos ao trabalhar com children em
+              componentes reutilizáveis.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Prático: Componente Modal
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Um dos usos mais clássicos de
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">children</code>
+            é o componente de Modal — a janela que aparece sobre a página. O
+            Modal precisa ser flexível o suficiente para exibir qualquer
+            conteúdo:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Modal.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">function Modal({ titulo, children, aoFechar }) {
+  return (
+    &lt;div className="overlay" onClick={aoFechar}&gt;
+      {/* Evita fechar ao clicar dentro do modal */}
+      &lt;div className="modal" onClick={(e) => e.stopPropagation()}&gt;
+
+        {/* Cabeçalho do modal */}
+        &lt;div className="modal-header"&gt;
+          &lt;h2&gt;{titulo}&lt;/h2&gt;
+          &lt;button onClick={aoFechar}&gt;✕&lt;/button&gt;
+        &lt;/div&gt;
+
+        {/* Conteúdo flexível via children */}
+        &lt;div className="modal-body"&gt;
+          {children}
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Modal;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — usando o Modal</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+import Modal from './components/Modal';
+
+function App() {
+  const [modalAberto, setModalAberto] = useState(false);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() => setModalAberto(true)}&gt;
+        Abrir Modal
+      &lt;/button&gt;
+
+      {modalAberto &amp;&amp; (
+        &lt;Modal
+          titulo="Confirmação"
+          aoFechar={() => setModalAberto(false)}
+        &gt;
+          {/* O conteúdo interno é definido aqui — children! */}
+          &lt;p&gt;Tem certeza que deseja continuar?&lt;/p&gt;
+          &lt;div className="acoes"&gt;
+            &lt;button onClick={() => setModalAberto(false)}&gt;
+              Cancelar
+            &lt;/button&gt;
+            &lt;button onClick={() => {
+              alert('Confirmado!');
+              setModalAberto(false);
+            }}&gt;
+              Confirmar ✅
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/Modal&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-6"
+          >
+            <p class="text-purple-300">
+              💡 <strong>Perceba o poder:</strong> O componente
+              <code class="bg-purple-500/20 px-2 py-1 rounded">Modal</code>
+              não sabe nada sobre botões de confirmação, formulários ou listas.
+              Ele apenas cuida do overlay, do título e do botão de fechar. O
+              <strong>conteúdo</strong> é responsabilidade de quem usa o Modal!
+              Isso é <strong>separação de responsabilidades</strong> em ação.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Children vs. Props Normais: Quando Usar Cada Um?
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-xl font-bold text-white mb-4">
+                  🔵 Use Props Normais quando...
+                </h3>
+                <ul class="text-slate-300 space-y-3 list-disc list-inside">
+                  <li>O valor é um dado simples (string, número, booleano)</li>
+                  <li>Você precisa passar uma função (callback)</li>
+                  <li>O conteúdo é pequeno e previsível</li>
+                  <li>Você quer nomear o que está passando explicitamente</li>
+                </ul>
+                <div class="codebox mt-4">
+                  <div class="codebox-header bg-slate-800 text-slate-300">
+                    <span>Props normais</span>
+                    <button
+                      class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                      onclick="copyCode(this)"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <pre><code class="language-jsx">&lt;Botao
+  texto="Salvar"
+  cor="blue"
+  aoClicar={salvar}
+/&gt;</code></pre>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xl font-bold text-white mb-4">
+                  🟢 Use Children quando...
+                </h3>
+                <ul class="text-slate-300 space-y-3 list-disc list-inside">
+                  <li>O conteúdo é JSX complexo ou variável</li>
+                  <li>Você está criando um componente de layout ou wrapper</li>
+                  <li>Outros desenvolvedores vão usar o componente</li>
+                  <li>O conteúdo precisa ser livre e flexível</li>
+                </ul>
+                <div class="codebox mt-4">
+                  <div class="codebox-header bg-slate-800 text-slate-300">
+                    <span>Children</span>
+                    <button
+                      class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                      onclick="copyCode(this)"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <pre><code class="language-jsx">&lt;Card titulo="Perfil"&gt;
+  &lt;Avatar src={foto} /&gt;
+  &lt;p&gt;Nome: {nome}&lt;/p&gt;
+  &lt;BotaoSeguir /&gt;
+&lt;/Card&gt;</code></pre>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -851,19 +925,29 @@ export default App;</code></pre>
           >
             <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
             <p class="text-slate-200 text-lg leading-relaxed mb-4">
-              Você dominou os fundamentos do JSX! Você aprendeu:
+              Você dominou a prop
+              <code class="bg-white/10 px-2 py-1 rounded text-lg">children</code
+              >! Você aprendeu:
             </p>
             <ul class="text-slate-200 space-y-2 list-disc list-inside">
-              <li>O que é JSX e suas diferenças com HTML</li>
-              <li>Como usar expressões JavaScript em JSX</li>
-              <li>Trabalhar com JSX multiline e fragmentos</li>
-              <li>Comentários e estilos inline</li>
-              <li>Aplicar tudo em um exemplo prático</li>
+              <li>
+                O que é a prop especial
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >children</code
+                >
+                e como ela funciona
+              </li>
+              <li>Como criar componentes com conteúdo flexível</li>
+              <li>Como combinar children com outras props</li>
+              <li>Como construir componentes de layout reutilizáveis</li>
+              <li>Como lidar com children ausentes usando valores padrão</li>
+              <li>Quando usar children vs. props normais</li>
             </ul>
             <p class="text-slate-300 mt-4">
               No próximo capítulo, vamos aprender sobre
-              <strong>Componentes Funcionais</strong>
-              e como criar componentes reutilizáveis!
+              <strong>Renderização Condicional</strong>
+              — como mostrar ou esconder partes da interface baseado em
+              condições!
             </p>
           </div>
         </section>
@@ -873,7 +957,7 @@ export default App;</code></pre>
           class="flex justify-between items-center pt-8 border-t border-white/10"
         >
           <a
-            href="capitulo-01.html"
+            href="capitulo-04.html"
             class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
           >
             ← Capítulo Anterior
@@ -885,7 +969,7 @@ export default App;</code></pre>
             Voltar ao índice
           </a>
           <a
-            href="capitulo-03.html"
+            href="capitulo-06.html"
             class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
           >
             Próximo capítulo →
@@ -903,10 +987,8 @@ export default App;</code></pre>
     </div>
 
     <script>
-      // Initialize syntax highlighting
       hljs.highlightAll();
 
-      // Theme toggle
       const themeToggle = document.getElementById("themeToggle");
       const body = document.body;
       let isDark = true;
@@ -918,22 +1000,17 @@ export default App;</code></pre>
           body.className =
             "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
           themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
-
-          // Update navbar
           document.querySelector("nav").className =
             "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
         } else {
           body.className =
             "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
           themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
-
-          // Update navbar
           document.querySelector("nav").className =
             "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
         }
       });
 
-      // Copy code function
       function copyCode(button) {
         const codeBlock = button.closest(".codebox").querySelector("code");
         const text = codeBlock.textContent;
@@ -954,8 +1031,7 @@ export default App;</code></pre>
     </script>
 
     <script>
-      // Chapter completion system
-      const CHAPTER_ID = 2;
+      const CHAPTER_ID = 5;
       const STORAGE_KEY = "completedChapters";
 
       const completeButtonContainer = document.getElementById(
@@ -966,29 +1042,21 @@ export default App;</code></pre>
       const completeText = document.getElementById("completeText");
       const statusBadge = document.getElementById("statusBadge");
 
-      // Check if chapter is already completed
       function isChapterCompleted() {
         const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
         return completed.includes(CHAPTER_ID);
       }
 
-      // Mark chapter as completed
       function markChapterCompleted() {
         const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
         if (!completed.includes(CHAPTER_ID)) {
           completed.push(CHAPTER_ID);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-
-          // Update UI
           updateCompletedUI();
-
-          // Show success message
           showSuccessMessage();
         }
       }
 
-      // Update UI for completed state
       function updateCompletedUI() {
         completeButton.classList.add("completed");
         completeIcon.textContent = "✓";
@@ -996,7 +1064,6 @@ export default App;</code></pre>
         statusBadge.classList.remove("hidden");
       }
 
-      // Show success message
       function showSuccessMessage() {
         const message = document.createElement("div");
         message.className =
@@ -1010,31 +1077,21 @@ export default App;</code></pre>
           </div>
         `;
         document.body.appendChild(message);
-
-        setTimeout(() => {
-          message.remove();
-        }, 3000);
+        setTimeout(() => message.remove(), 3000);
       }
 
-      // Check if user has scrolled past the conclusion section
       function hasReachedConclusion() {
         const conclusion = document.getElementById("conclusion");
         if (!conclusion) return false;
-
         const rect = conclusion.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-
-        // Show button when conclusion is visible or passed
-        return rect.top < windowHeight * 0.8;
+        return rect.top < window.innerHeight * 0.8;
       }
 
-      // Initialize on page load
       function init() {
         if (isChapterCompleted()) {
           updateCompletedUI();
         }
 
-        // Show/hide complete button based on scroll
         window.addEventListener("scroll", () => {
           if (hasReachedConclusion()) {
             completeButtonContainer.classList.remove("hidden");
@@ -1043,20 +1100,17 @@ export default App;</code></pre>
           }
         });
 
-        // Handle complete button click
         completeButton.addEventListener("click", () => {
           if (!isChapterCompleted()) {
             markChapterCompleted();
           }
         });
 
-        // Check initial scroll position
         if (hasReachedConclusion()) {
           completeButtonContainer.classList.remove("hidden");
         }
       }
 
-      // Run initialization when DOM is ready
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
       } else {

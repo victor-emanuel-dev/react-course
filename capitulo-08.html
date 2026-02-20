@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 8 - Keys em Listas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-theme .text-white {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155 !important;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569 !important;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b !important;
+      }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-theme .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+      }
+      body.light-theme .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      body.light-theme .bg-slate-700 {
+        background-color: #cbd5e1 !important;
+      }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+      }
+      body.light-theme a {
+        color: #2563eb !important;
+      }
+      body.light-theme a:hover {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .text-green-300 {
+        color: #15803d !important;
+      }
+      body.light-theme .bg-green-500\/10 {
+        background-color: rgba(34, 197, 94, 0.15) !important;
+      }
+      body.light-theme .bg-green-500\/20 {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        color: #15803d !important;
+      }
+      body.light-theme .border-green-500\/30 {
+        border-color: rgba(34, 197, 94, 0.3) !important;
+      }
+      body.light-theme .text-blue-400 {
+        color: #2563eb !important;
+      }
+      body.light-theme .text-blue-300 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .bg-blue-500\/20 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-500 {
+        color: #2563eb !important;
+      }
+      body.light-theme .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-700 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme code:not(pre code) {
+        color: #1e293b !important;
+      }
+      body.light-theme .codebox-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      body.light-theme .copy-btn {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .copy-btn:hover {
+        background-color: rgba(59, 130, 246, 0.5) !important;
+      }
+      body.light-theme .text-yellow-300 {
+        color: #a16207 !important;
+      }
+      body.light-theme .bg-yellow-500\/10 {
+        background-color: rgba(234, 179, 8, 0.15) !important;
+      }
+      body.light-theme .border-yellow-500\/30 {
+        border-color: rgba(234, 179, 8, 0.3) !important;
+      }
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+      body.light-theme .text-red-300 {
+        color: #b91c1c !important;
+      }
+      body.light-theme .bg-red-500\/10 {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+      }
+      body.light-theme .border-red-500\/30 {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+
+      .codebox {
+        position: relative;
+        margin: 1.5rem 0;
+      }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover {
+        transform: scale(1.05);
+      }
+      pre {
+        margin: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+      }
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+      }
+      .complete-btn.completed {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        cursor: default;
+      }
+      .complete-btn.completed:hover {
+        transform: none;
+        box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="react-course.html"
+            class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
+              ✓ Concluído
+            </div>
+            <button
+              id="themeToggle"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"
+            >
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
+            >Capítulo 8</span
+          >
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+            >Iniciante</span
+          >
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          Keys em Listas
+        </h1>
+        <p class="text-xl text-slate-300">
+          Entenda por que o React exige a prop
+          <code class="bg-slate-700 px-2 py-1 rounded text-lg">key</code>, como
+          escolher a key certa e quais erros comuns você deve evitar
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O que é a Prop Key?
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Toda vez que você usa
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code>
+              para renderizar uma lista, o React exige que cada elemento tenha
+              uma prop especial chamada
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">key</code>.
+              Ela é um identificador único que o React usa internamente para
+              rastrear quais itens foram adicionados, removidos ou reordenados
+              na lista.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              Sem as keys, o React precisa re-renderizar
+              <strong class="text-white">toda a lista</strong>
+              a cada mudança. Com keys corretas, ele sabe exatamente qual item
+              mudou e atualiza
+              <strong class="text-white">somente esse elemento</strong> —
+              tornando sua aplicação muito mais eficiente.
+            </p>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Analogia:</strong> Imagine uma turma de alunos sem
+              crachás. Se um aluno sair e outro entrar, o professor precisa
+              chamar a chamada inteira para saber quem mudou. Com crachás
+              (keys), ele identifica imediatamente quem é quem — muito mais
+              eficiente!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Como o React Usa as Keys Internamente
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O React mantém uma representação virtual do DOM chamada
+            <strong class="text-white">Virtual DOM</strong>. Quando o estado
+            muda, ele compara a versão antiga com a nova (processo chamado de
+            <em>reconciliação</em>) e atualiza apenas o que mudou no DOM real.
+          </p>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              Sem key — o React não sabe o que mudou
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Lista antes da mudança</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// Estado antigo da lista
+&lt;ul&gt;
+  &lt;li&gt;Ana&lt;/li&gt;   {/* posição 0 */}
+  &lt;li&gt;Bruno&lt;/li&gt; {/* posição 1 */}
+  &lt;li&gt;Carla&lt;/li&gt; {/* posição 2 */}
+&lt;/ul&gt;
+
+// Após adicionar "Diego" NO INÍCIO
+&lt;ul&gt;
+  &lt;li&gt;Diego&lt;/li&gt; {/* posição 0 — React acha que é "Ana" que mudou! */}
+  &lt;li&gt;Ana&lt;/li&gt;   {/* posição 1 — React acha que é "Bruno" que mudou! */}
+  &lt;li&gt;Bruno&lt;/li&gt; {/* posição 2 — React acha que é "Carla" que mudou! */}
+  &lt;li&gt;Carla&lt;/li&gt; {/* posição 3 — React acha que é um item novo! */}
+&lt;/ul&gt;
+{/* Resultado: React re-renderiza TUDO desnecessariamente 😱 */}</code></pre>
+            </div>
+
+            <h3 class="text-xl font-bold text-white mb-4 mt-6">
+              Com key — o React identifica cada item
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Lista com keys únicas</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// Com keys, o React rastreia cada item pelo ID
+&lt;ul&gt;
+  &lt;li key="1"&gt;Ana&lt;/li&gt;
+  &lt;li key="2"&gt;Bruno&lt;/li&gt;
+  &lt;li key="3"&gt;Carla&lt;/li&gt;
+&lt;/ul&gt;
+
+// Após adicionar "Diego" NO INÍCIO
+&lt;ul&gt;
+  &lt;li key="4"&gt;Diego&lt;/li&gt; {/* key="4" é nova — React cria apenas este! */}
+  &lt;li key="1"&gt;Ana&lt;/li&gt;   {/* key="1" já existia — React não toca! */}
+  &lt;li key="2"&gt;Bruno&lt;/li&gt; {/* key="2" já existia — React não toca! */}
+  &lt;li key="3"&gt;Carla&lt;/li&gt; {/* key="3" já existia — React não toca! */}
+&lt;/ul&gt;
+{/* Resultado: React cria apenas 1 elemento novo ✅ */}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Boas Práticas: Usando IDs como Keys
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            A melhor key é sempre um
+            <strong class="text-white">ID único</strong>
+            que vem dos próprios dados — geralmente o ID do banco de dados. Ele
+            é estável, único e não muda com reordenações:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>✅ Usando IDs do banco de dados — melhor prática</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">const usuarios = [
+  { id: "usr_001", nome: "Ana Silva",    cargo: "Dev"     },
+  { id: "usr_002", nome: "Bruno Costa",  cargo: "Design"  },
+  { id: "usr_003", nome: "Carla Mendes", cargo: "PM"      },
+];
+
+function ListaUsuarios() {
+  return (
+    &lt;ul&gt;
+      {usuarios.map((usuario) => (
+        // ✅ Usando o ID único do objeto como key
+        &lt;li key={usuario.id}&gt;
+          {usuario.nome} — {usuario.cargo}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+          </div>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando o objeto tem um campo único identificador — mesmo que não
+            seja chamado de
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">id</code> —
+            use-o:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Outros campos únicos como key</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">// CPF como key
+const clientes = [{ cpf: "111.222.333-44", nome: "Ana" }];
+clientes.map(({ cpf, nome }) => &lt;li key={cpf}&gt;{nome}&lt;/li&gt;);
+
+// Email como key (se garantidamente único)
+const contatos = [{ email: "ana@email.com", nome: "Ana" }];
+contatos.map(({ email, nome }) => &lt;li key={email}&gt;{nome}&lt;/li&gt;);
+
+// Slug como key (em posts de blog)
+const posts = [{ slug: "introducao-react", titulo: "Intro" }];
+posts.map(({ slug, titulo }) => &lt;li key={slug}&gt;{titulo}&lt;/li&gt;);</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O Problema de Usar o Índice como Key
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O segundo parâmetro do
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">.map()</code>
+            é o índice do elemento. Muita gente usa isso como key por
+            conveniência — mas isso pode causar bugs sérios:
+          </p>
+
+          <div
+            class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-6"
+          >
+            <h3 class="text-lg font-bold text-red-300 mb-4">
+              🚨 Por que index como key é problemático?
+            </h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>❌ Problema com index como key</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// Lista inicial
+["Ana", "Bruno", "Carla"].map((nome, index) => (
+  &lt;li key={index}&gt;{nome}&lt;/li&gt;
+));
+// key=0 → Ana | key=1 → Bruno | key=2 → Carla
+
+// Após remover "Ana" (primeira da lista)
+["Bruno", "Carla"].map((nome, index) => (
+  &lt;li key={index}&gt;{nome}&lt;/li&gt;
+));
+// key=0 → Bruno | key=1 → Carla
+//
+// O React vê key=0 associada a "Bruno", mas antes era "Ana"!
+// Ele acha que ANA mudou para BRUNO — comportamento incorreto.
+// Isso causa bugs em inputs, checkboxes, animações e estados locais.</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              Quando o index é aceitável?
+            </h3>
+            <p class="text-slate-300 mb-4">
+              O index como key é
+              <strong class="text-white">seguro</strong> apenas quando as três
+              condições abaixo forem verdadeiras:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li>
+                A lista é <strong class="text-white">estática</strong> — nunca
+                muda após o primeiro render
+              </li>
+              <li>
+                Os itens
+                <strong class="text-white">nunca são reordenados</strong> nem
+                removidos do meio
+              </li>
+              <li>
+                Os itens
+                <strong class="text-white">não têm estado local</strong>
+                (inputs, checkboxes, etc.)
+              </li>
+            </ul>
+            <div class="codebox mt-4">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>✅ Casos onde index é OK</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// Lista de navegação estática — OK usar index
+const links = ["Home", "Sobre", "Contato", "Blog"];
+
+function Navbar() {
+  return (
+    &lt;nav&gt;
+      {links.map((link, index) => (
+        &lt;a key={index} href={`/${link.toLowerCase()}`}&gt;{link}&lt;/a&gt;
+      ))}
+    &lt;/nav&gt;
+  );
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Gerando Keys Únicas Sem ID
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            E quando os dados não têm um ID e a lista pode mudar? Existem
+            algumas estratégias para gerar keys únicas:
+          </p>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              Opção 1: crypto.randomUUID()
+            </h3>
+            <p class="text-slate-300 mb-4">
+              Gere um UUID ao criar cada item e salve-o junto com os dados.
+              <strong class="text-white">Nunca gere dentro do .map()</strong> —
+              isso cria um novo ID a cada render!
+            </p>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>✅ Gerando ID na criação do item</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">import { useState } from 'react';
+
+function ListaTarefas() {
+  const [tarefas, setTarefas] = useState([]);
+  const [texto, setTexto] = useState("");
+
+  const adicionarTarefa = () => {
+    if (!texto.trim()) return;
+
+    const novaTarefa = {
+      id: crypto.randomUUID(), // ✅ ID gerado UMA VEZ na criação
+      texto,
+      concluida: false,
+    };
+
+    setTarefas([...tarefas, novaTarefa]);
+    setTexto("");
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;input value={texto} onChange={(e) => setTexto(e.target.value)} /&gt;
+      &lt;button onClick={adicionarTarefa}&gt;Adicionar&lt;/button&gt;
+
+      &lt;ul&gt;
+        {tarefas.map(({ id, texto, concluida }) => (
+          &lt;li key={id}&gt; {/* ✅ Usa o ID estável */}
+            {texto} {concluida ? "✅" : "⬜"}
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">
+              Opção 2: Combinar campos únicos
+            </h3>
+            <p class="text-slate-300 mb-4">
+              Se cada item tem campos que, combinados, formam um valor único,
+              use isso como key:
+            </p>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Combinando campos para formar key única</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">const horarios = [
+  { dia: "Segunda", hora: "09:00", materia: "React" },
+  { dia: "Segunda", hora: "10:00", materia: "Node"  },
+  { dia: "Terça",   hora: "09:00", materia: "CSS"   },
+];
+
+horarios.map(({ dia, hora, materia }) => (
+  // Combinação de dia + hora é única para cada aula
+  &lt;li key={`${dia}-${hora}`}&gt;
+    {dia} às {hora}: {materia}
+  &lt;/li&gt;
+));</code></pre>
+            </div>
+          </div>
+
+          <div
+            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-6"
+          >
+            <p class="text-yellow-300">
+              ⚠️ <strong>Nunca faça isso:</strong> Gerar um ID aleatório
+              <em>dentro</em> do
+              <code class="bg-yellow-500/20 px-2 py-1 rounded">.map()</code>
+              cria uma key diferente a cada render, o que é pior do que usar
+              index!
+            </p>
+            <div class="codebox mt-4">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>❌ Key gerada a cada render — NUNCA faça isso</span>
+                <button
+                  class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                  onclick="copyCode(this)"
+                >
+                  Copiar
+                </button>
+              </div>
+              <pre><code class="language-jsx">// ❌ ERRADO — novo UUID gerado a cada re-render
+{itens.map((item) => (
+  &lt;li key={Math.random()}&gt;{item}&lt;/li&gt;
+))}
+
+{itens.map((item) => (
+  &lt;li key={crypto.randomUUID()}&gt;{item}&lt;/li&gt;
+))}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Regras Essenciais das Keys
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="space-y-6">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl mt-1">1️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold text-lg">
+                    Keys devem ser únicas entre irmãos
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    As keys precisam ser únicas apenas entre os elementos no
+                    mesmo nível da lista. Duas listas diferentes podem ter keys
+                    iguais sem problema.
+                  </p>
+                  <div class="codebox mt-3">
+                    <div class="codebox-header bg-slate-800 text-slate-300">
+                      <span>Keys únicas por lista</span>
+                      <button
+                        class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                        onclick="copyCode(this)"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre><code class="language-jsx">// ✅ OK — key="1" aparece em listas diferentes
+&lt;ul&gt;
+  &lt;li key="1"&gt;Item A&lt;/li&gt;  {/* lista 1 */}
+&lt;/ul&gt;
+&lt;ul&gt;
+  &lt;li key="1"&gt;Item B&lt;/li&gt;  {/* lista 2 — sem problema! */}
+&lt;/ul&gt;</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <span class="text-2xl mt-1">2️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold text-lg">
+                    Keys não são acessíveis como prop
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    A
+                    <code class="bg-slate-700 px-1 rounded text-xs">key</code> é
+                    reservada para o React — o componente filho não recebe ela
+                    como prop. Se precisar do valor, passe como outra prop com
+                    nome diferente.
+                  </p>
+                  <div class="codebox mt-3">
+                    <div class="codebox-header bg-slate-800 text-slate-300">
+                      <span>Passando o ID como prop separada</span>
+                      <button
+                        class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                        onclick="copyCode(this)"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre><code class="language-jsx">// Se o componente filho precisa do ID, passe-o explicitamente
+{produtos.map(({ id, nome }) => (
+  &lt;CardProduto
+    key={id}       // para o React
+    id={id}        // para o componente usar
+    nome={nome}
+  /&gt;
+))}</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <span class="text-2xl mt-1">3️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold text-lg">
+                    Keys devem ser estáveis
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    A key de um item não deve mudar entre renders. Use sempre um
+                    valor que identifica o item de forma permanente — como o ID
+                    do banco de dados.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <span class="text-2xl mt-1">4️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold text-lg">
+                    Keys devem ser strings ou números
+                  </h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    O valor da key deve ser uma string ou número. Objetos,
+                    arrays e booleanos não funcionam como keys.
+                  </p>
+                  <div class="codebox mt-3">
+                    <div class="codebox-header bg-slate-800 text-slate-300">
+                      <span>Tipos válidos de key</span>
+                      <button
+                        class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                        onclick="copyCode(this)"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <pre><code class="language-jsx">// ✅ String
+&lt;li key="produto-42"&gt;...&lt;/li&gt;
+
+// ✅ Número
+&lt;li key={42}&gt;...&lt;/li&gt;
+
+// ✅ Template literal (vira string)
+&lt;li key={`produto-${id}`}&gt;...&lt;/li&gt;
+
+// ❌ Objeto — não use!
+&lt;li key={{ id: 42 }}&gt;...&lt;/li&gt;</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Todo List com Keys Corretas
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Veja um exemplo completo de uma lista de tarefas onde as keys são
+            usadas corretamente — permitindo adicionar, remover e marcar itens
+            sem nenhum bug de re-renderização:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Todo List com keys corretas</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function App() {
+  const [tarefas, setTarefas] = useState([
+    { id: crypto.randomUUID(), texto: "Aprender React", concluida: true  },
+    { id: crypto.randomUUID(), texto: "Estudar props",  concluida: true  },
+    { id: crypto.randomUUID(), texto: "Entender keys",  concluida: false },
+  ]);
+  const [novoTexto, setNovoTexto] = useState("");
+
+  // Adicionar nova tarefa com ID único gerado na criação
+  const adicionar = () => {
+    if (!novoTexto.trim()) return;
+    setTarefas([
+      ...tarefas,
+      { id: crypto.randomUUID(), texto: novoTexto, concluida: false },
+    ]);
+    setNovoTexto("");
+  };
+
+  // Remover por ID — keys corretas garantem que o React
+  // remove apenas o elemento certo
+  const remover = (id) => {
+    setTarefas(tarefas.filter((t) => t.id !== id));
+  };
+
+  // Alternar estado de concluída
+  const alternar = (id) => {
+    setTarefas(tarefas.map((t) =>
+      t.id === id ? { ...t, concluida: !t.concluida } : t
+    ));
+  };
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Minhas Tarefas ✅&lt;/h1&gt;
+
+      {/* Input para nova tarefa */}
+      &lt;div className="nova-tarefa"&gt;
+        &lt;input
+          value={novoTexto}
+          onChange={(e) => setNovoTexto(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" &amp;&amp; adicionar()}
+          placeholder="Nova tarefa..."
+        /&gt;
+        &lt;button onClick={adicionar}&gt;Adicionar&lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Lista com keys corretas */}
+      &lt;ul&gt;
+        {tarefas.map(({ id, texto, concluida }) => (
+          &lt;li key={id} className={concluida ? "concluida" : ""}&gt;
+            &lt;button onClick={() => alternar(id)}&gt;
+              {concluida ? "✅" : "⬜"}
+            &lt;/button&gt;
+            &lt;span&gt;{texto}&lt;/span&gt;
+            &lt;button onClick={() => remover(id)}&gt;🗑️&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+
+      &lt;p&gt;{tarefas.filter((t) => t.concluida).length} de {tarefas.length} concluídas&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-6"
+          >
+            <p class="text-purple-300">
+              💡 <strong>Observe:</strong> Com keys corretas (IDs únicos gerados
+              em
+              <code class="bg-purple-500/20 px-2 py-1 rounded"
+                >crypto.randomUUID()</code
+              >), o React sabe exatamente qual tarefa foi removida, marcada ou
+              adicionada. Não há re-renderização desnecessária dos outros itens
+              — sua lista funciona de forma eficiente mesmo com centenas de
+              tarefas!
+            </p>
+          </div>
+        </section>
+
+        <!-- Resumo visual -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Resumo Rápido</h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div
+                class="bg-green-500/10 border border-green-500/30 rounded-xl p-5"
+              >
+                <h3 class="text-green-300 font-bold text-lg mb-3">✅ Use</h3>
+                <ul class="text-slate-300 text-sm space-y-2">
+                  <li>• ID do banco de dados</li>
+                  <li>• UUID gerado na criação</li>
+                  <li>• Campo único do objeto (email, slug, cpf)</li>
+                  <li>• Combinação de campos únicos</li>
+                </ul>
+              </div>
+
+              <div
+                class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-5"
+              >
+                <h3 class="text-yellow-300 font-bold text-lg mb-3">
+                  ⚠️ Com cuidado
+                </h3>
+                <ul class="text-slate-300 text-sm space-y-2">
+                  <li>• Index do .map()</li>
+                  <li>• Apenas em listas estáticas</li>
+                  <li>• Sem reordenação</li>
+                  <li>• Sem estado local nos itens</li>
+                </ul>
+              </div>
+
+              <div
+                class="bg-red-500/10 border border-red-500/30 rounded-xl p-5"
+              >
+                <h3 class="text-red-300 font-bold text-lg mb-3">
+                  ❌ Nunca use
+                </h3>
+                <ul class="text-slate-300 text-sm space-y-2">
+                  <li>• Math.random() no .map()</li>
+                  <li>• crypto.randomUUID() no .map()</li>
+                  <li>• Sem key alguma</li>
+                  <li>• Objetos ou arrays como key</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div
+            class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8"
+          >
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou as keys em listas no React! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>O que são keys e por que o React as exige</li>
+              <li>Como o React usa keys no processo de reconciliação</li>
+              <li>Por que IDs do banco de dados são a melhor escolha</li>
+              <li>
+                Por que usar o index é problemático — e quando é aceitável
+              </li>
+              <li>
+                Como gerar IDs únicos com
+                <code class="bg-white/10 px-2 py-1 rounded text-sm"
+                  >crypto.randomUUID()</code
+                >
+              </li>
+              <li>As 4 regras essenciais das keys</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>Eventos em React</strong>
+              — como lidar com cliques, submissão de formulários, teclado e
+              muito mais!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div
+          class="flex justify-between items-center pt-8 border-t border-white/10"
+        >
+          <a
+            href="capitulo-07.html"
+            class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+          >
+            ← Capítulo Anterior
+          </a>
+          <a
+            href="react-course.html"
+            class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30"
+          >
+            Voltar ao índice
+          </a>
+          <a
+            href="capitulo-09.html"
+            class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
+          >
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className =
+            "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className =
+            "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 8;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion())
+          completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

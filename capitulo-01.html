@@ -58,7 +58,11 @@
       }
 
       body.light-theme .bg-gradient-to-r {
-        background: linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2)) !important;
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
         border-color: rgba(59, 130, 246, 0.3) !important;
       }
 
@@ -224,7 +228,8 @@
       }
 
       @keyframes pulse {
-        0%, 100% {
+        0%,
+        100% {
           opacity: 1;
         }
         50% {
@@ -262,7 +267,10 @@
 
           <div class="flex items-center gap-3">
             <!-- Chapter status badge -->
-            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
               ✓ Concluído
             </div>
 
@@ -627,7 +635,7 @@ export default App;</code></pre>
             ← Voltar ao índice
           </a>
           <a
-            href="#"
+            href="capitulo-02.html"
             class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
           >
             Próximo capítulo →
@@ -660,17 +668,17 @@ export default App;</code></pre>
           body.className =
             "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
           themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
-          
+
           // Update navbar
-          document.querySelector('nav').className = 
+          document.querySelector("nav").className =
             "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
         } else {
           body.className =
             "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
           themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
-          
+
           // Update navbar
-          document.querySelector('nav').className = 
+          document.querySelector("nav").className =
             "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
         }
       });
@@ -700,7 +708,9 @@ export default App;</code></pre>
       const CHAPTER_ID = 1;
       const STORAGE_KEY = "completedChapters";
 
-      const completeButtonContainer = document.getElementById("completeButtonContainer");
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
       const completeButton = document.getElementById("completeButton");
       const completeIcon = document.getElementById("completeIcon");
       const completeText = document.getElementById("completeText");
@@ -719,10 +729,10 @@ export default App;</code></pre>
         if (!completed.includes(CHAPTER_ID)) {
           completed.push(CHAPTER_ID);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-          
+
           // Update UI
           updateCompletedUI();
-          
+
           // Show success message
           showSuccessMessage();
         }
@@ -739,7 +749,8 @@ export default App;</code></pre>
       // Show success message
       function showSuccessMessage() {
         const message = document.createElement("div");
-        message.className = "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
         message.innerHTML = `
           <div class="flex items-center gap-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -762,7 +773,7 @@ export default App;</code></pre>
 
         const rect = conclusion.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        
+
         // Show button when conclusion is visible or passed
         return rect.top < windowHeight * 0.8;
       }
