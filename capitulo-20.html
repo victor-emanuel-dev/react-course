@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 20 - Custom Hooks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 20</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Custom Hooks</h1>
+        <p class="text-xl text-slate-300">Aprenda a criar seus próprios hooks reutilizáveis — a forma mais elegante de extrair, compartilhar e testar lógica stateful entre componentes</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O que são Custom Hooks?</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Custom hooks são funções JavaScript que começam com <code class="bg-slate-700 px-2 py-1 rounded text-sm">use</code>
+              e podem chamar outros hooks internamente. Eles permitem extrair lógica stateful
+              de componentes e reutilizá-la em qualquer lugar — sem duplicação de código.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              Você já criou custom hooks neste curso! O <code class="bg-slate-700 px-2 py-1 rounded text-sm">useFetch</code>,
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">useTema</code>,
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">useAuth</code> e
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">usePrevious</code>
+              que vimos nos capítulos anteriores são todos custom hooks.
+              Agora vamos aprender a criá-los do zero com consciência.
+            </p>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>O problema antes vs. a solução com custom hook</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ❌ ANTES: lógica de input duplicada em cada componente
+function FormCadastro() {
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  // ... validação, onChange handlers duplicados em cada campo
+}
+
+function FormLogin() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  // ... mesma lógica repetida!
+}
+
+// ✅ DEPOIS: custom hook reutilizável
+function useInput(valorInicial = "") {
+  const [valor, setValor] = useState(valorInicial);
+
+  const onChange = (e) => setValor(e.target.value);
+  const reset    = () => setValor(valorInicial);
+
+  return { valor, onChange, reset };
+}
+
+// Uso em FormCadastro — limpíssimo!
+function FormCadastro() {
+  const nome  = useInput("");
+  const email = useInput("");
+
+  return (
+    &lt;form&gt;
+      &lt;input value={nome.valor}  onChange={nome.onChange}  /&gt;
+      &lt;input value={email.valor} onChange={email.onChange} /&gt;
+      &lt;button type="button" onClick={nome.reset}&gt;Limpar nome&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Regras dos Custom Hooks</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">1️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Nome DEVE começar com <code class="bg-slate-700 px-1 rounded text-sm">use</code></h3>
+                  <p class="text-slate-300 text-sm mt-1">Isso permite que o React e os linters identifiquem que é um hook e apliquem as regras dos hooks (não chamar dentro de condicionais etc.).</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">2️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Pode usar qualquer hook internamente</h3>
+                  <p class="text-slate-300 text-sm mt-1">useState, useEffect, useRef, useCallback, outros custom hooks — sem restrições.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">3️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Estado é isolado por instância</h3>
+                  <p class="text-slate-300 text-sm mt-1">Cada componente que usa o hook tem seu próprio estado independente — assim como useState.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">4️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Retorne o que for útil para quem usa</h3>
+                  <p class="text-slate-300 text-sm mt-1">Pode retornar um array (como useState), um objeto, um valor único, uma função — o que fizer mais sentido para a API do hook.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Biblioteca de Custom Hooks Essenciais</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">Vamos construir uma coleção de hooks que você vai usar em projetos reais:</p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useLocalStorage.js</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+// useState que persiste no localStorage automaticamente
+function useLocalStorage(chave, valorInicial) {
+  const [valor, setValor] = useState(() => {
+    try {
+      const item = localStorage.getItem(chave);
+      return item ? JSON.parse(item) : valorInicial;
+    } catch {
+      return valorInicial;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(chave, JSON.stringify(valor));
+    } catch {
+      console.error("Erro ao salvar no localStorage");
+    }
+  }, [chave, valor]);
+
+  return [valor, setValor];
+}
+
+export default useLocalStorage;
+
+// Uso — idêntico ao useState, mas persiste!
+function Preferencias() {
+  const [tema, setTema]     = useLocalStorage("tema", "dark");
+  const [idioma, setIdioma] = useLocalStorage("idioma", "pt-BR");
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() => setTema(t => t === "dark" ? "light" : "dark")}&gt;
+        Tema: {tema}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useDebounce.js</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+// Retorna o valor "estabilizado" após o delay
+function useDebounce(valor, delay = 500) {
+  const [valorDebounced, setValorDebounced] = useState(valor);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setValorDebounced(valor), delay);
+    return () => clearTimeout(timer);
+  }, [valor, delay]);
+
+  return valorDebounced;
+}
+
+export default useDebounce;
+
+// Uso — busca só após o usuário parar de digitar
+function BuscaComDebounce() {
+  const [busca, setBusca] = useState("");
+  const buscaDebounced    = useDebounce(busca, 500); // estabiliza após 500ms
+
+  // Este efeito só roda quando buscaDebounced muda — não a cada tecla!
+  useEffect(() => {
+    if (!buscaDebounced) return;
+    console.log("Buscando:", buscaDebounced);
+    // fetch(`/api/busca?q=${buscaDebounced}`)
+  }, [buscaDebounced]);
+
+  return (
+    &lt;input
+      value={busca}
+      onChange={(e) => setBusca(e.target.value)}
+      placeholder="Digite para buscar..."
+    /&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useOnScreen.js — Intersection Observer</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useState, useEffect } from 'react';
+
+// Detecta se um elemento está visível na viewport
+function useOnScreen(opcoes = {}) {
+  const ref = useRef(null);
+  const [visivel, setVisivel] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setVisivel(entry.isIntersecting);
+    }, opcoes);
+
+    const el = ref.current;
+    if (el) observer.observe(el);
+
+    return () => { if (el) observer.unobserve(el); };
+  }, [opcoes.threshold, opcoes.rootMargin]);
+
+  return [ref, visivel];
+}
+
+export default useOnScreen;
+
+// Uso — animação de entrada ao rolar a página
+function CardAnimado({ children }) {
+  const [ref, visivel] = useOnScreen({ threshold: 0.1 });
+
+  return (
+    &lt;div
+      ref={ref}
+      style={{
+        opacity: visivel ? 1 : 0,
+        transform: visivel ? "translateY(0)" : "translateY(40px)",
+        transition: "opacity 0.6s, transform 0.6s",
+      }}
+    &gt;
+      {children}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useMediaQuery.js</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+// Detecta se uma media query CSS está ativa
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(
+    () => window.matchMedia(query).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const handler = (e) => setMatches(e.matches);
+
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+}
+
+export default useMediaQuery;
+
+// Uso — layout responsivo sem CSS
+function Layout({ children }) {
+  const isMobile  = useMediaQuery("(max-width: 768px)");
+  const isDark    = useMediaQuery("(prefers-color-scheme: dark)");
+  const isTablet  = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
+
+  return (
+    &lt;div style={{ display: isMobile ? "block" : "flex" }}&gt;
+      {!isMobile &amp;&amp; &lt;Sidebar /&gt;}
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useToggle.js e useCounter.js</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useCallback } from 'react';
+
+// Toggle entre true/false
+function useToggle(valorInicial = false) {
+  const [valor, setValor] = useState(valorInicial);
+  const toggle  = useCallback(() => setValor((v) => !v), []);
+  const ligar   = useCallback(() => setValor(true), []);
+  const desligar = useCallback(() => setValor(false), []);
+  return [valor, toggle, ligar, desligar];
+}
+
+// Contador com min, max e passo configuráveis
+function useCounter(inicial = 0, { min = -Infinity, max = Infinity, passo = 1 } = {}) {
+  const [count, setCount] = useState(inicial);
+  const incrementar = useCallback(() => setCount((c) => Math.min(c + passo, max)), [passo, max]);
+  const decrementar = useCallback(() => setCount((c) => Math.max(c - passo, min)), [passo, min]);
+  const resetar     = useCallback(() => setCount(inicial), [inicial]);
+  const definir     = useCallback((v) => setCount(Math.min(Math.max(v, min), max)), [min, max]);
+  return { count, incrementar, decrementar, resetar, definir };
+}
+
+// Uso
+function Controles() {
+  const [aberto, toggleAberto, abrir, fechar] = useToggle(false);
+  const { count, incrementar, decrementar, resetar } = useCounter(0, { min: 0, max: 10 });
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={toggleAberto}&gt;{aberto ? "Fechar" : "Abrir"} menu&lt;/button&gt;
+
+      &lt;div&gt;
+        &lt;button onClick={decrementar} disabled={count === 0}&gt;−&lt;/button&gt;
+        &lt;span&gt;{count}/10&lt;/span&gt;
+        &lt;button onClick={incrementar} disabled={count === 10}&gt;+&lt;/button&gt;
+        &lt;button onClick={resetar}&gt;Reset&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: Dashboard com Custom Hooks</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Dashboard usando 4 custom hooks</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+import useLocalStorage from './hooks/useLocalStorage';
+import useDebounce     from './hooks/useDebounce';
+import useToggle       from './hooks/useToggle';
+import useFetch        from './hooks/useFetch';
+
+function Dashboard() {
+  // Tema persiste no localStorage entre sessões
+  const [tema, setTema] = useLocalStorage("dash-tema", "dark");
+
+  // Sidebar abre/fecha com toggle
+  const [sidebarAberta, toggleSidebar] = useToggle(true);
+
+  // Busca com debounce — só busca após 400ms de pausa
+  const [busca, setBusca] = useState("");
+  const buscaDebounced    = useDebounce(busca, 400);
+
+  // Fetch reativo — refaz quando buscaDebounced muda
+  const url = buscaDebounced
+    ? `https://jsonplaceholder.typicode.com/users?name_like=${buscaDebounced}`
+    : `https://jsonplaceholder.typicode.com/users`;
+
+  const { dados: usuarios, carregando, erro } = useFetch(url);
+
+  const bg     = tema === "dark" ? "#0f172a" : "#f8fafc";
+  const cor    = tema === "dark" ? "#f1f5f9" : "#1e293b";
+  const card   = tema === "dark" ? "#1e293b" : "#ffffff";
+
+  return (
+    &lt;div style={{ display: "flex", minHeight: "100vh", background: bg, color: cor, fontFamily: "sans-serif" }}&gt;
+
+      {/* Sidebar */}
+      {sidebarAberta &amp;&amp; (
+        &lt;aside style={{ width: 220, background: card, padding: "1.5rem", borderRight: `1px solid ${tema === "dark" ? "#334155" : "#e2e8f0"}` }}&gt;
+          &lt;h2&gt;⚛️ Dashboard&lt;/h2&gt;
+          &lt;nav&gt;
+            &lt;ul style={{ listStyle: "none", padding: 0 }}&gt;
+              {["📊 Visão Geral", "👥 Usuários", "📦 Produtos", "⚙️ Config"].map((item) => (
+                &lt;li key={item} style={{ padding: "0.5rem 0", cursor: "pointer" }}&gt;{item}&lt;/li&gt;
+              ))}
+            &lt;/ul&gt;
+          &lt;/nav&gt;
+        &lt;/aside&gt;
+      )}
+
+      {/* Conteúdo principal */}
+      &lt;div style={{ flex: 1, padding: "1.5rem" }}&gt;
+
+        {/* Header */}
+        &lt;div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}&gt;
+          &lt;div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}&gt;
+            &lt;button onClick={toggleSidebar}&gt;☰&lt;/button&gt;
+            &lt;h1 style={{ margin: 0 }}&gt;Usuários&lt;/h1&gt;
+          &lt;/div&gt;
+          &lt;button onClick={() => setTema(t => t === "dark" ? "light" : "dark")}&gt;
+            {tema === "dark" ? "☀️ Claro" : "🌙 Escuro"}
+          &lt;/button&gt;
+        &lt;/div&gt;
+
+        {/* Busca */}
+        &lt;input
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="🔍 Buscar usuário..."
+          style={{ width: "100%", maxWidth: 400, padding: "0.5rem 1rem", marginBottom: "1.5rem", background: card, color: cor, border: "1px solid #475569", borderRadius: "0.5rem" }}
+        /&gt;
+        {buscaDebounced !== busca &amp;&amp; &lt;span style={{ fontSize: "0.75rem", color: "#94a3b8" }}&gt; ⏳ digitando...&lt;/span&gt;}
+
+        {/* Lista */}
+        {carregando &amp;&amp; &lt;p&gt;⏳ Carregando usuários...&lt;/p&gt;}
+        {erro       &amp;&amp; &lt;p style={{ color: "red" }}&gt;❌ {erro}&lt;/p&gt;}
+        {usuarios &amp;&amp; (
+          &lt;div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1rem" }}&gt;
+            {usuarios.map((u) => (
+              &lt;div key={u.id} style={{ background: card, padding: "1rem", borderRadius: "0.75rem", border: `1px solid ${tema === "dark" ? "#334155" : "#e2e8f0"}` }}&gt;
+                &lt;div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}&gt;
+                  &lt;div style={{ width: 40, height: 40, borderRadius: "50%", background: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#fff" }}&gt;
+                    {u.name[0]}
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;p style={{ margin: 0, fontWeight: "bold" }}&gt;{u.name}&lt;/p&gt;
+                    &lt;p style={{ margin: 0, fontSize: "0.8rem", color: "#94a3b8" }}&gt;@{u.username}&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;p style={{ margin: "0 0 0.25rem", fontSize: "0.85rem" }}&gt;📧 {u.email}&lt;/p&gt;
+                &lt;p style={{ margin: 0, fontSize: "0.85rem" }}&gt;🏢 {u.company.name}&lt;/p&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Dashboard;</code></pre>
+          </div>
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>4 custom hooks, componente limpíssimo:</strong>
+              <code class="bg-orange-500/20 px-1 rounded">useLocalStorage</code> persiste o tema,
+              <code class="bg-orange-500/20 px-1 rounded">useToggle</code> controla a sidebar,
+              <code class="bg-orange-500/20 px-1 rounded">useDebounce</code> evita fetch a cada tecla, e
+              <code class="bg-orange-500/20 px-1 rounded">useFetch</code> busca os dados —
+              o componente apenas compõe comportamentos sem se preocupar com a implementação!
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Onde Colocar os Custom Hooks</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Estrutura de pastas recomendada</span>
+                <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+              </div>
+              <pre><code class="language-bash">src/
+├── hooks/                    # todos os custom hooks
+│   ├── useLocalStorage.js    # utilitários genéricos
+│   ├── useDebounce.js
+│   ├── useToggle.js
+│   ├── useCounter.js
+│   ├── useMediaQuery.js
+│   ├── useOnScreen.js
+│   ├── useFetch.js           # fetch genérico
+│   └── index.js              # re-exporta tudo
+│
+├── contexts/                 # hooks de contexto
+│   ├── AuthContext.jsx
+│   └── TemaContext.jsx
+│
+├── components/
+│   └── Dashboard/
+│       ├── Dashboard.jsx
+│       └── useDashboard.js   # hook específico do componente
+│
+└── App.jsx</code></pre>
+            </div>
+            <p class="text-slate-300 text-sm mt-4">
+              Hooks genéricos e reutilizáveis ficam em <code class="bg-slate-700 px-1 rounded">src/hooks/</code>.
+              Hooks específicos de um componente ficam junto ao componente.
+              Hooks de contexto ficam em <code class="bg-slate-700 px-1 rounded">src/contexts/</code>.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns — Módulo Intermediário Concluído!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou os Custom Hooks e concluiu o módulo intermediário! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>O que são custom hooks e por que eles eliminam duplicação de código</li>
+              <li>As 4 regras dos custom hooks</li>
+              <li>Uma biblioteca de hooks essenciais: useLocalStorage, useDebounce, useOnScreen, useMediaQuery, useToggle, useCounter</li>
+              <li>Como compor múltiplos hooks em um dashboard limpo e funcional</li>
+              <li>A estrutura de pastas recomendada para organizar hooks</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo módulo vamos entrar no nível <strong>avançado</strong>:
+              <strong>useMemo e useCallback</strong>
+              — otimização de performance, memoização e como evitar renders desnecessários!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-19.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-21.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn"><span id="completeIcon">✓</span><span id="completeText">Concluir Capítulo</span></button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle"); const body = document.body; let isDark = true;
+      themeToggle.addEventListener("click", () => { isDark = !isDark; if (isDark) { body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"; themeToggle.innerHTML = '<span class="text-lg">🌙</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"; } else { body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme"; themeToggle.innerHTML = '<span class="text-lg">☀️</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200"; } });
+      function copyCode(button) { const text = button.closest(".codebox").querySelector("code").textContent; navigator.clipboard.writeText(text).then(() => { const orig = button.textContent; button.textContent = "Copiado!"; button.classList.add("bg-green-500/30","text-green-300"); button.classList.remove("bg-blue-500/20","text-blue-300"); setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000); }); }
+    </script>
+    <script>
+      const CHAPTER_ID = 20, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer"), cb = document.getElementById("completeButton"), ci = document.getElementById("completeIcon"), ct = document.getElementById("completeText"), sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() { const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); } }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() { const m=document.createElement("div"); m.className="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse"; m.innerHTML='<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>'; document.body.appendChild(m); setTimeout(()=>m.remove(),3000); }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() { if(isCompleted()) updateUI(); window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); }); cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); }); if(reached()) cbc.classList.remove("hidden"); }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>

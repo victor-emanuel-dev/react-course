@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 18 - useReducer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 18</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">useReducer</h1>
+        <p class="text-xl text-slate-300">Aprenda uma alternativa poderosa ao useState para estados complexos — centralizando toda a lógica de atualização em uma função reducer previsível</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">useState vs. useReducer — Quando Migrar?</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              O <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code> é ótimo para estados simples e independentes.
+              Mas quando um componente tem muitos estados relacionados, múltiplas ações que os atualizam juntos,
+              ou lógica de atualização complexa, o código começa a ficar espalhado e difícil de rastrear.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              O <code class="bg-slate-700 px-2 py-1 rounded text-sm">useReducer</code> centraliza toda a
+              lógica de atualização em uma única função — a <strong class="text-white">reducer</strong> —
+              tornando o código mais previsível, testável e fácil de entender.
+            </p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Sinais de que você precisa do useReducer</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div class="flex items-start gap-2">
+                <span class="text-red-400 mt-1">⚠️</span>
+                <p class="text-slate-300">Você tem 4+ estados relacionados no mesmo componente</p>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-red-400 mt-1">⚠️</span>
+                <p class="text-slate-300">Uma ação precisa atualizar vários estados ao mesmo tempo</p>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-red-400 mt-1">⚠️</span>
+                <p class="text-slate-300">O próximo estado depende de múltiplos campos do atual</p>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-red-400 mt-1">⚠️</span>
+                <p class="text-slate-300">Você quer testar a lógica de estado isoladamente</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Anatomia do useReducer</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Estrutura completa do useReducer</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useReducer } from 'react';
+
+// 1. Estado inicial — um objeto com todos os campos relacionados
+const estadoInicial = { contador: 0, passo: 1 };
+
+// 2. Reducer — função PURA que recebe estado + ação e retorna novo estado
+//    (estado, ação) => novoEstado
+function reducer(estado, acao) {
+  switch (acao.type) {
+    case "INCREMENTAR":
+      return { ...estado, contador: estado.contador + estado.passo };
+    case "DECREMENTAR":
+      return { ...estado, contador: estado.contador - estado.passo };
+    case "RESETAR":
+      return estadoInicial;
+    case "MUDAR_PASSO":
+      return { ...estado, passo: acao.payload };
+    default:
+      // Sempre retorne o estado atual em casos desconhecidos
+      return estado;
+  }
+}
+
+function Contador() {
+  //        ↓ estado atual   ↓ função dispatch     ↓ reducer  ↓ estado inicial
+  const [estado, dispatch] = useReducer(reducer, estadoInicial);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Contador: {estado.contador} (passo: {estado.passo})&lt;/p&gt;
+
+      {/* dispatch envia uma "ação" para o reducer */}
+      &lt;button onClick={() => dispatch({ type: "DECREMENTAR" })}&gt;−&lt;/button&gt;
+      &lt;button onClick={() => dispatch({ type: "RESETAR" })}&gt;🔄&lt;/button&gt;
+      &lt;button onClick={() => dispatch({ type: "INCREMENTAR" })}&gt;+&lt;/button&gt;
+
+      &lt;input
+        type="number"
+        value={estado.passo}
+        onChange={(e) => dispatch({ type: "MUDAR_PASSO", payload: Number(e.target.value) })}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-4">
+            <p class="text-blue-300">
+              💡 <strong>O objeto ação tem por convenção dois campos:</strong>
+              <code class="bg-blue-500/20 px-1 rounded">type</code> (string que identifica a ação, geralmente em SNAKE_CASE)
+              e <code class="bg-blue-500/20 px-1 rounded">payload</code> (dados extras opcionais que a ação carrega).
+              Essa convenção vem do padrão Flux/Redux e é amplamente adotada no ecossistema React.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">A Reducer Deve Ser uma Função Pura</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Reducer pura — regras obrigatórias</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ✅ Reducer PURA — só calcula o próximo estado, sem efeitos colaterais
+function reducer(estado, acao) {
+  switch (acao.type) {
+    case "ADICIONAR_ITEM":
+      // ✅ Retorna um NOVO objeto/array — não muta o estado!
+      return {
+        ...estado,
+        itens: [...estado.itens, acao.payload],
+        total: estado.total + acao.payload.preco,
+      };
+
+    case "REMOVER_ITEM":
+      const itemRemovido = estado.itens.find((i) => i.id === acao.payload);
+      return {
+        ...estado,
+        itens: estado.itens.filter((i) => i.id !== acao.payload),
+        total: estado.total - (itemRemovido?.preco || 0),
+      };
+
+    default:
+      return estado;
+  }
+}
+
+// ❌ ERRADO — reducer com efeitos colaterais
+function reducerRuim(estado, acao) {
+  switch (acao.type) {
+    case "ADICIONAR":
+      estado.itens.push(acao.payload); // ❌ muta o estado!
+      fetch("/api/salvar", { body: JSON.stringify(estado) }); // ❌ efeito colateral!
+      return estado; // ❌ mesmo objeto = React não detecta mudança
+  }
+}</code></pre>
+          </div>
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4">
+            <p class="text-yellow-300">
+              ⚠️ <strong>Regras da reducer:</strong>
+              (1) Deve ser uma função pura — mesmo input sempre produz mesmo output.
+              (2) Nunca mute o estado — retorne sempre um objeto novo.
+              (3) Nunca faça efeitos colaterais (fetch, timers, localStorage) — isso vai no useEffect.
+              (4) Sempre tenha um <code class="bg-yellow-500/20 px-1 rounded">default</code> que retorna o estado atual.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">useState vs. useReducer — Comparação Direta</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>O mesmo formulário: useState vs. useReducer</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ── Com useState — vários estados independentes ──────────
+function FormComUseState() {
+  const [nome, setNome]           = useState("");
+  const [email, setEmail]         = useState("");
+  const [enviando, setEnviando]   = useState(false);
+  const [erro, setErro]           = useState(null);
+  const [sucesso, setSucesso]     = useState(false);
+
+  const enviar = async () => {
+    setEnviando(true);
+    setErro(null);
+    setSucesso(false);
+    try {
+      await salvarNaAPI({ nome, email });
+      setSucesso(true);
+      setNome("");
+      setEmail("");
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setEnviando(false);
+    }
+    // 5 chamadas de setState espalhadas!
+  };
+}
+
+// ── Com useReducer — estado centralizado ─────────────────
+const inicial = { nome: "", email: "", enviando: false, erro: null, sucesso: false };
+
+function formReducer(estado, acao) {
+  switch (acao.type) {
+    case "CAMPO":
+      return { ...estado, [acao.campo]: acao.valor };
+    case "ENVIANDO":
+      return { ...estado, enviando: true, erro: null, sucesso: false };
+    case "SUCESSO":
+      return { ...inicial, sucesso: true };
+    case "ERRO":
+      return { ...estado, enviando: false, erro: acao.payload };
+    default:
+      return estado;
+  }
+}
+
+function FormComUseReducer() {
+  const [estado, dispatch] = useReducer(formReducer, inicial);
+
+  const enviar = async () => {
+    dispatch({ type: "ENVIANDO" }); // uma ação, tudo sincronizado!
+    try {
+      await salvarNaAPI({ nome: estado.nome, email: estado.email });
+      dispatch({ type: "SUCESSO" });
+    } catch (e) {
+      dispatch({ type: "ERRO", payload: e.message });
+    }
+    // Apenas 2 dispatches — muito mais limpo!
+  };
+
+  return (
+    &lt;form onSubmit={(e) => { e.preventDefault(); enviar(); }}&gt;
+      &lt;input
+        value={estado.nome}
+        onChange={(e) => dispatch({ type: "CAMPO", campo: "nome", valor: e.target.value })}
+      /&gt;
+      &lt;input
+        value={estado.email}
+        onChange={(e) => dispatch({ type: "CAMPO", campo: "email", valor: e.target.value })}
+      /&gt;
+      {estado.erro    &amp;&amp; &lt;p style={{ color: "red" }}&gt;{estado.erro}&lt;/p&gt;}
+      {estado.sucesso &amp;&amp; &lt;p style={{ color: "green" }}&gt;✅ Enviado!&lt;/p&gt;}
+      &lt;button disabled={estado.enviando}&gt;
+        {estado.enviando ? "Enviando..." : "Enviar"}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: Todo List com useReducer</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Todo List com reducer</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useReducer, useState } from 'react';
+
+// ── Estado inicial ────────────────────────────────────────
+const estadoInicial = {
+  tarefas: [
+    { id: 1, texto: "Aprender useReducer", concluida: true },
+    { id: 2, texto: "Praticar com exemplos", concluida: false },
+  ],
+  filtro: "todas", // "todas" | "pendentes" | "concluidas"
+};
+
+// ── Reducer — toda lógica centralizada aqui ───────────────
+function tarefasReducer(estado, acao) {
+  switch (acao.type) {
+
+    case "ADICIONAR":
+      return {
+        ...estado,
+        tarefas: [
+          ...estado.tarefas,
+          { id: crypto.randomUUID(), texto: acao.payload, concluida: false },
+        ],
+      };
+
+    case "REMOVER":
+      return {
+        ...estado,
+        tarefas: estado.tarefas.filter((t) => t.id !== acao.payload),
+      };
+
+    case "ALTERNAR":
+      return {
+        ...estado,
+        tarefas: estado.tarefas.map((t) =>
+          t.id === acao.payload ? { ...t, concluida: !t.concluida } : t
+        ),
+      };
+
+    case "EDITAR":
+      return {
+        ...estado,
+        tarefas: estado.tarefas.map((t) =>
+          t.id === acao.payload.id ? { ...t, texto: acao.payload.texto } : t
+        ),
+      };
+
+    case "LIMPAR_CONCLUIDAS":
+      return {
+        ...estado,
+        tarefas: estado.tarefas.filter((t) => !t.concluida),
+      };
+
+    case "MARCAR_TODAS":
+      return {
+        ...estado,
+        tarefas: estado.tarefas.map((t) => ({ ...t, concluida: true })),
+      };
+
+    case "MUDAR_FILTRO":
+      return { ...estado, filtro: acao.payload };
+
+    default:
+      return estado;
+  }
+}
+
+// ── Componente ────────────────────────────────────────────
+function App() {
+  const [{ tarefas, filtro }, dispatch] = useReducer(tarefasReducer, estadoInicial);
+  const [novoTexto, setNovoTexto] = useState("");
+
+  const adicionar = () => {
+    if (!novoTexto.trim()) return;
+    dispatch({ type: "ADICIONAR", payload: novoTexto.trim() });
+    setNovoTexto("");
+  };
+
+  const tarefasFiltradas = tarefas.filter((t) => {
+    if (filtro === "pendentes")  return !t.concluida;
+    if (filtro === "concluidas") return t.concluida;
+    return true;
+  });
+
+  const pendentes  = tarefas.filter((t) => !t.concluida).length;
+  const concluidas = tarefas.filter((t) => t.concluida).length;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;📝 Tarefas&lt;/h1&gt;
+      &lt;p&gt;{pendentes} pendentes · {concluidas} concluídas&lt;/p&gt;
+
+      {/* Input */}
+      &lt;div&gt;
+        &lt;input
+          value={novoTexto}
+          onChange={(e) => setNovoTexto(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" &amp;&amp; adicionar()}
+          placeholder="Nova tarefa..."
+        /&gt;
+        &lt;button onClick={adicionar}&gt;+ Adicionar&lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Filtros */}
+      &lt;div&gt;
+        {["todas", "pendentes", "concluidas"].map((f) => (
+          &lt;button
+            key={f}
+            onClick={() => dispatch({ type: "MUDAR_FILTRO", payload: f })}
+            style={{ fontWeight: filtro === f ? "bold" : "normal" }}
+          &gt;
+            {f}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Lista */}
+      &lt;ul&gt;
+        {tarefasFiltradas.map((t) => (
+          &lt;li key={t.id} style={{ opacity: t.concluida ? 0.6 : 1 }}&gt;
+            &lt;input
+              type="checkbox"
+              checked={t.concluida}
+              onChange={() => dispatch({ type: "ALTERNAR", payload: t.id })}
+            /&gt;
+            &lt;span style={{ textDecoration: t.concluida ? "line-through" : "none" }}&gt;
+              {t.texto}
+            &lt;/span&gt;
+            &lt;button onClick={() => dispatch({ type: "REMOVER", payload: t.id })}&gt;🗑️&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+
+      {/* Ações em massa */}
+      &lt;div&gt;
+        &lt;button onClick={() => dispatch({ type: "MARCAR_TODAS" })}&gt;✅ Marcar todas&lt;/button&gt;
+        &lt;button onClick={() => dispatch({ type: "LIMPAR_CONCLUIDAS" })}&gt;🗑️ Limpar concluídas&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>O poder do useReducer aqui:</strong> todas as 7 operações
+              (adicionar, remover, alternar, editar, limpar concluídas, marcar todas, mudar filtro)
+              estão documentadas na reducer. Para saber tudo que o componente pode fazer,
+              basta ler o <code class="bg-green-500/20 px-1 rounded">switch</code> — é como um manual de instruções do estado!
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Quando Usar Cada Um</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-blue-300 font-bold mb-3">useState — use quando:</h3>
+                <ul class="space-y-2 text-slate-300 text-sm list-disc list-inside">
+                  <li>Estado simples: boolean, string, número</li>
+                  <li>Poucos estados independentes (1-3)</li>
+                  <li>Atualizações simples e diretas</li>
+                  <li>Sem lógica complexa de transição</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="text-purple-300 font-bold mb-3">useReducer — use quando:</h3>
+                <ul class="space-y-2 text-slate-300 text-sm list-disc list-inside">
+                  <li>Estado complexo com múltiplos campos</li>
+                  <li>Ações que atualizam vários campos juntos</li>
+                  <li>Lógica de negócio que você quer testar</li>
+                  <li>Muitas transições de estado diferentes</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou o useReducer! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>Quando migrar de useState para useReducer</li>
+              <li>Anatomia: estado inicial, reducer, dispatch e objeto ação</li>
+              <li>Por que a reducer deve ser uma função pura</li>
+              <li>A comparação direta useState vs. useReducer no mesmo formulário</li>
+              <li>Como centralizar 7 operações em uma única reducer legível</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>useRef</strong>
+              — o hook para acessar elementos do DOM diretamente e guardar
+              valores que não causam re-render!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-17.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-19.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn"><span id="completeIcon">✓</span><span id="completeText">Concluir Capítulo</span></button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle"); const body = document.body; let isDark = true;
+      themeToggle.addEventListener("click", () => { isDark = !isDark; if (isDark) { body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"; themeToggle.innerHTML = '<span class="text-lg">🌙</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"; } else { body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme"; themeToggle.innerHTML = '<span class="text-lg">☀️</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200"; } });
+      function copyCode(button) { const text = button.closest(".codebox").querySelector("code").textContent; navigator.clipboard.writeText(text).then(() => { const orig = button.textContent; button.textContent = "Copiado!"; button.classList.add("bg-green-500/30","text-green-300"); button.classList.remove("bg-blue-500/20","text-blue-300"); setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000); }); }
+    </script>
+    <script>
+      const CHAPTER_ID = 18, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer"), cb = document.getElementById("completeButton"), ci = document.getElementById("completeIcon"), ct = document.getElementById("completeText"), sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() { const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); } }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() { const m=document.createElement("div"); m.className="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse"; m.innerHTML='<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>'; document.body.appendChild(m); setTimeout(()=>m.remove(),3000); }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() { if(isCompleted()) updateUI(); window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); }); cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); }); if(reached()) cbc.classList.remove("hidden"); }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>

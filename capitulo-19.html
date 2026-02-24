@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 19 - useRef</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 19</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">useRef</h1>
+        <p class="text-xl text-slate-300">Aprenda a acessar elementos do DOM diretamente e a guardar valores mutáveis que não causam re-render — os dois superpoderes do useRef</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O que é o useRef?</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              O <code class="bg-slate-700 px-2 py-1 rounded text-sm">useRef</code> retorna um objeto com uma única propriedade:
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm">.current</code>.
+              Esse objeto persiste durante toda a vida do componente e tem dois usos principais:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                <h3 class="text-blue-300 font-bold mb-2">1. Referenciar elementos do DOM</h3>
+                <p class="text-slate-300 text-sm">Acesse diretamente um nó do DOM para dar foco, medir tamanho, reproduzir vídeo, integrar com bibliotecas externas etc.</p>
+              </div>
+              <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
+                <h3 class="text-purple-300 font-bold mb-2">2. Guardar valores sem re-render</h3>
+                <p class="text-slate-300 text-sm">Armazene valores mutáveis que precisam persistir entre renders mas que <strong>não devem disparar uma nova renderização</strong> quando mudarem.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Criando e usando um ref</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef } from 'react';
+
+function MeuComponente() {
+  // Cria um ref — valor inicial é null para refs de DOM
+  const inputRef = useRef(null);
+
+  // Acesso ao .current — o elemento DOM real
+  const focarInput = () => {
+    inputRef.current.focus();
+  };
+
+  return (
+    &lt;div&gt;
+      {/* Vincula o ref ao elemento DOM com a prop "ref" */}
+      &lt;input ref={inputRef} placeholder="Clique no botão abaixo..." /&gt;
+      &lt;button onClick={focarInput}&gt;🎯 Focar input&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Uso 1: Manipulação do DOM</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Os casos mais comuns de manipulação direta do DOM com refs:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Foco automático, scroll e seleção de texto</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useEffect } from 'react';
+
+function FormLogin() {
+  const emailRef   = useRef(null);
+  const senhaRef   = useRef(null);
+  const topoRef    = useRef(null);
+
+  // Foco automático no primeiro campo ao montar
+  useEffect(() => {
+    emailRef.current.focus();
+  }, []);
+
+  const irParaSenha = (e) => {
+    // Ao pressionar Enter no email, pula para a senha
+    if (e.key === "Enter") {
+      e.preventDefault();
+      senhaRef.current.focus();
+    }
+  };
+
+  const selecionarTudo = () => {
+    emailRef.current.select(); // seleciona todo o texto do input
+  };
+
+  const voltarAoTopo = () => {
+    topoRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;div ref={topoRef}&gt;&lt;h1&gt;Login&lt;/h1&gt;&lt;/div&gt;
+
+      &lt;input
+        ref={emailRef}
+        type="email"
+        placeholder="Email"
+        onKeyDown={irParaSenha}
+      /&gt;
+      &lt;button onClick={selecionarTudo}&gt;Selecionar tudo&lt;/button&gt;
+
+      &lt;input
+        ref={senhaRef}
+        type="password"
+        placeholder="Senha"
+      /&gt;
+
+      &lt;button onClick={voltarAoTopo}&gt;⬆️ Voltar ao topo&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Controle de vídeo/áudio com ref</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useState } from 'react';
+
+function PlayerVideo({ src }) {
+  const videoRef  = useRef(null);
+  const [tocando, setTocando] = useState(false);
+
+  const alternarPlay = () => {
+    if (tocando) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
+    }
+    setTocando((t) => !t);
+  };
+
+  const reiniciar = () => {
+    videoRef.current.currentTime = 0;
+    videoRef.current.play();
+    setTocando(true);
+  };
+
+  const mudarVolume = (e) => {
+    videoRef.current.volume = e.target.value;
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;video ref={videoRef} src={src} width="400" /&gt;
+      &lt;div&gt;
+        &lt;button onClick={alternarPlay}&gt;{tocando ? "⏸️" : "▶️"}&lt;/button&gt;
+        &lt;button onClick={reiniciar}&gt;⏮️&lt;/button&gt;
+        &lt;input type="range" min="0" max="1" step="0.1" defaultValue="1" onChange={mudarVolume} /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Medindo dimensões de elementos</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useState, useEffect } from 'react';
+
+function MedirElemento() {
+  const boxRef = useRef(null);
+  const [dimensoes, setDimensoes] = useState({ largura: 0, altura: 0 });
+
+  useEffect(() => {
+    const atualizar = () => {
+      if (boxRef.current) {
+        const rect = boxRef.current.getBoundingClientRect();
+        setDimensoes({ largura: Math.round(rect.width), altura: Math.round(rect.height) });
+      }
+    };
+
+    atualizar(); // mede na montagem
+    window.addEventListener("resize", atualizar); // atualiza no resize
+    return () => window.removeEventListener("resize", atualizar);
+  }, []);
+
+  return (
+    &lt;div&gt;
+      &lt;div
+        ref={boxRef}
+        style={{ padding: "2rem", background: "#1e293b", resize: "both", overflow: "auto" }}
+      &gt;
+        &lt;p&gt;Redimensione-me! (resize handle no canto inferior direito)&lt;/p&gt;
+        &lt;p&gt;📏 {dimensoes.largura} × {dimensoes.altura} px&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Uso 2: Valores que Não Causam Re-render</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O segundo superpoder do useRef: guardar valores que precisam persistir entre renders
+            mas sem disparar uma nova renderização quando mudam —
+            algo que o <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code> sempre faz.
+          </p>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-3">Comparação: estado vs. ref</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="bg-slate-700 rounded-lg p-3">
+                <p class="text-white font-semibold mb-1">Variável comum</p>
+                <p class="text-slate-300">❌ Resetada a cada render</p>
+                <p class="text-slate-300">❌ Não persiste</p>
+              </div>
+              <div class="bg-slate-700 rounded-lg p-3">
+                <p class="text-white font-semibold mb-1">useState</p>
+                <p class="text-green-300">✅ Persiste entre renders</p>
+                <p class="text-red-300">⚠️ Causa re-render ao mudar</p>
+              </div>
+              <div class="bg-slate-700 rounded-lg p-3">
+                <p class="text-white font-semibold mb-1">useRef</p>
+                <p class="text-green-300">✅ Persiste entre renders</p>
+                <p class="text-green-300">✅ NÃO causa re-render</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Guardar ID de timer para cancelamento</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useState } from 'react';
+
+function BotaoDebounce() {
+  const [mensagem, setMensagem] = useState("");
+  const timerRef = useRef(null); // guarda o ID do timer sem causar re-render
+
+  const handleClick = () => {
+    // Cancela o timer anterior se existir
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    setMensagem("Aguardando...");
+
+    // Define novo timer
+    timerRef.current = setTimeout(() => {
+      setMensagem("✅ Ação executada!");
+      timerRef.current = null;
+    }, 1000);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={handleClick}&gt;Clique rápido várias vezes!&lt;/button&gt;
+      &lt;p&gt;{mensagem}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Guardar valor anterior para comparação</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useEffect, useState } from 'react';
+
+// Hook customizado — usePrevious
+function usePrevious(valor) {
+  const ref = useRef(undefined);
+
+  useEffect(() => {
+    ref.current = valor; // atualiza APÓS o render, então .current tem o valor anterior
+  });
+
+  return ref.current; // retorna o valor do render anterior
+}
+
+function ContadorComHistorico() {
+  const [count, setCount] = useState(0);
+  const anterior = usePrevious(count); // valor do render anterior
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Atual: {count}&lt;/h2&gt;
+      &lt;p&gt;Anterior: {anterior ?? "—"}&lt;/p&gt;
+      &lt;p&gt;Mudança: {anterior !== undefined ? count - anterior : "—"}&lt;/p&gt;
+      &lt;button onClick={() => setCount(c => c + 1)}&gt;+1&lt;/button&gt;
+      &lt;button onClick={() => setCount(c => c - 1)}&gt;−1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Saber se o componente ainda está montado (evita setState em desmontado)</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useEffect, useState } from 'react';
+
+function ComponenteComAsync() {
+  const [dados, setDados] = useState(null);
+  const montadoRef = useRef(true); // true enquanto o componente está na tela
+
+  useEffect(() => {
+    montadoRef.current = true;
+
+    const buscar = async () => {
+      const res  = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+      const json = await res.json();
+
+      // Só atualiza o estado se o componente ainda estiver na tela
+      if (montadoRef.current) {
+        setDados(json);
+      }
+    };
+
+    buscar();
+
+    return () => {
+      montadoRef.current = false; // componente desmontou
+    };
+  }, []);
+
+  return &lt;div&gt;{dados ? dados.title : "Carregando..."}&lt;/div&gt;;
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: Editor de Texto com Histórico</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/EditorTexto.jsx</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useRef, useState, useEffect } from 'react';
+
+function EditorTexto() {
+  const [texto, setTexto]       = useState("");
+  const [salvo, setSalvo]       = useState(false);
+  const textareaRef             = useRef(null);
+  const autoSaveTimerRef        = useRef(null);
+  const historicoRef            = useRef([]); // histórico de saves — sem re-render
+  const contadorRenderRef       = useRef(0);  // conta renders — só para debug
+
+  contadorRenderRef.current += 1; // incrementa a cada render sem causar re-render
+
+  // Foco automático ao montar
+  useEffect(() => {
+    textareaRef.current.focus();
+  }, []);
+
+  // Auto-save com debounce — salva 2s após parar de digitar
+  useEffect(() => {
+    if (!texto) return;
+
+    setSalvo(false);
+
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      // "Salva" no histórico (ref — sem re-render!)
+      historicoRef.current = [
+        ...historicoRef.current.slice(-4), // mantém os últimos 5
+        { texto, hora: new Date().toLocaleTimeString("pt-BR") },
+      ];
+      localStorage.setItem("rascunho", texto);
+      setSalvo(true);
+    }, 2000);
+
+    return () => clearTimeout(autoSaveTimerRef.current);
+  }, [texto]);
+
+  const inserirSnippet = (snippet) => {
+    const el    = textareaRef.current;
+    const start = el.selectionStart;
+    const end   = el.selectionEnd;
+    const novoTexto = texto.slice(0, start) + snippet + texto.slice(end);
+    setTexto(novoTexto);
+
+    // Reposiciona o cursor após o snippet inserido
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + snippet.length, start + snippet.length);
+    });
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}&gt;
+        &lt;h2&gt;📝 Editor&lt;/h2&gt;
+        &lt;span style={{ fontSize: "0.75rem", color: "#94a3b8" }}&gt;
+          {salvo ? "✅ Salvo" : "⏳ Salvando..."} · {texto.length} chars · {contadorRenderRef.current} renders
+        &lt;/span&gt;
+      &lt;/div&gt;
+
+      {/* Barra de snippets */}
+      &lt;div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}&gt;
+        {["**negrito**", "_itálico_", "`código`", "## Título"].map((s) => (
+          &lt;button key={s} onClick={() => inserirSnippet(s)} style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}&gt;
+            {s}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      &lt;textarea
+        ref={textareaRef}
+        value={texto}
+        onChange={(e) => setTexto(e.target.value)}
+        rows={10}
+        style={{ width: "100%", padding: "1rem", fontFamily: "monospace", fontSize: "0.9rem" }}
+        placeholder="Comece a digitar... (auto-save em 2s)"
+      /&gt;
+
+      {/* Histórico de saves (lê da ref) */}
+      {historicoRef.current.length &gt; 0 &amp;&amp; (
+        &lt;div style={{ marginTop: "1rem" }}&gt;
+          &lt;h3&gt;Histórico de saves:&lt;/h3&gt;
+          &lt;ul style={{ fontSize: "0.8rem" }}&gt;
+            {[...historicoRef.current].reverse().map((h, i) => (
+              &lt;li key={i}&gt;{h.hora} — {h.texto.slice(0, 40)}{h.texto.length &gt; 40 ? "..." : ""}&lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default EditorTexto;</code></pre>
+          </div>
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>useRef em 4 funções aqui:</strong>
+              <code class="bg-orange-500/20 px-1 rounded">textareaRef</code> para manipular o DOM diretamente (foco + cursor),
+              <code class="bg-orange-500/20 px-1 rounded">autoSaveTimerRef</code> para guardar o ID do timer de debounce,
+              <code class="bg-orange-500/20 px-1 rounded">historicoRef</code> para acumular saves sem re-render, e
+              <code class="bg-orange-500/20 px-1 rounded">contadorRenderRef</code> para contar renders sem causar novos renders!
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Quando Usar useRef vs. useState</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <p class="text-slate-300 mb-4">A pergunta chave: <strong class="text-white">esse valor precisa aparecer na UI quando mudar?</strong></p>
+            <div class="space-y-3">
+              <div class="flex items-center gap-4">
+                <span class="text-green-300 font-bold whitespace-nowrap">Sim → useState</span>
+                <p class="text-slate-300 text-sm">Contagem exibida na tela, texto de um input, item selecionado, dados carregados da API...</p>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-purple-300 font-bold whitespace-nowrap">Não → useRef</span>
+                <p class="text-slate-300 text-sm">ID de timer, referência ao DOM, valor anterior, flag "está montado", contadores de debug...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou o useRef! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>Os dois usos principais: DOM e valores sem re-render</li>
+              <li>Como dar foco, fazer scroll, selecionar texto e medir elementos</li>
+              <li>Como controlar vídeo/áudio com refs</li>
+              <li>Guardar timers, valores anteriores e flags de montagem</li>
+              <li>A regra de ouro: precisa aparecer na UI? useState. Caso contrário? useRef</li>
+              <li>Um editor com auto-save usando 4 refs diferentes</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>Custom Hooks</strong>
+              — como criar seus próprios hooks reutilizáveis para extrair
+              e compartilhar lógica stateful entre componentes!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-18.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-20.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn"><span id="completeIcon">✓</span><span id="completeText">Concluir Capítulo</span></button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle"); const body = document.body; let isDark = true;
+      themeToggle.addEventListener("click", () => { isDark = !isDark; if (isDark) { body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"; themeToggle.innerHTML = '<span class="text-lg">🌙</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"; } else { body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme"; themeToggle.innerHTML = '<span class="text-lg">☀️</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200"; } });
+      function copyCode(button) { const text = button.closest(".codebox").querySelector("code").textContent; navigator.clipboard.writeText(text).then(() => { const orig = button.textContent; button.textContent = "Copiado!"; button.classList.add("bg-green-500/30","text-green-300"); button.classList.remove("bg-blue-500/20","text-blue-300"); setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000); }); }
+    </script>
+    <script>
+      const CHAPTER_ID = 19, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer"), cb = document.getElementById("completeButton"), ci = document.getElementById("completeIcon"), ct = document.getElementById("completeText"), sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() { const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); } }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() { const m=document.createElement("div"); m.className="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse"; m.innerHTML='<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>'; document.body.appendChild(m); setTimeout(()=>m.remove(),3000); }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() { if(isCompleted()) updateUI(); window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); }); cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); }); if(reached()) cbc.classList.remove("hidden"); }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>
