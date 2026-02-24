@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 15 - useEffect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 15</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">useEffect</h1>
+        <p class="text-xl text-slate-300">Aprenda a sincronizar seus componentes com o mundo exterior — timers, localStorage, eventos globais e muito mais</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O que são Efeitos Colaterais?</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Componentes React têm uma única responsabilidade: receber dados (props/state) e retornar JSX.
+              Mas aplicações reais precisam fazer mais — buscar dados de APIs, salvar no localStorage,
+              configurar timers, escutar eventos do browser. Essas operações são chamadas de
+              <strong class="text-white">efeitos colaterais</strong> porque acontecem "fora" do fluxo puro de renderização.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              O hook <code class="bg-slate-700 px-2 py-1 rounded text-sm">useEffect</code> é o lugar certo
+              para executar esses efeitos — depois que o componente renderizou e o DOM foi atualizado.
+            </p>
+          </div>
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Exemplos de efeitos colaterais:</strong> fetch de dados, timers (<code class="bg-blue-500/20 px-1 rounded">setTimeout</code> / <code class="bg-blue-500/20 px-1 rounded">setInterval</code>),
+              manipulação do <code class="bg-blue-500/20 px-1 rounded">document.title</code>, leitura/escrita no <code class="bg-blue-500/20 px-1 rounded">localStorage</code>,
+              eventos globais (<code class="bg-blue-500/20 px-1 rounded">window.addEventListener</code>), WebSockets e integrações com bibliotecas de terceiros.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Anatomia do useEffect</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Estrutura completa do useEffect</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useEffect } from 'react';
+
+useEffect(
+  () => {
+    // 1. Corpo do efeito — executa após o render
+    console.log("Efeito executado!");
+
+    // 2. Função de limpeza (opcional) — executa antes do próximo efeito
+    //    ou quando o componente é desmontado
+    return () => {
+      console.log("Limpeza do efeito!");
+    };
+  },
+  [dependencia1, dependencia2] // 3. Array de dependências
+);</code></pre>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+            <h3 class="text-xl font-bold text-white mb-4">O array de dependências — o coração do useEffect</h3>
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <code class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded text-sm whitespace-nowrap">[]</code>
+                <div>
+                  <p class="text-white font-semibold">Array vazio — executa apenas uma vez</p>
+                  <p class="text-slate-300 text-sm">O efeito roda somente após a montagem inicial do componente. Equivalente ao <code class="bg-slate-700 px-1 rounded text-xs">componentDidMount</code> das classes.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <code class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm whitespace-nowrap">[dep]</code>
+                <div>
+                  <p class="text-white font-semibold">Com dependências — executa quando elas mudam</p>
+                  <p class="text-slate-300 text-sm">O efeito roda após a montagem E toda vez que qualquer dependência mudar de valor.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <code class="bg-orange-500/20 text-orange-300 px-3 py-1 rounded text-sm whitespace-nowrap">sem array</code>
+                <div>
+                  <p class="text-white font-semibold">Sem array — executa após todo render</p>
+                  <p class="text-slate-300 text-sm">O efeito roda após cada renderização. Use com cuidado — pode causar loops infinitos se o efeito atualizar o estado.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplos Práticos de useEffect</h2>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>1. Atualizar o título da página</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function Contador() {
+  const [count, setCount] = useState(0);
+
+  // Atualiza o título toda vez que "count" muda
+  useEffect(() => {
+    document.title = `Contador: ${count} | Minha App`;
+  }, [count]); // depende de "count"
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Contagem: {count}&lt;/p&gt;
+      &lt;button onClick={() => setCount(c => c + 1)}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>2. Salvar e carregar do localStorage</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function NotasApp() {
+  // Carrega do localStorage na inicialização (lazy init)
+  const [nota, setNota] = useState(
+    () => localStorage.getItem("nota") || ""
+  );
+
+  // Salva no localStorage toda vez que "nota" muda
+  useEffect(() => {
+    localStorage.setItem("nota", nota);
+  }, [nota]);
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;📝 Minhas Notas (salvas automaticamente)&lt;/h2&gt;
+      &lt;textarea
+        value={nota}
+        onChange={(e) => setNota(e.target.value)}
+        placeholder="Digite suas notas aqui..."
+        rows={10}
+      /&gt;
+      &lt;p&gt;{nota.length} caracteres&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>3. Timer com limpeza (cleanup)</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function Relogio() {
+  const [hora, setHora] = useState(new Date());
+
+  useEffect(() => {
+    // Inicia o intervalo após montar
+    const intervalo = setInterval(() => {
+      setHora(new Date());
+    }, 1000);
+
+    // ✅ LIMPEZA — cancela o intervalo quando o componente desmonta
+    // Sem isso, o intervalo continuaria rodando mesmo após o componente sumir!
+    return () => {
+      clearInterval(intervalo);
+      console.log("Timer cancelado — componente desmontou");
+    };
+  }, []); // [] = roda só uma vez na montagem
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;🕐 {hora.toLocaleTimeString("pt-BR")}&lt;/h2&gt;
+      &lt;p&gt;{hora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>4. Evento global de teclado</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function AtalhosTeclado() {
+  const [ultimaTecla, setUltimaTecla] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      setUltimaTecla(e.key);
+
+      // Abre modal com Ctrl+K
+      if (e.ctrlKey &amp;&amp; e.key === "k") {
+        e.preventDefault();
+        setModalAberto(true);
+      }
+
+      // Fecha com Escape
+      if (e.key === "Escape") {
+        setModalAberto(false);
+      }
+    };
+
+    // Adiciona listener no window
+    window.addEventListener("keydown", handleKeyDown);
+
+    // ✅ Remove o listener ao desmontar — evita memory leak!
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []); // [] = adiciona o listener uma única vez
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Última tecla: {ultimaTecla || "nenhuma"}&lt;/p&gt;
+      &lt;p&gt;Pressione Ctrl+K para abrir o modal&lt;/p&gt;
+      {modalAberto &amp;&amp; (
+        &lt;div className="modal"&gt;
+          &lt;p&gt;Modal aberto! (Esc para fechar)&lt;/p&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mt-4">
+            <p class="text-red-300">
+              🚨 <strong>Sempre limpe seus efeitos!</strong> Qualquer efeito que registre
+              listeners, inicie timers ou abra conexões <strong>deve retornar uma função de limpeza</strong>.
+              Sem ela, você acumula listeners e timers a cada re-render, causando
+              memory leaks e comportamentos imprevisíveis — especialmente em modo de desenvolvimento
+              com React StrictMode (que monta componentes duas vezes intencionalmente).
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O Loop Infinito — Erro Clássico</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Loop infinito vs. ✅ Correto</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ❌ LOOP INFINITO!
+// 1. Componente renderiza → 2. useEffect roda → 3. setCount muda estado
+// → 4. Componente re-renderiza → 5. useEffect roda novamente → ...
+function Bugado() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(count + 1); // atualiza estado → re-render → efeito roda de novo!
+  }); // sem array de dependências = roda em todo render
+
+  return &lt;p&gt;{count}&lt;/p&gt;;
+}
+
+// ✅ CORRETO — roda apenas uma vez
+function Correto() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(1); // define valor inicial apenas na montagem
+  }, []); // [] = roda só uma vez
+
+  return &lt;p&gt;{count}&lt;/p&gt;;
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: Cronômetro</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/Cronometro.jsx</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function Cronometro() {
+  const [segundos, setSegundos] = useState(0);
+  const [rodando, setRodando]   = useState(false);
+  const [voltas, setVoltas]     = useState([]);
+
+  useEffect(() => {
+    // Só inicia o intervalo se rodando === true
+    if (!rodando) return;
+
+    const intervalo = setInterval(() => {
+      setSegundos((s) => s + 1);
+    }, 1000);
+
+    // Limpa o intervalo quando rodando mudar para false ou ao desmontar
+    return () => clearInterval(intervalo);
+  }, [rodando]); // re-executa quando "rodando" muda
+
+  // Atualiza o título da página com o tempo atual
+  useEffect(() => {
+    const mm = String(Math.floor(segundos / 60)).padStart(2, "0");
+    const ss = String(segundos % 60).padStart(2, "0");
+    document.title = rodando ? `⏱️ ${mm}:${ss} — Cronômetro` : "Cronômetro";
+
+    return () => { document.title = "React Course"; };
+  }, [segundos, rodando]);
+
+  const formatar = (s) => {
+    const mm = String(Math.floor(s / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    return `${mm}:${ss}`;
+  };
+
+  const registrarVolta = () => {
+    setVoltas((prev) => [...prev, segundos]);
+  };
+
+  const resetar = () => {
+    setRodando(false);
+    setSegundos(0);
+    setVoltas([]);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;h1 style={{ fontSize: "4rem", fontFamily: "monospace" }}&gt;
+        {formatar(segundos)}
+      &lt;/h1&gt;
+
+      &lt;div&gt;
+        &lt;button onClick={() => setRodando((r) => !r)}&gt;
+          {rodando ? "⏸️ Pausar" : "▶️ Iniciar"}
+        &lt;/button&gt;
+        &lt;button onClick={registrarVolta} disabled={!rodando}&gt;🏁 Volta&lt;/button&gt;
+        &lt;button onClick={resetar}&gt;🔄 Resetar&lt;/button&gt;
+      &lt;/div&gt;
+
+      {voltas.length &gt; 0 &amp;&amp; (
+        &lt;ul&gt;
+          {voltas.map((v, i) => (
+            &lt;li key={i}&gt;Volta {i + 1}: {formatar(v)}&lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default Cronometro;</code></pre>
+          </div>
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>Dois useEffects com responsabilidades distintas:</strong>
+              um controla o timer (depende de <code class="bg-orange-500/20 px-1 rounded">rodando</code>)
+              e outro atualiza o título da página (depende de <code class="bg-orange-500/20 px-1 rounded">segundos</code> e <code class="bg-orange-500/20 px-1 rounded">rodando</code>).
+              Separar efeitos por responsabilidade é uma boa prática — cada <code class="bg-orange-500/20 px-1 rounded">useEffect</code> faz uma coisa só.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou o useEffect! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>O que são efeitos colaterais e por que o useEffect existe</li>
+              <li>A anatomia do useEffect: corpo, limpeza e array de dependências</li>
+              <li>As três formas do array: <code class="bg-white/10 px-1 rounded text-xs">[]</code>, <code class="bg-white/10 px-1 rounded text-xs">[dep]</code> e sem array</li>
+              <li>Como atualizar o título, salvar no localStorage, criar timers e eventos globais</li>
+              <li>Por que a função de limpeza é obrigatória para timers e listeners</li>
+              <li>Como evitar o loop infinito — o erro mais comum com useEffect</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos usar o useEffect para
+              <strong>buscar dados de APIs</strong>
+              — o caso de uso mais comum no dia a dia do desenvolvimento React!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-14.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-16.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+      function copyCode(button) {
+        const text = button.closest(".codebox").querySelector("code").textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30","text-green-300");
+          button.classList.remove("bg-blue-500/20","text-blue-300");
+          setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000);
+        });
+      }
+    </script>
+    <script>
+      const CHAPTER_ID = 15, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer");
+      const cb = document.getElementById("completeButton");
+      const ci = document.getElementById("completeIcon");
+      const ct = document.getElementById("completeText");
+      const sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() {
+        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+        if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); }
+      }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() {
+        const m = document.createElement("div");
+        m.className = "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        m.innerHTML = '<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>';
+        document.body.appendChild(m); setTimeout(()=>m.remove(),3000);
+      }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() {
+        if (isCompleted()) updateUI();
+        window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); });
+        cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); });
+        if (reached()) cbc.classList.remove("hidden");
+      }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 17 - useContext</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 17</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">useContext</h1>
+        <p class="text-xl text-slate-300">Aprenda a compartilhar estado globalmente entre componentes sem prop drilling — a solução nativa do React para estado global simples</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O Problema: Prop Drilling</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              No capítulo anterior, vimos que ao elevar o estado você pode acabar passando
+              props por vários níveis de componentes intermediários que nem usam aquele dado.
+              Isso se chama <strong class="text-white">prop drilling</strong> e torna o código
+              difícil de manter.
+            </p>
+          </div>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Prop drilling — passar tema por 4 níveis</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// O tema precisa chegar no BotaoTema, mas passa por componentes que não usam
+function App() {
+  const [tema, setTema] = useState("dark");
+  return &lt;Layout tema={tema} setTema={setTema} /&gt;;
+}
+
+function Layout({ tema, setTema }) {
+  // Layout não usa tema — só repassa!
+  return &lt;Header tema={tema} setTema={setTema} /&gt;;
+}
+
+function Header({ tema, setTema }) {
+  // Header também não usa — só repassa!
+  return &lt;Nav tema={tema} setTema={setTema} /&gt;;
+}
+
+function Nav({ tema, setTema }) {
+  // Finalmente usa o tema aqui
+  return (
+    &lt;nav style={{ background: tema === "dark" ? "#1e293b" : "#f1f5f9" }}&gt;
+      &lt;BotaoTema tema={tema} setTema={setTema} /&gt;
+    &lt;/nav&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-4">
+            <p class="text-blue-300">
+              💡 <strong>A solução é o Context API:</strong> crie um "contexto global" que
+              qualquer componente da árvore pode acessar diretamente —
+              sem passar por intermediários. É como uma variável global, mas com os benefícios
+              do sistema reativo do React.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Os 3 Passos do Context API</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Passo 1 — Criar o contexto</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// src/contexts/TemaContext.js
+import { createContext } from 'react';
+
+// createContext(valorPadrão) — usado quando não há Provider acima
+const TemaContext = createContext("dark");
+
+export default TemaContext;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Passo 2 — Prover o contexto com Provider</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// src/App.jsx
+import { useState } from 'react';
+import TemaContext from './contexts/TemaContext';
+import Layout from './components/Layout';
+
+function App() {
+  const [tema, setTema] = useState("dark");
+
+  return (
+    // Provider torna o valor disponível para TODA a árvore abaixo
+    &lt;TemaContext.Provider value={{ tema, setTema }}&gt;
+      &lt;Layout /&gt;
+      {/* Layout, Header, Nav, BotaoTema... todos têm acesso */}
+      {/* Nenhum precisa receber "tema" como prop! */}
+    &lt;/TemaContext.Provider&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Passo 3 — Consumir com useContext</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// src/components/BotaoTema.jsx
+import { useContext } from 'react';
+import TemaContext from '../contexts/TemaContext';
+
+function BotaoTema() {
+  // Acessa o contexto diretamente — sem receber props!
+  const { tema, setTema } = useContext(TemaContext);
+
+  return (
+    &lt;button onClick={() => setTema(tema === "dark" ? "light" : "dark")}&gt;
+      {tema === "dark" ? "☀️ Tema Claro" : "🌙 Tema Escuro"}
+    &lt;/button&gt;
+  );
+}
+
+export default BotaoTema;</code></pre>
+          </div>
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>O poder do Context:</strong> <code class="bg-green-500/20 px-1 rounded">BotaoTema</code>
+              acessa <code class="bg-green-500/20 px-1 rounded">tema</code> e <code class="bg-green-500/20 px-1 rounded">setTema</code>
+              sem receber nenhuma prop. Layout e Header não precisam mais conhecer o tema.
+              Cada componente pede exatamente o que precisa.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Boas Práticas: Custom Context Hook</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O padrão profissional é encapsular o contexto em um arquivo dedicado com um
+            Provider customizado e um hook de consumo:
+          </p>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/contexts/TemaContext.jsx — padrão profissional</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { createContext, useContext, useState } from 'react';
+
+// 1. Cria o contexto (não exporta diretamente)
+const TemaContext = createContext(null);
+
+// 2. Provider customizado — encapsula o estado
+export function TemaProvider({ children }) {
+  const [tema, setTema] = useState(
+    () => localStorage.getItem("tema") || "dark"
+  );
+
+  const alternarTema = () => {
+    setTema((prev) => {
+      const novo = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("tema", novo);
+      return novo;
+    });
+  };
+
+  return (
+    &lt;TemaContext.Provider value={{ tema, alternarTema }}&gt;
+      {children}
+    &lt;/TemaContext.Provider&gt;
+  );
+}
+
+// 3. Hook customizado — com validação
+export function useTema() {
+  const ctx = useContext(TemaContext);
+  if (!ctx) {
+    throw new Error("useTema deve ser usado dentro de TemaProvider");
+  }
+  return ctx;
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Usando o padrão profissional</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// src/main.jsx — envolve a app com o Provider
+import { TemaProvider } from './contexts/TemaContext';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  &lt;TemaProvider&gt;
+    &lt;App /&gt;
+  &lt;/TemaProvider&gt;
+);
+
+// Qualquer componente na árvore usa o hook diretamente:
+import { useTema } from '../contexts/TemaContext';
+
+function BotaoTema() {
+  const { tema, alternarTema } = useTema(); // simples e seguro
+  return (
+    &lt;button onClick={alternarTema}&gt;
+      {tema === "dark" ? "☀️" : "🌙"}
+    &lt;/button&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4">
+            <p class="text-purple-300">
+              💡 <strong>Por que esse padrão é superior?</strong> O hook <code class="bg-purple-500/20 px-1 rounded">useTema()</code>
+              valida se foi usado dentro do Provider, centralizando a lógica de estado e efeitos
+              no arquivo do contexto. Componentes consumidores ficam limpos — só chamam o hook.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Múltiplos Contextos</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Uma aplicação real costuma ter vários contextos independentes — tema, usuário autenticado, carrinho, idioma:
+          </p>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Múltiplos Providers aninhados</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// src/main.jsx
+import { TemaProvider }    from './contexts/TemaContext';
+import { AuthProvider }    from './contexts/AuthContext';
+import { CarrinhoProvider } from './contexts/CarrinhoContext';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  &lt;TemaProvider&gt;
+    &lt;AuthProvider&gt;
+      &lt;CarrinhoProvider&gt;
+        &lt;App /&gt;
+      &lt;/CarrinhoProvider&gt;
+    &lt;/AuthProvider&gt;
+  &lt;/TemaProvider&gt;
+);
+
+// Qualquer componente acessa qualquer contexto que precisar:
+function Header() {
+  const { tema }    = useTema();
+  const { usuario } = useAuth();
+  const { total }   = useCarrinho();
+
+  return (
+    &lt;header style={{ background: tema === "dark" ? "#0f172a" : "#f8fafc" }}&gt;
+      &lt;span&gt;Olá, {usuario?.nome}!&lt;/span&gt;
+      &lt;span&gt;🛒 {total} itens&lt;/span&gt;
+    &lt;/header&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: App com Tema e Autenticação</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/contexts/AuthContext.jsx</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { createContext, useContext, useState } from 'react';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [usuario, setUsuario] = useState(null);
+
+  const login = (email, senha) => {
+    // Simulação de login — em produção seria uma chamada API
+    if (email && senha) {
+      setUsuario({ id: 1, nome: "Ana Silva", email, avatar: "🧑‍💻" });
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => setUsuario(null);
+
+  return (
+    &lt;AuthContext.Provider value={{ usuario, login, logout, logado: !!usuario }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  return ctx;
+}</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — usando os dois contextos</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+import { useTema } from './contexts/TemaContext';
+import { useAuth } from './contexts/AuthContext';
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Navbar /&gt;
+      &lt;Conteudo /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function Navbar() {
+  const { tema, alternarTema } = useTema();
+  const { usuario, logout, logado } = useAuth();
+
+  return (
+    &lt;nav style={{ background: tema === "dark" ? "#0f172a" : "#e2e8f0", padding: "1rem", display: "flex", justifyContent: "space-between" }}&gt;
+      &lt;span&gt;⚛️ Minha App&lt;/span&gt;
+      &lt;div style={{ display: "flex", gap: "1rem", alignItems: "center" }}&gt;
+        {logado &amp;&amp; &lt;span&gt;{usuario.avatar} {usuario.nome}&lt;/span&gt;}
+        &lt;button onClick={alternarTema}&gt;{tema === "dark" ? "☀️" : "🌙"}&lt;/button&gt;
+        {logado &amp;&amp; &lt;button onClick={logout}&gt;Sair&lt;/button&gt;}
+      &lt;/div&gt;
+    &lt;/nav&gt;
+  );
+}
+
+function Conteudo() {
+  const { logado } = useAuth();
+  return logado ? &lt;Dashboard /&gt; : &lt;FormLogin /&gt;;
+}
+
+function Dashboard() {
+  const { usuario } = useAuth();
+  const { tema }    = useTema();
+  return (
+    &lt;div style={{ padding: "2rem", color: tema === "dark" ? "#fff" : "#1e293b" }}&gt;
+      &lt;h1&gt;Bem-vindo, {usuario.nome}! 🎉&lt;/h1&gt;
+      &lt;p&gt;Você está logado como {usuario.email}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+function FormLogin() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro]   = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const ok = login(email, senha);
+    if (!ok) setErro("Preencha email e senha");
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit} style={{ padding: "2rem", maxWidth: "400px", margin: "auto" }}&gt;
+      &lt;h2&gt;🔐 Login&lt;/h2&gt;
+      {erro &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erro}&lt;/p&gt;}
+      &lt;div&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ display: "block", width: "100%", padding: "0.5rem", marginBottom: "1rem" }} /&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;label&gt;Senha&lt;/label&gt;
+        &lt;input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} style={{ display: "block", width: "100%", padding: "0.5rem", marginBottom: "1rem" }} /&gt;
+      &lt;/div&gt;
+      &lt;button type="submit" style={{ width: "100%", padding: "0.75rem", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "0.5rem", cursor: "pointer" }}&gt;
+        Entrar
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>Zero prop drilling:</strong> <code class="bg-orange-500/20 px-1 rounded">Navbar</code>,
+              <code class="bg-orange-500/20 px-1 rounded">Dashboard</code> e
+              <code class="bg-orange-500/20 px-1 rounded">FormLogin</code> acessam tema e autenticação
+              diretamente via hooks — sem receber uma única prop relacionada a esses dados.
+              O componente <code class="bg-orange-500/20 px-1 rounded">App</code> não precisa nem conhecer o tema ou o usuário!
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Quando Usar Context — e Quando Não Usar</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-green-300 font-bold mb-3">✅ Use Context para</h3>
+                <ul class="space-y-2 text-slate-300 text-sm">
+                  <li>🎨 Tema (dark/light)</li>
+                  <li>🌍 Idioma / internacionalização</li>
+                  <li>👤 Usuário autenticado</li>
+                  <li>🛒 Carrinho de compras</li>
+                  <li>🔔 Notificações globais</li>
+                  <li>Dados que mudam com pouca frequência</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="text-red-300 font-bold mb-3">❌ Evite Context para</h3>
+                <ul class="space-y-2 text-slate-300 text-sm">
+                  <li>Estado local de um único componente</li>
+                  <li>Dados que mudam muito frequentemente (causa re-renders)</li>
+                  <li>Dados que só 2-3 componentes próximos precisam (use lifting)</li>
+                  <li>Cache de servidor (use React Query / SWR)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou o useContext! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>O que é prop drilling e por que o Context resolve esse problema</li>
+              <li>Os 3 passos: <code class="bg-white/10 px-1 rounded text-xs">createContext</code>, <code class="bg-white/10 px-1 rounded text-xs">Provider</code> e <code class="bg-white/10 px-1 rounded text-xs">useContext</code></li>
+              <li>O padrão profissional com Provider customizado e custom hook</li>
+              <li>Como usar múltiplos contextos independentes</li>
+              <li>Um app completo com contextos de tema e autenticação</li>
+              <li>Quando usar e quando evitar o Context</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>useReducer</strong>
+              — uma alternativa poderosa ao useState para estados mais complexos,
+              inspirada no padrão Redux!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-16.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-18.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn"><span id="completeIcon">✓</span><span id="completeText">Concluir Capítulo</span></button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) { body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"; themeToggle.innerHTML = '<span class="text-lg">🌙</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"; }
+        else { body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme"; themeToggle.innerHTML = '<span class="text-lg">☀️</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200"; }
+      });
+      function copyCode(button) {
+        const text = button.closest(".codebox").querySelector("code").textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = button.textContent; button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30","text-green-300"); button.classList.remove("bg-blue-500/20","text-blue-300");
+          setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000);
+        });
+      }
+    </script>
+    <script>
+      const CHAPTER_ID = 17, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer"), cb = document.getElementById("completeButton");
+      const ci = document.getElementById("completeIcon"), ct = document.getElementById("completeText"), sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() { const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); } }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() { const m=document.createElement("div"); m.className="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse"; m.innerHTML='<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>'; document.body.appendChild(m); setTimeout(()=>m.remove(),3000); }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() { if(isCompleted()) updateUI(); window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); }); cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); }); if(reached()) cbc.classList.remove("hidden"); }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>

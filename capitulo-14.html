@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 14 - Lifting State Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255,255,255,0.8) !important;
+        border-color: rgba(0,0,0,0.1) !important;
+      }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important;
+        border-color: rgba(59,130,246,0.3) !important;
+      }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+
+      /* Botão próximo capítulo — tema claro */
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16,185,129,0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">
+              ✓ Concluído
+            </div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20">
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 14</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          Lifting State Up
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda a técnica fundamental de elevar o estado para o ancestral
+          comum — permitindo que componentes irmãos compartilhem e sincronizem dados
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O Problema: Irmãos que Precisam Conversar</h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Você já sabe que dados fluem do pai para o filho via props. Mas e quando
+              dois componentes irmãos precisam compartilhar o mesmo dado? Por exemplo:
+              um campo de busca e uma lista de resultados que ficam em componentes separados.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              A solução é <strong class="text-white">Lifting State Up</strong> (elevar o estado):
+              mover o estado para o <strong class="text-white">ancestral comum mais próximo</strong>
+              dos dois componentes que precisam dele, e distribuir via props.
+            </p>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">Visualizando o problema</h3>
+            <div class="codebox">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>❌ Cada filho tem seu próprio estado — não se comunicam</span>
+                <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+              </div>
+              <pre><code class="language-jsx">// ❌ Problema: InputBusca e ListaResultados são irmãos.
+// O estado "busca" está no InputBusca, mas ListaResultados precisa dele!
+
+function InputBusca() {
+  const [busca, setBusca] = useState(""); // estado preso aqui
+  return &lt;input value={busca} onChange={(e) => setBusca(e.target.value)} /&gt;;
+}
+
+function ListaResultados() {
+  // Como acessar o valor de "busca" aqui?
+  // Não tem como! Os irmãos não se comunicam diretamente. 😱
+  return &lt;ul&gt;...&lt;/ul&gt;;
+}
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;InputBusca /&gt;      {/* tem o estado */}
+      &lt;ListaResultados /&gt; {/* precisa do estado */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>A regra do React:</strong> dados só fluem para baixo (pai → filho).
+              Para compartilhar entre irmãos, eleve o estado para o pai comum e
+              distribua via props para cada filho que precisar.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            A Solução: Elevando o Estado
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Mova o estado para o pai (ou ancestral comum) e passe os dados e
+            as funções de atualização como props para cada filho:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>✅ Estado elevado para o pai — funcionando!</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const PRODUTOS = [
+  { id: 1, nome: "Notebook Pro",    categoria: "Informática" },
+  { id: 2, nome: "Teclado Mecânico",categoria: "Informática" },
+  { id: 3, nome: "Tênis Running",   categoria: "Esportes"    },
+  { id: 4, nome: "Mochila Tática",  categoria: "Esportes"    },
+  { id: 5, nome: "Cafeteira",       categoria: "Casa"        },
+];
+
+// Filho 1 — só exibe o input e chama onBuscaChange
+function InputBusca({ busca, onBuscaChange }) {
+  return (
+    &lt;input
+      value={busca}
+      onChange={(e) => onBuscaChange(e.target.value)}
+      placeholder="🔍 Buscar produto..."
+    /&gt;
+  );
+}
+
+// Filho 2 — recebe os resultados prontos via prop
+function ListaResultados({ resultados }) {
+  if (resultados.length === 0) {
+    return &lt;p&gt;📭 Nenhum produto encontrado.&lt;/p&gt;;
+  }
+  return (
+    &lt;ul&gt;
+      {resultados.map(({ id, nome, categoria }) => (
+        &lt;li key={id}&gt;
+          &lt;strong&gt;{nome}&lt;/strong&gt; — {categoria}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+// Pai — guarda o estado e coordena os filhos
+function App() {
+  const [busca, setBusca] = useState(""); // ✅ estado elevado aqui
+
+  const resultados = PRODUTOS.filter((p) =>
+    p.nome.toLowerCase().includes(busca.toLowerCase())
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Catálogo de Produtos&lt;/h1&gt;
+
+      {/* Passa o estado E a função de atualização */}
+      &lt;InputBusca busca={busca} onBuscaChange={setBusca} /&gt;
+
+      &lt;p&gt;{resultados.length} produto(s) encontrado(s)&lt;/p&gt;
+
+      {/* Recebe os resultados já filtrados */}
+      &lt;ListaResultados resultados={resultados} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>O fluxo com Lifting State Up:</strong>
+              o usuário digita no <code class="bg-green-500/20 px-2 py-1 rounded">InputBusca</code>
+              → ele chama <code class="bg-green-500/20 px-2 py-1 rounded">onBuscaChange</code>
+              → o pai atualiza o estado <code class="bg-green-500/20 px-2 py-1 rounded">busca</code>
+              → re-renderiza ambos os filhos com os dados atualizados.
+              O pai é o "maestro" que coordena tudo!
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Passando Callbacks para Filhos
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Além de dados, o pai pode passar <strong class="text-white">funções</strong>
+            como props — permitindo que o filho "avise" o pai quando algo acontecer.
+            Essa é a base da comunicação filho → pai no React:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Filho avisa o pai via callback</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// Filho — exibe um produto e avisa o pai quando selecionado
+function CardProduto({ produto, onSelecionar }) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;h3&gt;{produto.nome}&lt;/h3&gt;
+      &lt;p&gt;R$ {produto.preco.toFixed(2)}&lt;/p&gt;
+
+      {/* Ao clicar, chama a função do pai passando o produto */}
+      &lt;button onClick={() => onSelecionar(produto)}&gt;
+        Ver detalhes
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Filho — exibe os detalhes do produto selecionado
+function PainelDetalhes({ produto }) {
+  if (!produto) return &lt;p&gt;Selecione um produto para ver os detalhes.&lt;/p&gt;;
+
+  return (
+    &lt;div className="painel"&gt;
+      &lt;h2&gt;{produto.nome}&lt;/h2&gt;
+      &lt;p&gt;Categoria: {produto.categoria}&lt;/p&gt;
+      &lt;p&gt;Preço: R$ {produto.preco.toFixed(2)}&lt;/p&gt;
+      &lt;p&gt;{produto.descricao}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Pai — gerencia qual produto está selecionado
+function App() {
+  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+
+  const produtos = [
+    { id: 1, nome: "Notebook", preco: 4999, categoria: "Tech", descricao: "Processador i7..." },
+    { id: 2, nome: "Mouse",    preco: 199,  categoria: "Tech", descricao: "Wireless, 3200 DPI..." },
+  ];
+
+  return (
+    &lt;div className="layout"&gt;
+      {/* Lista de cards — cada um pode selecionar */}
+      &lt;div className="lista"&gt;
+        {produtos.map((p) => (
+          &lt;CardProduto
+            key={p.id}
+            produto={p}
+            onSelecionar={setProdutoSelecionado} {/* callback do pai */}
+          /&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Painel de detalhes — recebe o produto selecionado */}
+      &lt;PainelDetalhes produto={produtoSelecionado} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4">
+            <p class="text-purple-300">
+              💡 <strong>Convenção de nomenclatura:</strong> Props que são callbacks
+              costumam ter o prefixo <code class="bg-purple-500/20 px-2 py-1 rounded">on</code>:
+              <code class="bg-purple-500/20 px-2 py-1 rounded">onSelecionar</code>,
+              <code class="bg-purple-500/20 px-2 py-1 rounded">onChange</code>,
+              <code class="bg-purple-500/20 px-2 py-1 rounded">onSubmit</code>,
+              <code class="bg-purple-500/20 px-2 py-1 rounded">onDelete</code>.
+              Isso deixa claro para quem lê o código que é uma função que será chamada
+              em resposta a um evento.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Quando e Quanto Elevar o Estado?
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              A regra é: eleve o estado apenas o suficiente — até o
+              <strong class="text-white">ancestral comum mais próximo</strong>
+              dos componentes que precisam dele. Não coloque tudo no topo da árvore
+              sem necessidade.
+            </p>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Identificando onde elevar o estado</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// Árvore de componentes:
+//
+// App
+// ├── Header
+// │   └── ContadorCarrinho  ← precisa saber quantos itens tem
+// └── MainContent
+//     ├── ListaProdutos
+//     │   └── CardProduto   ← dispara "adicionar ao carrinho"
+//     └── Sidebar
+//
+// O estado do carrinho precisa estar em App,
+// pois é o ancestral comum de Header e MainContent.
+
+function App() {
+  const [carrinho, setCarrinho] = useState([]);
+
+  const adicionarAoCarrinho = (produto) => {
+    setCarrinho((prev) => [...prev, produto]);
+  };
+
+  const removerDoCarrinho = (id) => {
+    setCarrinho((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  return (
+    &lt;div&gt;
+      {/* Header recebe apenas a contagem */}
+      &lt;Header quantidadeCarrinho={carrinho.length} /&gt;
+
+      &lt;MainContent
+        carrinho={carrinho}
+        onAdicionarAoCarrinho={adicionarAoCarrinho}
+        onRemoverDoCarrinho={removerDoCarrinho}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4">
+            <p class="text-yellow-300">
+              ⚠️ <strong>Cuidado com prop drilling!</strong> Se você precisa passar
+              props por muitos níveis intermediários que não usam aquele dado,
+              isso se chama "prop drilling" e é um sinal de que talvez seja hora
+              de usar Context API ou uma solução de gerenciamento de estado global
+              (temas de capítulos futuros!).
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Estado Derivado: Evite Duplicar o Estado
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Ao elevar o estado, é tentador criar estados separados para dados que
+            podem ser <strong class="text-white">calculados</strong> a partir do
+            estado principal. Evite isso:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Estado duplicado vs. ✅ Estado derivado</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ❌ RUIM — total duplica info que já está em itens
+function App() {
+  const [itens, setItens]   = useState([]);
+  const [total, setTotal]   = useState(0); // duplicado!
+  const [conta, setConta]   = useState(0); // duplicado!
+
+  const adicionar = (item) => {
+    setItens([...itens, item]);
+    setTotal(total + item.preco);  // fácil de desincronizar!
+    setConta(conta + 1);
+  };
+}
+
+// ✅ BOM — total e conta são derivados de itens no render
+function App() {
+  const [itens, setItens] = useState([]); // única fonte da verdade
+
+  const adicionar = (item) => {
+    setItens((prev) => [...prev, item]);
+  };
+
+  // Calculados diretamente — sempre sincronizados!
+  const total = itens.reduce((acc, item) => acc + item.preco, 0);
+  const conta = itens.length;
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{conta} itens — Total: R$ {total.toFixed(2)}&lt;/p&gt;
+      {/* ... */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>Princípio da fonte única da verdade (Single Source of Truth):</strong>
+              cada dado deve existir em um único lugar no estado. Tudo que pode ser
+              calculado a partir do estado existente deve ser derivado no render —
+              nunca duplicado em um estado separado.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Carrinho de Compras
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Um exemplo clássico de Lifting State Up — carrinho de compras com
+            lista de produtos, carrinho e resumo, todos sincronizados via estado elevado:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — Carrinho de compras completo</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const CATALOGO = [
+  { id: 1, nome: "Notebook Pro",    preco: 4999, emoji: "💻" },
+  { id: 2, nome: "Teclado Mecânico",preco: 349,  emoji: "⌨️" },
+  { id: 3, nome: "Mouse Gamer",     preco: 199,  emoji: "🖱️" },
+  { id: 4, nome: "Monitor 4K",      preco: 2499, emoji: "🖥️" },
+  { id: 5, nome: "Headset BT",      preco: 289,  emoji: "🎧" },
+];
+
+// ── Componente: Card do produto no catálogo ──────────────
+function CardProduto({ produto, quantidade, onAdicionar, onRemover }) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;span style={{ fontSize: "2rem" }}&gt;{produto.emoji}&lt;/span&gt;
+      &lt;h3&gt;{produto.nome}&lt;/h3&gt;
+      &lt;p&gt;R$ {produto.preco.toFixed(2)}&lt;/p&gt;
+
+      {quantidade &gt; 0 ? (
+        &lt;div className="controles"&gt;
+          &lt;button onClick={() => onRemover(produto.id)}&gt;−&lt;/button&gt;
+          &lt;span&gt;{quantidade} no carrinho&lt;/span&gt;
+          &lt;button onClick={() => onAdicionar(produto)}&gt;+&lt;/button&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;button onClick={() => onAdicionar(produto)}&gt;
+          🛒 Adicionar
+        &lt;/button&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+// ── Componente: Item dentro do carrinho ──────────────────
+function ItemCarrinho({ item, onAdicionar, onRemover, onRemoverTudo }) {
+  return (
+    &lt;li className="item-carrinho"&gt;
+      &lt;span&gt;{item.emoji} {item.nome}&lt;/span&gt;
+      &lt;div className="controles"&gt;
+        &lt;button onClick={() => onRemover(item.id)}&gt;−&lt;/button&gt;
+        &lt;span&gt;{item.quantidade}&lt;/span&gt;
+        &lt;button onClick={() => onAdicionar(item)}&gt;+&lt;/button&gt;
+        &lt;button onClick={() => onRemoverTudo(item.id)}&gt;🗑️&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;span&gt;R$ {(item.preco * item.quantidade).toFixed(2)}&lt;/span&gt;
+    &lt;/li&gt;
+  );
+}
+
+// ── Componente PAI — guarda todo o estado ────────────────
+function App() {
+  // Estado elevado: array de itens no carrinho com quantidade
+  const [carrinho, setCarrinho] = useState([]);
+
+  // Adicionar ou incrementar quantidade
+  const adicionar = (produto) => {
+    setCarrinho((prev) => {
+      const existe = prev.find((i) => i.id === produto.id);
+      if (existe) {
+        return prev.map((i) =>
+          i.id === produto.id ? { ...i, quantidade: i.quantidade + 1 } : i
+        );
+      }
+      return [...prev, { ...produto, quantidade: 1 }];
+    });
+  };
+
+  // Decrementar ou remover se chegar a zero
+  const removerUm = (id) => {
+    setCarrinho((prev) =>
+      prev
+        .map((i) => i.id === id ? { ...i, quantidade: i.quantidade - 1 } : i)
+        .filter((i) => i.quantidade &gt; 0)
+    );
+  };
+
+  // Remover todos de um produto
+  const removerTudo = (id) => {
+    setCarrinho((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // ── Estado derivado — nunca duplique! ─────────────────
+  const totalItens = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
+  const totalPreco = carrinho.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
+  const quantidadePorId = Object.fromEntries(
+    carrinho.map((i) => [i.id, i.quantidade])
+  );
+
+  return (
+    &lt;div className="app"&gt;
+
+      {/* Header com contador do carrinho */}
+      &lt;header&gt;
+        &lt;h1&gt;🛍️ Loja React&lt;/h1&gt;
+        &lt;span className="badge"&gt;🛒 {totalItens} itens&lt;/span&gt;
+      &lt;/header&gt;
+
+      &lt;div className="layout"&gt;
+
+        {/* Catálogo de produtos */}
+        &lt;section className="catalogo"&gt;
+          &lt;h2&gt;Produtos&lt;/h2&gt;
+          &lt;div className="grid"&gt;
+            {CATALOGO.map((produto) => (
+              &lt;CardProduto
+                key={produto.id}
+                produto={produto}
+                quantidade={quantidadePorId[produto.id] || 0}
+                onAdicionar={adicionar}
+                onRemover={removerUm}
+              /&gt;
+            ))}
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        {/* Painel do carrinho */}
+        &lt;aside className="carrinho"&gt;
+          &lt;h2&gt;🛒 Carrinho ({totalItens})&lt;/h2&gt;
+
+          {carrinho.length === 0 ? (
+            &lt;p&gt;Seu carrinho está vazio.&lt;/p&gt;
+          ) : (
+            &lt;&gt;
+              &lt;ul&gt;
+                {carrinho.map((item) => (
+                  &lt;ItemCarrinho
+                    key={item.id}
+                    item={item}
+                    onAdicionar={adicionar}
+                    onRemover={removerUm}
+                    onRemoverTudo={removerTudo}
+                  /&gt;
+                ))}
+              &lt;/ul&gt;
+
+              &lt;div className="resumo"&gt;
+                &lt;p&gt;&lt;strong&gt;Total: R$ {totalPreco.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;
+                &lt;button onClick={() => setCarrinho([])}&gt;
+                  Esvaziar carrinho
+                &lt;/button&gt;
+                &lt;button className="btn-comprar"&gt;
+                  Finalizar compra ✅
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/&gt;
+          )}
+        &lt;/aside&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>Lifting State Up em ação:</strong> O estado
+              <code class="bg-orange-500/20 px-2 py-1 rounded">carrinho</code> está em
+              <code class="bg-orange-500/20 px-2 py-1 rounded">App</code> — o ancestral
+              comum de <code class="bg-orange-500/20 px-2 py-1 rounded">CardProduto</code>
+              e <code class="bg-orange-500/20 px-2 py-1 rounded">ItemCarrinho</code>.
+              Ambos recebem os callbacks
+              <code class="bg-orange-500/20 px-2 py-1 rounded">adicionar</code> e
+              <code class="bg-orange-500/20 px-2 py-1 rounded">removerUm</code>,
+              e o header lê <code class="bg-orange-500/20 px-2 py-1 rounded">totalItens</code>
+              — tudo derivado de uma única fonte da verdade!
+            </p>
+          </div>
+        </section>
+
+        <!-- Resumo -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Resumo do Fluxo</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">1️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Identifique o ancestral comum</h3>
+                  <p class="text-slate-300 text-sm mt-1">Encontre o componente pai mais próximo que contenha todos os componentes que precisam do estado.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">2️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Mova o estado para lá</h3>
+                  <p class="text-slate-300 text-sm mt-1">Remova o <code class="bg-slate-700 px-1 rounded text-xs">useState</code> dos filhos e coloque no pai.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">3️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Passe dados e callbacks via props</h3>
+                  <p class="text-slate-300 text-sm mt-1">O pai passa o valor atual e uma função (<code class="bg-slate-700 px-1 rounded text-xs">onXxx</code>) para cada filho que precisar ler ou atualizar o estado.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">4️⃣</span>
+                <div>
+                  <h3 class="text-white font-bold">Derive, não duplique</h3>
+                  <p class="text-slate-300 text-sm mt-1">Calcule totais, contagens e filtros diretamente no render — nunca crie estados extras para dados que podem ser derivados.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou o Lifting State Up! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>Por que componentes irmãos não podem se comunicar diretamente</li>
+              <li>Como elevar o estado ao ancestral comum mais próximo</li>
+              <li>Como passar callbacks com prefixo <code class="bg-white/10 px-1 rounded text-xs">on</code> para filhos atualizarem o estado do pai</li>
+              <li>Quando e quanto elevar o estado — evitando prop drilling</li>
+              <li>O princípio da fonte única da verdade — derivar em vez de duplicar</li>
+              <li>Um carrinho de compras completo com múltiplos componentes sincronizados</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>useEffect</strong>
+              — o hook para sincronizar componentes com o mundo exterior:
+              APIs, timers, subscriptions e efeitos colaterais!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-13.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">
+            ← Capítulo Anterior
+          </a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">
+            Voltar ao índice
+          </a>
+          <a href="capitulo-15.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 14;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById("completeButtonContainer");
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className = "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion()) completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

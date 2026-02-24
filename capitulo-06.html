@@ -177,6 +177,16 @@
         border-color: rgba(239, 68, 68, 0.3) !important;
       }
 
+      body.light-theme .btn-next {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+      }
+
+      body.light-theme .btn-next:hover {
+        background-color: #1e40af !important;
+        color: #ffffff !important;
+      }
+
       .codebox {
         position: relative;
         margin: 1.5rem 0;
@@ -340,32 +350,36 @@
 
       <!-- Article Content -->
       <article class="prose prose-invert prose-lg max-w-none">
-
         <!-- Section 1 -->
         <section class="mb-12">
-          <h2 class="text-3xl font-bold text-white mb-6">O que é Renderização Condicional?</h2>
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O que é Renderização Condicional?
+          </h2>
 
           <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
             <p class="text-slate-300 leading-relaxed mb-4">
               Renderização condicional é a capacidade de mostrar componentes ou
               elementos diferentes dependendo de uma condição — assim como um
-              <code class="bg-slate-700 px-2 py-1 rounded text-sm">if/else</code>
+              <code class="bg-slate-700 px-2 py-1 rounded text-sm"
+                >if/else</code
+              >
               em JavaScript, mas dentro do JSX.
             </p>
             <p class="text-slate-300 leading-relaxed">
-              Exemplos do dia a dia: mostrar um menu diferente para usuários logados,
-              exibir um spinner enquanto os dados carregam, mostrar uma mensagem de
-              erro se algo deu errado ou exibir um badge "Novo" apenas em produtos
-              recentes.
+              Exemplos do dia a dia: mostrar um menu diferente para usuários
+              logados, exibir um spinner enquanto os dados carregam, mostrar uma
+              mensagem de erro se algo deu errado ou exibir um badge "Novo"
+              apenas em produtos recentes.
             </p>
           </div>
 
           <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
             <p class="text-blue-300">
-              💡 <strong>No React</strong>, como o JSX é JavaScript, você pode usar
-              todas as técnicas condicionais do JS — operador ternário, operador
-              lógico <code class="bg-blue-500/20 px-2 py-1 rounded">&&</code>,
-              if/else fora do JSX, e até switch/case. Cada um tem seu momento ideal!
+              💡 <strong>No React</strong>, como o JSX é JavaScript, você pode
+              usar todas as técnicas condicionais do JS — operador ternário,
+              operador lógico
+              <code class="bg-blue-500/20 px-2 py-1 rounded">&&</code>, if/else
+              fora do JSX, e até switch/case. Cada um tem seu momento ideal!
             </p>
           </div>
         </section>
@@ -379,7 +393,8 @@
           <p class="text-slate-300 leading-relaxed mb-6">
             A forma mais simples e legível: use um
             <code class="bg-slate-700 px-2 py-1 rounded text-sm">if/else</code>
-            antes do <code class="bg-slate-700 px-2 py-1 rounded text-sm">return</code>
+            antes do
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">return</code>
             para decidir o que renderizar:
           </p>
 
@@ -439,11 +454,13 @@ export default Saudacao;</code></pre>
 }</code></pre>
           </div>
 
-          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4"
+          >
             <p class="text-green-300">
-              ✅ <strong>Quando usar:</strong> Ideal quando os dois blocos de JSX
-              são grandes e complexos. Manter o if/else fora do JSX deixa o código
-              mais limpo e fácil de ler.
+              ✅ <strong>Quando usar:</strong> Ideal quando os dois blocos de
+              JSX são grandes e complexos. Manter o if/else fora do JSX deixa o
+              código mais limpo e fácil de ler.
             </p>
           </div>
         </section>
@@ -456,8 +473,8 @@ export default Saudacao;</code></pre>
 
           <p class="text-slate-300 leading-relaxed mb-6">
             O operador ternário permite escrever condicionais
-            <strong class="text-white">diretamente dentro do JSX</strong>.
-            É perfeito para condicionais simples com dois resultados possíveis:
+            <strong class="text-white">diretamente dentro do JSX</strong>. É
+            perfeito para condicionais simples com dois resultados possíveis:
           </p>
 
           <div class="codebox">
@@ -524,7 +541,9 @@ export default Saudacao;</code></pre>
 }</code></pre>
           </div>
 
-          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4">
+          <div
+            class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4"
+          >
             <p class="text-yellow-300">
               ⚠️ <strong>Cuidado com ternários aninhados:</strong> Evite colocar
               um ternário dentro de outro. Isso torna o código difícil de ler.
@@ -542,7 +561,10 @@ export default Saudacao;</code></pre>
           </h2>
 
           <p class="text-slate-300 leading-relaxed mb-6">
-            Quando você quer renderizar algo <strong class="text-white">apenas se uma condição for verdadeira</strong>
+            Quando você quer renderizar algo
+            <strong class="text-white"
+              >apenas se uma condição for verdadeira</strong
+            >
             — sem precisar de um "senão" — o operador
             <code class="bg-slate-700 px-2 py-1 rounded text-sm">&&</code>
             é a solução mais elegante:
@@ -586,13 +608,17 @@ export default Saudacao;</code></pre>
 }</code></pre>
           </div>
 
-          <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mt-4">
+          <div
+            class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mt-4"
+          >
             <p class="text-red-300">
-              🚨 <strong>Armadilha clássica com números!</strong> Se a condição for
-              um número como <code class="bg-red-500/20 px-2 py-1 rounded">lista.length</code>,
-              e o valor for <code class="bg-red-500/20 px-2 py-1 rounded">0</code>,
-              o React vai renderizar o número <strong>0</strong> na tela — não nada!
-              Use sempre uma expressão booleana explícita:
+              🚨 <strong>Armadilha clássica com números!</strong> Se a condição
+              for um número como
+              <code class="bg-red-500/20 px-2 py-1 rounded">lista.length</code>,
+              e o valor for
+              <code class="bg-red-500/20 px-2 py-1 rounded">0</code>, o React
+              vai renderizar o número <strong>0</strong> na tela — não nada! Use
+              sempre uma expressão booleana explícita:
             </p>
             <div class="codebox mt-4">
               <div class="codebox-header bg-slate-800 text-slate-300">
@@ -662,12 +688,14 @@ export default Saudacao;</code></pre>
 export default MensagemStatus;</code></pre>
           </div>
 
-          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4"
+          >
             <p class="text-green-300">
-              ✅ <strong>Quando usar:</strong> Perfeito quando você tem 3 ou mais
-              condições possíveis. Usar uma variável mantém o JSX do
-              <code class="bg-green-500/20 px-2 py-1 rounded">return</code> limpo
-              e fácil de entender, enquanto a lógica fica separada acima.
+              ✅ <strong>Quando usar:</strong> Perfeito quando você tem 3 ou
+              mais condições possíveis. Usar uma variável mantém o JSX do
+              <code class="bg-green-500/20 px-2 py-1 rounded">return</code>
+              limpo e fácil de entender, enquanto a lógica fica separada acima.
             </p>
           </div>
         </section>
@@ -680,7 +708,8 @@ export default MensagemStatus;</code></pre>
 
           <p class="text-slate-300 leading-relaxed mb-6">
             Se você quiser que um componente não renderize absolutamente nada,
-            basta retornar <code class="bg-slate-700 px-2 py-1 rounded text-sm">null</code>:
+            basta retornar
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">null</code>:
           </p>
 
           <div class="codebox">
@@ -733,12 +762,15 @@ export default AvisoErro;</code></pre>
 }</code></pre>
           </div>
 
-          <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4">
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4"
+          >
             <p class="text-purple-300">
-              💡 <strong>Retornar null</strong> é diferente de não usar o componente!
-              O componente ainda é instanciado, seus hooks ainda executam — ele apenas
-              não produz nenhuma saída visual. Isso é muito útil para componentes que
-              aparecem condicionalmente, como tooltips, notificações e overlays.
+              💡 <strong>Retornar null</strong> é diferente de não usar o
+              componente! O componente ainda é instanciado, seus hooks ainda
+              executam — ele apenas não produz nenhuma saída visual. Isso é
+              muito útil para componentes que aparecem condicionalmente, como
+              tooltips, notificações e overlays.
             </p>
           </div>
         </section>
@@ -834,9 +866,13 @@ export default App;</code></pre>
               <div class="flex items-start gap-4">
                 <span class="text-2xl">🔵</span>
                 <div>
-                  <h3 class="text-white font-bold text-lg">if/else fora do JSX</h3>
+                  <h3 class="text-white font-bold text-lg">
+                    if/else fora do JSX
+                  </h3>
                   <p class="text-slate-300 text-sm mt-1">
-                    Use quando os blocos de JSX são grandes ou quando há múltiplos retornos possíveis (retorno antecipado). Mais legível para lógicas complexas.
+                    Use quando os blocos de JSX são grandes ou quando há
+                    múltiplos retornos possíveis (retorno antecipado). Mais
+                    legível para lógicas complexas.
                   </p>
                 </div>
               </div>
@@ -844,9 +880,13 @@ export default App;</code></pre>
               <div class="flex items-start gap-4">
                 <span class="text-2xl">🟡</span>
                 <div>
-                  <h3 class="text-white font-bold text-lg">Operador ternário ( ? : )</h3>
+                  <h3 class="text-white font-bold text-lg">
+                    Operador ternário ( ? : )
+                  </h3>
                   <p class="text-slate-300 text-sm mt-1">
-                    Use quando há exatamente dois resultados possíveis e o JSX é curto. Ótimo para alternar entre dois componentes ou textos inline.
+                    Use quando há exatamente dois resultados possíveis e o JSX é
+                    curto. Ótimo para alternar entre dois componentes ou textos
+                    inline.
                   </p>
                 </div>
               </div>
@@ -854,9 +894,13 @@ export default App;</code></pre>
               <div class="flex items-start gap-4">
                 <span class="text-2xl">🟢</span>
                 <div>
-                  <h3 class="text-white font-bold text-lg">Operador lógico ( && )</h3>
+                  <h3 class="text-white font-bold text-lg">
+                    Operador lógico ( && )
+                  </h3>
                   <p class="text-slate-300 text-sm mt-1">
-                    Use quando quer mostrar algo <em>apenas se</em> uma condição for verdadeira, sem um caso alternativo. Perfeito para badges, avisos e seções opcionais.
+                    Use quando quer mostrar algo <em>apenas se</em> uma condição
+                    for verdadeira, sem um caso alternativo. Perfeito para
+                    badges, avisos e seções opcionais.
                   </p>
                 </div>
               </div>
@@ -866,7 +910,8 @@ export default App;</code></pre>
                 <div>
                   <h3 class="text-white font-bold text-lg">Variável com JSX</h3>
                   <p class="text-slate-300 text-sm mt-1">
-                    Use quando há 3 ou mais casos possíveis e você quer manter o return limpo. Ideal junto com if/else if ou switch/case.
+                    Use quando há 3 ou mais casos possíveis e você quer manter o
+                    return limpo. Ideal junto com if/else if ou switch/case.
                   </p>
                 </div>
               </div>
@@ -876,7 +921,9 @@ export default App;</code></pre>
                 <div>
                   <h3 class="text-white font-bold text-lg">Retorno null</h3>
                   <p class="text-slate-300 text-sm mt-1">
-                    Use quando o componente não deve renderizar nada sob certas condições. Mantém o componente no React tree sem exibir nada visualmente.
+                    Use quando o componente não deve renderizar nada sob certas
+                    condições. Mantém o componente no React tree sem exibir nada
+                    visualmente.
                   </p>
                 </div>
               </div>
@@ -905,7 +952,8 @@ export default App;</code></pre>
             <p class="text-slate-300 mt-4">
               No próximo capítulo, vamos aprender sobre
               <strong>Renderização de Listas</strong>
-              — como usar o método <code class="bg-white/10 px-2 py-1 rounded text-sm">.map()</code>
+              — como usar o método
+              <code class="bg-white/10 px-2 py-1 rounded text-sm">.map()</code>
               para transformar arrays em elementos JSX!
             </p>
           </div>
@@ -928,8 +976,8 @@ export default App;</code></pre>
             Voltar ao índice
           </a>
           <a
-            href=capitulo-07.html"
-            class="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all opacity-50 cursor-not-allowed"
+            href="capitulo-07.html"
+            class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all"
           >
             Próximo capítulo →
           </a>
@@ -993,7 +1041,9 @@ export default App;</code></pre>
       const CHAPTER_ID = 6;
       const STORAGE_KEY = "completedChapters";
 
-      const completeButtonContainer = document.getElementById("completeButtonContainer");
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
       const completeButton = document.getElementById("completeButton");
       const completeIcon = document.getElementById("completeIcon");
       const completeText = document.getElementById("completeText");

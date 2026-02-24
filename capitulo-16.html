@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 16 - useEffect com Fetch de Dados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 { background-color: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.1) !important; }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r { background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important; border-color: rgba(59,130,246,0.3) !important; }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next { background-color: #1d4ed8 !important; color: #ffffff !important; }
+      body.light-theme .btn-next:hover { background-color: #1e40af !important; color: #ffffff !important; }
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+      .copy-btn { padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+      .complete-btn-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; animation: slideUp 0.5s ease-out; }
+      @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .complete-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(16,185,129,0.4); transition: all 0.3s ease; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">✓ Concluído</div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"><span class="text-lg">🌙</span></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 16</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Intermediário</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">useEffect com Fetch de Dados</h1>
+        <p class="text-xl text-slate-300">Aprenda o padrão completo para buscar dados de APIs — com loading, erro, cancelamento e boas práticas do mundo real</p>
+      </div>
+
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">O Padrão Básico de Fetch</h2>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed">
+              Buscar dados de uma API é o caso de uso mais comum do <code class="bg-slate-700 px-2 py-1 rounded text-sm">useEffect</code>.
+              Toda requisição precisa gerenciar três estados: <strong class="text-white">carregando</strong>,
+              <strong class="text-white">dados</strong> e <strong class="text-white">erro</strong>.
+            </p>
+          </div>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Padrão básico com os 3 estados</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function ListaUsuarios() {
+  const [usuarios, setUsuarios] = useState([]);   // dados
+  const [carregando, setCarregando] = useState(true); // loading
+  const [erro, setErro]         = useState(null); // erro
+
+  useEffect(() => {
+    // Função async dentro do useEffect
+    // (useEffect não pode ser async diretamente)
+    const buscarUsuarios = async () => {
+      try {
+        setCarregando(true);
+        setErro(null);
+
+        const resposta = await fetch("https://jsonplaceholder.typicode.com/users");
+
+        if (!resposta.ok) {
+          throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+
+        const dados = await resposta.json();
+        setUsuarios(dados);
+      } catch (err) {
+        setErro(err.message);
+      } finally {
+        setCarregando(false); // sempre executa, com sucesso ou erro
+      }
+    };
+
+    buscarUsuarios();
+  }, []); // [] = busca apenas na montagem
+
+  // Renderização condicional baseada nos 3 estados
+  if (carregando) return &lt;p&gt;⏳ Carregando usuários...&lt;/p&gt;;
+  if (erro)       return &lt;p style={{ color: "red" }}&gt;❌ Erro: {erro}&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {usuarios.map((u) => (
+        &lt;li key={u.id}&gt;
+          &lt;strong&gt;{u.name}&lt;/strong&gt; — {u.email}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default ListaUsuarios;</code></pre>
+          </div>
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4">
+            <p class="text-yellow-300">
+              ⚠️ <strong>Por que não usar async diretamente no useEffect?</strong>
+              Funções <code class="bg-yellow-500/20 px-1 rounded">async</code> retornam uma Promise,
+              mas o useEffect espera que você retorne uma função de limpeza ou <code class="bg-yellow-500/20 px-1 rounded">undefined</code>.
+              Retornar uma Promise causaria um warning no React. A solução é declarar uma função
+              async <em>dentro</em> do useEffect e chamá-la imediatamente.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Fetch com Dependência — Buscando por ID</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando a busca depende de um valor que pode mudar (como um ID selecionado pelo usuário),
+            adicione esse valor ao array de dependências:
+          </p>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Busca reativa — refaz quando o ID muda</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function PerfilUsuario() {
+  const [userId, setUserId]       = useState(1);
+  const [usuario, setUsuario]     = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro]           = useState(null);
+
+  useEffect(() => {
+    const buscar = async () => {
+      try {
+        setCarregando(true);
+        setErro(null);
+        setUsuario(null); // limpa dado anterior enquanto carrega
+
+        const res = await fetch(
+          `https://jsonplaceholder.typicode.com/users/${userId}`
+        );
+
+        if (!res.ok) throw new Error("Usuário não encontrado");
+
+        const dados = await res.json();
+        setUsuario(dados);
+      } catch (err) {
+        setErro(err.message);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscar();
+  }, [userId]); // ← re-executa sempre que userId mudar
+
+  return (
+    &lt;div&gt;
+      {/* Seletor de usuário */}
+      &lt;div&gt;
+        {[1, 2, 3, 4, 5].map((id) => (
+          &lt;button
+            key={id}
+            onClick={() => setUserId(id)}
+            style={{ fontWeight: userId === id ? "bold" : "normal" }}
+          &gt;
+            Usuário {id}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Conteúdo */}
+      {carregando &amp;&amp; &lt;p&gt;⏳ Carregando...&lt;/p&gt;}
+      {erro       &amp;&amp; &lt;p style={{ color: "red" }}&gt;❌ {erro}&lt;/p&gt;}
+      {usuario    &amp;&amp; (
+        &lt;div&gt;
+          &lt;h2&gt;{usuario.name}&lt;/h2&gt;
+          &lt;p&gt;📧 {usuario.email}&lt;/p&gt;
+          &lt;p&gt;📞 {usuario.phone}&lt;/p&gt;
+          &lt;p&gt;🌐 {usuario.website}&lt;/p&gt;
+          &lt;p&gt;🏢 {usuario.company.name}&lt;/p&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export default PerfilUsuario;</code></pre>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Cancelamento de Requisições — Race Conditions</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando o usuário troca rapidamente entre opções, múltiplas requisições ficam
+            pendentes ao mesmo tempo. A que chegar por último pode não ser a mais recente —
+            isso se chama <strong class="text-white">race condition</strong>. Use
+            <code class="bg-slate-700 px-2 py-1 rounded text-sm">AbortController</code> para cancelar requisições antigas:
+          </p>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Cancelando requisições com AbortController</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function BuscaComCancelamento({ query }) {
+  const [resultados, setResultados] = useState([]);
+  const [carregando, setCarregando] = useState(false);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setResultados([]);
+      return;
+    }
+
+    // Cria um controlador para esta requisição
+    const controller = new AbortController();
+
+    const buscar = async () => {
+      try {
+        setCarregando(true);
+
+        const res = await fetch(
+          `https://jsonplaceholder.typicode.com/posts?title_like=${query}`,
+          { signal: controller.signal } // vincula o sinal à requisição
+        );
+
+        const dados = await res.json();
+        setResultados(dados.slice(0, 5));
+      } catch (err) {
+        // AbortError é esperado — não é um erro real
+        if (err.name !== "AbortError") {
+          console.error("Erro na busca:", err);
+        }
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscar();
+
+    // Limpeza: cancela a requisição se query mudar antes de terminar
+    return () => {
+      controller.abort();
+    };
+  }, [query]); // re-executa a cada mudança de query
+
+  return (
+    &lt;div&gt;
+      {carregando &amp;&amp; &lt;p&gt;⏳ Buscando...&lt;/p&gt;}
+      &lt;ul&gt;
+        {resultados.map((r) => &lt;li key={r.id}&gt;{r.title}&lt;/li&gt;)}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>Como o AbortController funciona:</strong> ao chamar
+              <code class="bg-green-500/20 px-1 rounded">controller.abort()</code> na função de limpeza,
+              o React cancela a requisição pendente sempre que
+              <code class="bg-green-500/20 px-1 rounded">query</code> muda antes da resposta chegar.
+              Isso garante que apenas a resposta da query mais recente seja processada.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Custom Hook: useFetch</h2>
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O padrão de fetch se repete em toda aplicação. A solução elegante é
+            extrair para um <strong class="text-white">custom hook</strong> reutilizável:
+          </p>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/hooks/useFetch.js — hook reutilizável</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function useFetch(url) {
+  const [dados, setDados]           = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro]             = useState(null);
+
+  useEffect(() => {
+    if (!url) return;
+
+    const controller = new AbortController();
+
+    const buscar = async () => {
+      try {
+        setCarregando(true);
+        setErro(null);
+
+        const res = await fetch(url, { signal: controller.signal });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+        const json = await res.json();
+        setDados(json);
+      } catch (err) {
+        if (err.name !== "AbortError") setErro(err.message);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscar();
+    return () => controller.abort();
+  }, [url]);
+
+  return { dados, carregando, erro };
+}
+
+export default useFetch;</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Usando o useFetch em qualquer componente</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import useFetch from './hooks/useFetch';
+
+// Muito mais limpo!
+function ListaPosts() {
+  const { dados: posts, carregando, erro } = useFetch(
+    "https://jsonplaceholder.typicode.com/posts?_limit=10"
+  );
+
+  if (carregando) return &lt;p&gt;⏳ Carregando posts...&lt;/p&gt;;
+  if (erro)       return &lt;p&gt;❌ {erro}&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {posts?.map((post) => (
+        &lt;li key={post.id}&gt;
+          &lt;h3&gt;{post.title}&lt;/h3&gt;
+          &lt;p&gt;{post.body}&lt;/p&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+// Reuso em outro componente — mesma lógica, URL diferente
+function PerfilUsuario({ id }) {
+  const { dados: user, carregando, erro } = useFetch(
+    id ? `https://jsonplaceholder.typicode.com/users/${id}` : null
+  );
+
+  if (carregando) return &lt;p&gt;⏳ Carregando perfil...&lt;/p&gt;;
+  if (erro)       return &lt;p&gt;❌ {erro}&lt;/p&gt;;
+
+  return &lt;h2&gt;{user?.name}&lt;/h2&gt;;
+}</code></pre>
+          </div>
+          <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4">
+            <p class="text-purple-300">
+              💡 <strong>Custom hooks</strong> são funções que começam com <code class="bg-purple-500/20 px-1 rounded">use</code>
+              e podem usar outros hooks internamente. Eles são a forma mais elegante de reutilizar
+              lógica stateful entre componentes — sem duplicar código. Vamos aprofundá-los em um capítulo dedicado!
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Exemplo Completo: App de Pokémon</h2>
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/App.jsx — PokéDex com busca e detalhes</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+function App() {
+  const [lista, setLista]           = useState([]);
+  const [selecionado, setSelecionado] = useState(null);
+  const [detalhe, setDetalhe]       = useState(null);
+  const [loadLista, setLoadLista]   = useState(true);
+  const [loadDetalhe, setLoadDetalhe] = useState(false);
+  const [busca, setBusca]           = useState("");
+
+  // Carrega lista inicial de pokémon
+  useEffect(() => {
+    const carregar = async () => {
+      try {
+        const res  = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
+        const json = await res.json();
+        setLista(json.results);
+      } catch {
+        console.error("Erro ao carregar lista");
+      } finally {
+        setLoadLista(false);
+      }
+    };
+    carregar();
+  }, []);
+
+  // Carrega detalhes quando um pokémon é selecionado
+  useEffect(() => {
+    if (!selecionado) return;
+
+    const controller = new AbortController();
+
+    const carregarDetalhe = async () => {
+      try {
+        setLoadDetalhe(true);
+        setDetalhe(null);
+
+        const res  = await fetch(selecionado.url, { signal: controller.signal });
+        const json = await res.json();
+        setDetalhe(json);
+      } catch (err) {
+        if (err.name !== "AbortError") console.error(err);
+      } finally {
+        setLoadDetalhe(false);
+      }
+    };
+
+    carregarDetalhe();
+    return () => controller.abort();
+  }, [selecionado]);
+
+  const listaFiltrada = lista.filter((p) =>
+    p.name.includes(busca.toLowerCase())
+  );
+
+  return (
+    &lt;div style={{ display: "flex", gap: "2rem", padding: "2rem" }}&gt;
+
+      {/* Painel esquerdo — lista */}
+      &lt;div style={{ width: "250px" }}&gt;
+        &lt;h2&gt;🎮 PokéDex&lt;/h2&gt;
+        &lt;input
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Filtrar pokémon..."
+        /&gt;
+
+        {loadLista ? (
+          &lt;p&gt;⏳ Carregando...&lt;/p&gt;
+        ) : (
+          &lt;ul style={{ listStyle: "none", padding: 0 }}&gt;
+            {listaFiltrada.map((pokemon) => (
+              &lt;li
+                key={pokemon.name}
+                onClick={() => setSelecionado(pokemon)}
+                style={{
+                  cursor: "pointer",
+                  padding: "0.5rem",
+                  fontWeight: selecionado?.name === pokemon.name ? "bold" : "normal",
+                  textTransform: "capitalize",
+                }}
+              &gt;
+                {pokemon.name}
+              &lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+        )}
+      &lt;/div&gt;
+
+      {/* Painel direito — detalhes */}
+      &lt;div style={{ flex: 1 }}&gt;
+        {!selecionado &amp;&amp; &lt;p&gt;👈 Selecione um pokémon para ver os detalhes&lt;/p&gt;}
+        {loadDetalhe &amp;&amp; &lt;p&gt;⏳ Carregando detalhes...&lt;/p&gt;}
+        {detalhe &amp;&amp; (
+          &lt;div&gt;
+            &lt;h2 style={{ textTransform: "capitalize" }}&gt;{detalhe.name}&lt;/h2&gt;
+            &lt;img src={detalhe.sprites.front_default} alt={detalhe.name} style={{ width: 150, imageRendering: "pixelated" }} /&gt;
+            &lt;p&gt;Altura: {detalhe.height / 10}m | Peso: {detalhe.weight / 10}kg&lt;/p&gt;
+            &lt;p&gt;Tipos: {detalhe.types.map((t) => t.type.name).join(", ")}&lt;/p&gt;
+            &lt;p&gt;Habilidades: {detalhe.abilities.map((a) => a.ability.name).join(", ")}&lt;/p&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+          </div>
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>Dois useEffects com responsabilidades distintas:</strong>
+              o primeiro busca a lista na montagem (<code class="bg-orange-500/20 px-1 rounded">[]</code>),
+              o segundo busca os detalhes sempre que o pokémon selecionado muda (<code class="bg-orange-500/20 px-1 rounded">[selecionado]</code>),
+              com AbortController para evitar race conditions ao trocar rapidamente.
+            </p>
+          </div>
+        </section>
+
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">Você dominou o fetch de dados com useEffect! Você aprendeu:</p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>O padrão dos 3 estados: dados, carregando e erro</li>
+              <li>Por que não usar async diretamente no useEffect</li>
+              <li>Como re-buscar quando uma dependência muda (ex: ID selecionado)</li>
+              <li>Race conditions e como evitá-las com AbortController</li>
+              <li>Como extrair a lógica em um custom hook <code class="bg-white/10 px-1 rounded text-xs">useFetch</code> reutilizável</li>
+              <li>Um app de PokéDex com dois useEffects independentes</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>useContext</strong>
+              — como compartilhar estado globalmente sem precisar passar props por toda a árvore!
+            </p>
+          </div>
+        </section>
+
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-15.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">← Capítulo Anterior</a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">Voltar ao índice</a>
+          <a href="capitulo-17.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all">Próximo capítulo →</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn"><span id="completeIcon">✓</span><span id="completeText">Concluir Capítulo</span></button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) { body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen"; themeToggle.innerHTML = '<span class="text-lg">🌙</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"; }
+        else { body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme"; themeToggle.innerHTML = '<span class="text-lg">☀️</span>'; document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200"; }
+      });
+      function copyCode(button) {
+        const text = button.closest(".codebox").querySelector("code").textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = button.textContent; button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30","text-green-300"); button.classList.remove("bg-blue-500/20","text-blue-300");
+          setTimeout(() => { button.textContent = orig; button.classList.remove("bg-green-500/30","text-green-300"); button.classList.add("bg-blue-500/20","text-blue-300"); }, 2000);
+        });
+      }
+    </script>
+    <script>
+      const CHAPTER_ID = 16, STORAGE_KEY = "completedChapters";
+      const cbc = document.getElementById("completeButtonContainer"), cb = document.getElementById("completeButton");
+      const ci = document.getElementById("completeIcon"), ct = document.getElementById("completeText"), sb = document.getElementById("statusBadge");
+      function isCompleted() { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]").includes(CHAPTER_ID); }
+      function markCompleted() { const arr = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); if (!arr.includes(CHAPTER_ID)) { arr.push(CHAPTER_ID); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr)); updateUI(); showMsg(); } }
+      function updateUI() { cb.classList.add("completed"); ci.textContent="✓"; ct.textContent="Capítulo Concluído"; sb.classList.remove("hidden"); }
+      function showMsg() { const m=document.createElement("div"); m.className="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse"; m.innerHTML='<div class="flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-semibold">Progresso salvo!</span></div>'; document.body.appendChild(m); setTimeout(()=>m.remove(),3000); }
+      function reached() { const c=document.getElementById("conclusion"); if(!c) return false; return c.getBoundingClientRect().top < window.innerHeight*0.8; }
+      function init() { if(isCompleted()) updateUI(); window.addEventListener("scroll",()=>{ if(reached()) cbc.classList.remove("hidden"); else cbc.classList.add("hidden"); }); cb.addEventListener("click",()=>{ if(!isCompleted()) markCompleted(); }); if(reached()) cbc.classList.remove("hidden"); }
+      document.readyState==="loading" ? document.addEventListener("DOMContentLoaded",init) : init();
+    </script>
+  </body>
+</html>

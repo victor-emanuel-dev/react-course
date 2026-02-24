@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 11 - useState com Objetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body { transition: background-color 0.3s ease; }
+
+      body.light-theme .text-white { color: #1e293b !important; }
+      body.light-theme .text-slate-100 { color: #1e293b !important; }
+      body.light-theme .text-slate-200 { color: #334155 !important; }
+      body.light-theme .text-slate-300 { color: #475569 !important; }
+      body.light-theme .text-slate-400 { color: #64748b !important; }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255,255,255,0.8) !important;
+        border-color: rgba(0,0,0,0.1) !important;
+      }
+      body.light-theme .bg-white\/10 { background-color: rgba(255,255,255,0.9) !important; }
+      body.light-theme .bg-slate-800 { background-color: #e2e8f0 !important; color: #1e293b !important; }
+      body.light-theme .bg-slate-700 { background-color: #cbd5e1 !important; }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(to right, rgba(59,130,246,0.2), rgba(147,51,234,0.2)) !important;
+        border-color: rgba(59,130,246,0.3) !important;
+      }
+      body.light-theme a { color: #2563eb !important; }
+      body.light-theme a:hover { color: #1d4ed8 !important; }
+      body.light-theme .text-green-300 { color: #15803d !important; }
+      body.light-theme .bg-green-500\/10 { background-color: rgba(34,197,94,0.15) !important; }
+      body.light-theme .bg-green-500\/20 { background-color: rgba(34,197,94,0.2) !important; color: #15803d !important; }
+      body.light-theme .border-green-500\/30 { border-color: rgba(34,197,94,0.3) !important; }
+      body.light-theme .text-blue-400 { color: #2563eb !important; }
+      body.light-theme .text-blue-300 { color: #1d4ed8 !important; }
+      body.light-theme .bg-blue-500\/20 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-500 { color: #2563eb !important; }
+      body.light-theme .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+      body.light-theme .text-blue-700 { color: #1d4ed8 !important; }
+      body.light-theme code:not(pre code) { color: #1e293b !important; }
+      body.light-theme .codebox-header { background-color: #334155 !important; color: #e2e8f0 !important; }
+      body.light-theme .copy-btn { background-color: rgba(59,130,246,0.3) !important; color: #ffffff !important; }
+      body.light-theme .copy-btn:hover { background-color: rgba(59,130,246,0.5) !important; }
+      body.light-theme .text-yellow-300 { color: #a16207 !important; }
+      body.light-theme .bg-yellow-500\/10 { background-color: rgba(234,179,8,0.15) !important; }
+      body.light-theme .border-yellow-500\/30 { border-color: rgba(234,179,8,0.3) !important; }
+      body.light-theme .text-purple-300 { color: #7e22ce !important; }
+      body.light-theme .bg-purple-500\/10 { background-color: rgba(168,85,247,0.15) !important; }
+      body.light-theme .border-purple-500\/30 { border-color: rgba(168,85,247,0.3) !important; }
+      body.light-theme .text-orange-300 { color: #c2410c !important; }
+      body.light-theme .bg-orange-500\/10 { background-color: rgba(249,115,22,0.15) !important; }
+      body.light-theme .border-orange-500\/30 { border-color: rgba(249,115,22,0.3) !important; }
+      body.light-theme .text-red-300 { color: #b91c1c !important; }
+      body.light-theme .bg-red-500\/10 { background-color: rgba(239,68,68,0.15) !important; }
+      body.light-theme .border-red-500\/30 { border-color: rgba(239,68,68,0.3) !important; }
+      body.light-theme .btn-next {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .btn-next:hover {
+        background-color: #1e40af !important;
+        color: #ffffff !important;
+      }
+
+      .codebox { position: relative; margin: 1.5rem 0; }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover { transform: scale(1.05); }
+      pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+      pre code { font-size: 0.875rem; line-height: 1.6; }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16,185,129,0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(16,185,129,0.5); }
+      .complete-btn.completed { background: linear-gradient(135deg, #6b7280, #4b5563); cursor: default; }
+      .complete-btn.completed:hover { transform: none; box-shadow: 0 10px 40px rgba(107,114,128,0.4); }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="react-course.html" class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div id="statusBadge" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300">
+              ✓ Concluído
+            </div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20">
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300">Capítulo 11</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Iniciante</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          useState com Objetos
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda a gerenciar estados mais complexos usando objetos —
+          e evite os erros de imutabilidade que pegam todo mundo de surpresa
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Por que Usar Objetos como Estado?</h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Às vezes, vários campos de estado estão relacionados entre si — como os dados
+              de um formulário de cadastro: nome, email, senha, telefone. Em vez de criar
+              um <code class="bg-slate-700 px-2 py-1 rounded text-sm">useState</code> separado
+              para cada campo, podemos agrupá-los em um único objeto de estado.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              Isso torna o código mais organizado e facilita operações como resetar o
+              formulário inteiro de uma só vez, ou enviar todos os dados juntos para uma API.
+            </p>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Múltiplos useState vs. objeto de estado</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// 😐 Muitos estados separados — funciona, mas pode ficar bagunçado
+const [nome, setNome]       = useState("");
+const [email, setEmail]     = useState("");
+const [senha, setSenha]     = useState("");
+const [telefone, setTelefone] = useState("");
+
+// ✅ Um único objeto de estado — mais organizado
+const [form, setForm] = useState({
+  nome: "",
+  email: "",
+  senha: "",
+  telefone: "",
+});</code></pre>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mt-4">
+            <p class="text-blue-300">
+              💡 <strong>Regra geral:</strong> Se os estados sempre mudam juntos ou
+              representam um único conceito (como "dados do usuário" ou "configurações"),
+              agrupe-os em um objeto. Se mudam de forma independente, mantenha-os separados.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            A Regra de Ouro: Imutabilidade
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            A regra mais importante ao trabalhar com objetos no estado React é:
+            <strong class="text-white">nunca mute o objeto diretamente.</strong>
+            Sempre crie um objeto novo com as alterações desejadas:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Mutação direta — bug silencioso!</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const [usuario, setUsuario] = useState({ nome: "Ana", idade: 28 });
+
+const aniversario = () => {
+  // ❌ ERRADO — mutando o objeto diretamente
+  usuario.idade = usuario.idade + 1;
+  setUsuario(usuario); // passa o MESMO objeto!
+
+  // O React compara por referência. Como o objeto é o mesmo,
+  // ele acha que nada mudou e NÃO re-renderiza. 😱
+};</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>✅ Criando um novo objeto — correto!</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const [usuario, setUsuario] = useState({ nome: "Ana", idade: 28 });
+
+const aniversario = () => {
+  // ✅ CORRETO — criando um novo objeto com spread
+  setUsuario({
+    ...usuario,       // copia todos os campos existentes
+    idade: usuario.idade + 1, // sobrescreve apenas o que mudou
+  });
+
+  // O React recebe um objeto NOVO (referência diferente)
+  // e re-renderiza o componente. ✅
+};</code></pre>
+          </div>
+
+          <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mt-4">
+            <p class="text-red-300">
+              🚨 <strong>Por que o React compara por referência?</strong>
+              Para performance. Verificar se dois objetos são iguais campo por campo
+              seria muito lento. O React simplesmente checa:
+              "esse é o mesmo objeto na memória?" Se sim, não re-renderiza.
+              Por isso, <strong>sempre crie um objeto novo</strong> ao atualizar o estado.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            O Spread Operator: Seu Melhor Amigo
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O operador spread (<code class="bg-slate-700 px-2 py-1 rounded text-sm">...</code>)
+            é a ferramenta mais usada para atualizar objetos de estado.
+            Ele copia todos os campos do objeto original e permite sobrescrever apenas os que mudaram:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Spread em ação</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const [perfil, setPerfil] = useState({
+  nome: "Ana Silva",
+  email: "ana@email.com",
+  cidade: "São Paulo",
+  tema: "dark",
+});
+
+// Atualizar apenas o nome — o resto permanece igual
+const mudarNome = (novoNome) => {
+  setPerfil({
+    ...perfil,        // { nome: "Ana", email: "...", cidade: "...", tema: "..." }
+    nome: novoNome,   // sobrescreve apenas nome
+  });
+};
+
+// Atualizar apenas o tema
+const mudarTema = (novoTema) => {
+  setPerfil({ ...perfil, tema: novoTema });
+};
+
+// Atualizar múltiplos campos de uma vez
+const mudarLocalizacao = (cidade, estado) => {
+  setPerfil({ ...perfil, cidade, estado });
+};</code></pre>
+          </div>
+
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 mt-4">
+            <p class="text-yellow-300">
+              ⚠️ <strong>Ordem importa no spread!</strong> Os campos depois do spread
+              sobrescrevem os anteriores. Se você colocar o campo antes do spread,
+              o spread vai sobrescrever você:
+            </p>
+            <div class="codebox mt-4">
+              <div class="codebox-header bg-slate-800 text-slate-300">
+                <span>Ordem correta do spread</span>
+                <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+              </div>
+              <pre><code class="language-jsx">// ✅ Correto — spread primeiro, depois o que muda
+setPerfil({ ...perfil, nome: "Bruno" });
+// resultado: { ..., nome: "Bruno" } ✅
+
+// ❌ Errado — spread depois sobrescreve o novo valor
+setPerfil({ nome: "Bruno", ...perfil });
+// resultado: { ..., nome: "Ana" } — voltou ao original! ❌</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Formulário com Objeto de Estado
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            O caso de uso mais comum: um formulário onde todos os campos são
+            gerenciados por um único objeto de estado. Veja como fazer de forma
+            elegante com um handler genérico:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/FormCadastro.jsx</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const ESTADO_INICIAL = {
+  nome: "",
+  email: "",
+  senha: "",
+  telefone: "",
+};
+
+function FormCadastro() {
+  const [form, setForm] = useState(ESTADO_INICIAL);
+  const [enviado, setEnviado] = useState(false);
+
+  // Handler genérico — funciona para qualquer campo!
+  // Usa o atributo "name" do input como chave do objeto
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value, // computed property — chave dinâmica
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Dados do formulário:", form);
+    setEnviado(true);
+  };
+
+  const resetar = () => {
+    setForm(ESTADO_INICIAL); // reseta tudo de uma vez!
+    setEnviado(false);
+  };
+
+  if (enviado) {
+    return (
+      &lt;div className="sucesso"&gt;
+        &lt;h2&gt;✅ Cadastro realizado!&lt;/h2&gt;
+        &lt;p&gt;Bem-vindo, {form.nome}!&lt;/p&gt;
+        &lt;button onClick={resetar}&gt;Novo cadastro&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;h2&gt;Criar Conta&lt;/h2&gt;
+
+      {/* Cada input usa o atributo "name" igual à chave do objeto */}
+      &lt;input
+        name="nome"
+        value={form.nome}
+        onChange={handleChange}
+        placeholder="Seu nome completo"
+      /&gt;
+
+      &lt;input
+        name="email"
+        type="email"
+        value={form.email}
+        onChange={handleChange}
+        placeholder="seu@email.com"
+      /&gt;
+
+      &lt;input
+        name="senha"
+        type="password"
+        value={form.senha}
+        onChange={handleChange}
+        placeholder="Senha segura..."
+      /&gt;
+
+      &lt;input
+        name="telefone"
+        value={form.telefone}
+        onChange={handleChange}
+        placeholder="(11) 99999-9999"
+      /&gt;
+
+      &lt;div&gt;
+        &lt;button type="button" onClick={resetar}&gt;Limpar&lt;/button&gt;
+        &lt;button type="submit"&gt;Cadastrar&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormCadastro;</code></pre>
+          </div>
+
+          <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4">
+            <p class="text-green-300">
+              ✅ <strong>O truque do handler genérico:</strong>
+              <code class="bg-green-500/20 px-2 py-1 rounded">[name]: value</code>
+              usa uma <em>computed property</em> — a chave do objeto é o valor da variável
+              <code class="bg-green-500/20 px-2 py-1 rounded">name</code>.
+              Isso permite um único <code class="bg-green-500/20 px-2 py-1 rounded">handleChange</code>
+              para todos os campos, desde que o atributo
+              <code class="bg-green-500/20 px-2 py-1 rounded">name</code> do input
+              corresponda à chave no objeto de estado.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Objetos Aninhados: Cuidado Redobrado!
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Quando o estado tem objetos dentro de objetos, o spread shallow (raso)
+            não é suficiente — você precisa copiar cada nível manualmente:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>❌ Spread raso não funciona com objetos aninhados</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const [usuario, setUsuario] = useState({
+  nome: "Ana",
+  endereco: {
+    cidade: "São Paulo",
+    estado: "SP",
+    cep: "01310-100",
+  },
+});
+
+// ❌ ERRADO — o spread copia apenas o primeiro nível
+// O objeto "endereco" ainda é a mesma referência!
+const mudarCidade = (novaCidade) => {
+  setUsuario({
+    ...usuario,
+    endereco: {
+      cidade: novaCidade, // ❌ perde cep e estado!
+    },
+  });
+};</code></pre>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>✅ Spread em cada nível aninhado</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">// ✅ CORRETO — spread em cada nível
+const mudarCidade = (novaCidade) => {
+  setUsuario({
+    ...usuario,           // copia nome e endereco (referência)
+    endereco: {
+      ...usuario.endereco, // copia cidade, estado e cep
+      cidade: novaCidade,  // sobrescreve apenas cidade
+    },
+  });
+};
+
+// ✅ Também pode usar a forma funcional:
+const mudarEstado = (novoEstado) => {
+  setUsuario((prev) => ({
+    ...prev,
+    endereco: {
+      ...prev.endereco,
+      estado: novoEstado,
+    },
+  }));
+};</code></pre>
+          </div>
+
+          <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4">
+            <p class="text-purple-300">
+              💡 <strong>Dica Pro:</strong> Se o seu estado tem muitos níveis de aninhamento
+              e está ficando difícil de atualizar, considere simplificar a estrutura
+              ou dividir em estados menores e independentes. Estado profundamente aninhado
+              é um sinal de que talvez a estrutura possa ser repensada.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Atualizando Campos Específicos com Spread
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Veja outros padrões comuns de atualização de campos em objetos de estado:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Padrões de atualização de objetos</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">const [config, setConfig] = useState({
+  tema: "dark",
+  idioma: "pt-BR",
+  notificacoes: true,
+  fonte: 16,
+  sidebar: true,
+});
+
+// Alternar um booleano
+const toggleNotificacoes = () => {
+  setConfig((prev) => ({
+    ...prev,
+    notificacoes: !prev.notificacoes,
+  }));
+};
+
+// Incrementar um número
+const aumentarFonte = () => {
+  setConfig((prev) => ({
+    ...prev,
+    fonte: prev.fonte + 1,
+  }));
+};
+
+// Atualizar com base em uma seleção
+const mudarTema = (novoTema) => {
+  setConfig((prev) => ({ ...prev, tema: novoTema }));
+};
+
+// Resetar para o padrão
+const resetarConfig = () => {
+  setConfig({
+    tema: "dark",
+    idioma: "pt-BR",
+    notificacoes: true,
+    fonte: 16,
+    sidebar: true,
+  });
+};</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Painel de Configurações
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos aplicar tudo em um exemplo real — um painel de configurações
+            do usuário com objeto de estado, handler genérico e reset:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/PainelConfig.jsx</span>
+              <button class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30" onclick="copyCode(this)">Copiar</button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const CONFIG_INICIAL = {
+  nomeExibicao: "Ana Silva",
+  email: "ana@email.com",
+  tema: "dark",
+  idioma: "pt-BR",
+  notificacoes: true,
+  emailMarketing: false,
+};
+
+function PainelConfig() {
+  const [config, setConfig] = useState(CONFIG_INICIAL);
+  const [salvo, setSalvo]   = useState(false);
+
+  // Handler genérico para inputs de texto e select
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setConfig((prev) => ({
+      ...prev,
+      // Se for checkbox, usa "checked"; caso contrário, usa "value"
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    setSalvo(false);
+  };
+
+  const salvar = () => {
+    console.log("Salvando configurações:", config);
+    setSalvo(true);
+    setTimeout(() => setSalvo(false), 3000);
+  };
+
+  const resetar = () => {
+    setConfig(CONFIG_INICIAL);
+    setSalvo(false);
+  };
+
+  return (
+    &lt;div className="painel"&gt;
+      &lt;h2&gt;⚙️ Configurações&lt;/h2&gt;
+
+      {salvo &amp;&amp; (
+        &lt;div className="toast-sucesso"&gt;✅ Configurações salvas!&lt;/div&gt;
+      )}
+
+      {/* Informações pessoais */}
+      &lt;section&gt;
+        &lt;h3&gt;Perfil&lt;/h3&gt;
+
+        &lt;label&gt;Nome de exibição&lt;/label&gt;
+        &lt;input
+          name="nomeExibicao"
+          value={config.nomeExibicao}
+          onChange={handleChange}
+        /&gt;
+
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input
+          name="email"
+          type="email"
+          value={config.email}
+          onChange={handleChange}
+        /&gt;
+      &lt;/section&gt;
+
+      {/* Preferências */}
+      &lt;section&gt;
+        &lt;h3&gt;Preferências&lt;/h3&gt;
+
+        &lt;label&gt;Tema&lt;/label&gt;
+        &lt;select name="tema" value={config.tema} onChange={handleChange}&gt;
+          &lt;option value="dark"&gt;Escuro 🌙&lt;/option&gt;
+          &lt;option value="light"&gt;Claro ☀️&lt;/option&gt;
+          &lt;option value="system"&gt;Sistema 💻&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;label&gt;Idioma&lt;/label&gt;
+        &lt;select name="idioma" value={config.idioma} onChange={handleChange}&gt;
+          &lt;option value="pt-BR"&gt;Português (BR)&lt;/option&gt;
+          &lt;option value="en-US"&gt;English (US)&lt;/option&gt;
+          &lt;option value="es"&gt;Español&lt;/option&gt;
+        &lt;/select&gt;
+      &lt;/section&gt;
+
+      {/* Notificações — checkboxes */}
+      &lt;section&gt;
+        &lt;h3&gt;Notificações&lt;/h3&gt;
+
+        &lt;label&gt;
+          &lt;input
+            type="checkbox"
+            name="notificacoes"
+            checked={config.notificacoes}
+            onChange={handleChange}
+          /&gt;
+          Notificações do sistema
+        &lt;/label&gt;
+
+        &lt;label&gt;
+          &lt;input
+            type="checkbox"
+            name="emailMarketing"
+            checked={config.emailMarketing}
+            onChange={handleChange}
+          /&gt;
+          Emails de marketing
+        &lt;/label&gt;
+      &lt;/section&gt;
+
+      {/* Ações */}
+      &lt;div className="acoes"&gt;
+        &lt;button onClick={resetar}&gt;↩️ Restaurar padrões&lt;/button&gt;
+        &lt;button onClick={salvar}&gt;💾 Salvar&lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Preview do estado atual */}
+      &lt;details&gt;
+        &lt;summary&gt;Ver estado atual (debug)&lt;/summary&gt;
+        &lt;pre&gt;{JSON.stringify(config, null, 2)}&lt;/pre&gt;
+      &lt;/details&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default PainelConfig;</code></pre>
+          </div>
+
+          <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4">
+            <p class="text-orange-300">
+              🔥 <strong>Destaque do exemplo:</strong> O
+              <code class="bg-orange-500/20 px-2 py-1 rounded">handleChange</code>
+              genérico trata tanto inputs de texto quanto checkboxes —
+              usando <code class="bg-orange-500/20 px-2 py-1 rounded">type === "checkbox" ? checked : value</code>.
+              Um único handler para todos os campos,
+              independente do tipo! Isso é um padrão muito usado em formulários React reais.
+            </p>
+          </div>
+        </section>
+
+        <!-- Resumo -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">Resumo: Regras de Ouro</h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div class="space-y-4">
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">🔒</span>
+                <div>
+                  <h3 class="text-white font-bold">Nunca mute o estado diretamente</h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Sempre crie um novo objeto com spread:
+                    <code class="bg-slate-700 px-1 rounded text-xs">setObj({"{"} ...obj, campo: novoValor {"}"})</code>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">📋</span>
+                <div>
+                  <h3 class="text-white font-bold">Spread em cada nível aninhado</h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Para objetos dentro de objetos, aplique o spread em cada camada que precisar alterar.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">🎯</span>
+                <div>
+                  <h3 class="text-white font-bold">Handler genérico com computed property</h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Use <code class="bg-slate-700 px-1 rounded text-xs">[e.target.name]: e.target.value</code>
+                    para um único handler que atende todos os campos do formulário.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <span class="text-2xl">🔄</span>
+                <div>
+                  <h3 class="text-white font-bold">Guarde o estado inicial em uma constante</h3>
+                  <p class="text-slate-300 text-sm mt-1">
+                    Extraia o estado inicial para uma constante fora do componente.
+                    Assim fica fácil resetar: <code class="bg-slate-700 px-1 rounded text-xs">setForm(ESTADO_INICIAL)</code>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou o <code class="bg-white/10 px-2 py-1 rounded">useState</code> com objetos! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>Por que agrupar campos relacionados em um objeto de estado</li>
+              <li>A regra de ouro da imutabilidade — e por que o React compara por referência</li>
+              <li>Como usar o spread operator para atualizar campos sem mutar o original</li>
+              <li>O padrão do handler genérico com computed property <code class="bg-white/10 px-1 rounded text-xs">[name]: value</code></li>
+              <li>Como lidar com objetos aninhados — spread em cada nível</li>
+              <li>Como tratar checkboxes com o mesmo handler genérico</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>useState com Arrays</strong>
+              — como adicionar, remover e atualizar itens de listas
+              sem cair nas armadilhas de mutação!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div class="flex justify-between items-center pt-8 border-t border-white/10">
+          <a href="capitulo-10.html" class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all">
+            ← Capítulo Anterior
+          </a>
+          <a href="react-course.html" class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30">
+            Voltar ao índice
+          </a>
+          <a href="capitulo-12.html" class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all"
+">
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className = "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className = "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className = "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 11;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById("completeButtonContainer");
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className = "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion()) completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulo 13 - Formulários Controlados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-theme .text-white {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b !important;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155 !important;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569 !important;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b !important;
+      }
+      body.light-theme .bg-white\/5 {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-theme .bg-white\/10 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+      }
+      body.light-theme .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+      }
+      body.light-theme .bg-slate-700 {
+        background-color: #cbd5e1 !important;
+      }
+      body.light-theme .bg-gradient-to-r {
+        background: linear-gradient(
+          to right,
+          rgba(59, 130, 246, 0.2),
+          rgba(147, 51, 234, 0.2)
+        ) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+      }
+      body.light-theme a {
+        color: #2563eb !important;
+      }
+      body.light-theme a:hover {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .text-green-300 {
+        color: #15803d !important;
+      }
+      body.light-theme .bg-green-500\/10 {
+        background-color: rgba(34, 197, 94, 0.15) !important;
+      }
+      body.light-theme .bg-green-500\/20 {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        color: #15803d !important;
+      }
+      body.light-theme .border-green-500\/30 {
+        border-color: rgba(34, 197, 94, 0.3) !important;
+      }
+      body.light-theme .text-blue-400 {
+        color: #2563eb !important;
+      }
+      body.light-theme .text-blue-300 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme .bg-blue-500\/20 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-500 {
+        color: #2563eb !important;
+      }
+      body.light-theme .bg-blue-100 {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+      }
+      body.light-theme .text-blue-700 {
+        color: #1d4ed8 !important;
+      }
+      body.light-theme code:not(pre code) {
+        color: #1e293b !important;
+      }
+      body.light-theme .codebox-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+      body.light-theme .copy-btn {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .copy-btn:hover {
+        background-color: rgba(59, 130, 246, 0.5) !important;
+      }
+      body.light-theme .text-yellow-300 {
+        color: #a16207 !important;
+      }
+      body.light-theme .bg-yellow-500\/10 {
+        background-color: rgba(234, 179, 8, 0.15) !important;
+      }
+      body.light-theme .border-yellow-500\/30 {
+        border-color: rgba(234, 179, 8, 0.3) !important;
+      }
+      body.light-theme .text-purple-300 {
+        color: #7e22ce !important;
+      }
+      body.light-theme .bg-purple-500\/10 {
+        background-color: rgba(168, 85, 247, 0.15) !important;
+      }
+      body.light-theme .border-purple-500\/30 {
+        border-color: rgba(168, 85, 247, 0.3) !important;
+      }
+      body.light-theme .text-orange-300 {
+        color: #c2410c !important;
+      }
+      body.light-theme .bg-orange-500\/10 {
+        background-color: rgba(249, 115, 22, 0.15) !important;
+      }
+      body.light-theme .border-orange-500\/30 {
+        border-color: rgba(249, 115, 22, 0.3) !important;
+      }
+      body.light-theme .text-red-300 {
+        color: #b91c1c !important;
+      }
+      body.light-theme .bg-red-500\/10 {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+      }
+      body.light-theme .border-red-500\/30 {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+      body.light-theme .btn-next {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+      }
+      body.light-theme .btn-next:hover {
+        background-color: #1e40af !important;
+        color: #ffffff !important;
+      }
+
+      .codebox {
+        position: relative;
+        margin: 1.5rem 0;
+      }
+      .codebox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .copy-btn {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover {
+        transform: scale(1.05);
+      }
+      pre {
+        margin: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+      }
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .complete-btn-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .complete-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .complete-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+      }
+      .complete-btn.completed {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        cursor: default;
+      }
+      .complete-btn.completed:hover {
+        transform: none;
+        box-shadow: 0 10px 40px rgba(107, 114, 128, 0.4);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="react-course.html"
+            class="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span class="font-semibold">Voltar ao curso</span>
+          </a>
+          <div class="flex items-center gap-3">
+            <div
+              id="statusBadge"
+              class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300"
+            >
+              ✓ Concluído
+            </div>
+            <button
+              id="themeToggle"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10 border-2 border-white/20 hover:bg-white/20"
+            >
+              <span class="text-lg">🌙</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300"
+            >Capítulo 13</span
+          >
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+            >Iniciante</span
+          >
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          Formulários Controlados
+        </h1>
+        <p class="text-xl text-slate-300">
+          Aprenda como o React assume o controle total dos inputs — habilitando
+          validação em tempo real, formatação automática e envio de dados sem
+          recarregar a página
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="prose prose-invert prose-lg max-w-none">
+        <!-- Section 1 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Controlado vs. Não Controlado
+          </h2>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+            <p class="text-slate-300 leading-relaxed mb-4">
+              No HTML puro, os inputs guardam seu próprio valor internamente — o
+              DOM é a "fonte da verdade". No React, há duas abordagens:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div
+                class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4"
+              >
+                <h3 class="text-yellow-300 font-bold mb-2">
+                  ⚠️ Não Controlado
+                </h3>
+                <p class="text-slate-300 text-sm">
+                  O DOM guarda o valor. Você acessa com
+                  <code class="bg-slate-700 px-1 rounded text-xs">ref</code>
+                  apenas quando precisa. Mais simples, mas menos poder sobre o
+                  valor em tempo real.
+                </p>
+              </div>
+              <div
+                class="bg-green-500/10 border border-green-500/30 rounded-xl p-4"
+              >
+                <h3 class="text-green-300 font-bold mb-2">✅ Controlado</h3>
+                <p class="text-slate-300 text-sm">
+                  O React guarda o valor no estado. Você tem controle total a
+                  cada tecla digitada — ideal para validação, formatação e
+                  lógica complexa.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Não controlado vs. Controlado</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">// ❌ Não controlado — o DOM guarda o valor
+function InputNaoControlado() {
+  const inputRef = useRef();
+
+  const handleSubmit = () => {
+    console.log(inputRef.current.value); // lê o valor só no submit
+  };
+
+  return &lt;input ref={inputRef} /&gt;;
+}
+
+// ✅ Controlado — o React guarda o valor no estado
+function InputControlado() {
+  const [valor, setValor] = useState("");
+
+  return (
+    &lt;input
+      value={valor}                           // React controla o valor
+      onChange={(e) => setValor(e.target.value)} // atualiza a cada tecla
+    /&gt;
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+            <p class="text-blue-300">
+              💡 <strong>Regra geral:</strong> Prefira formulários controlados
+              na maioria dos casos. Eles dão acesso ao valor a cada keystroke,
+              permitem validação em tempo real, formatação automática e
+              integração fácil com lógica de negócio. Use não controlados apenas
+              para casos muito simples ou integrações com bibliotecas de
+              terceiros.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Os Elementos de Formulário e Seus Eventos
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Cada tipo de input tem uma forma ligeiramente diferente de ser
+            controlado:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Todos os tipos de input controlados</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function TodosTipos() {
+  const [form, setForm] = useState({
+    texto: "",
+    email: "",
+    senha: "",
+    numero: 0,
+    textarea: "",
+    select: "opcao1",
+    checkbox: false,
+    radio: "sim",
+    range: 50,
+  });
+
+  // Handler genérico — lida com todos os tipos
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked
+            : type === "number" || type === "range" ? Number(value)
+            : value,
+    }));
+  };
+
+  return (
+    &lt;form&gt;
+      {/* Input de texto */}
+      &lt;input
+        type="text"
+        name="texto"
+        value={form.texto}
+        onChange={handleChange}
+        placeholder="Texto simples"
+      /&gt;
+
+      {/* Email */}
+      &lt;input
+        type="email"
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+      /&gt;
+
+      {/* Senha */}
+      &lt;input
+        type="password"
+        name="senha"
+        value={form.senha}
+        onChange={handleChange}
+      /&gt;
+
+      {/* Número */}
+      &lt;input
+        type="number"
+        name="numero"
+        value={form.numero}
+        onChange={handleChange}
+        min={0}
+        max={100}
+      /&gt;
+
+      {/* Textarea */}
+      &lt;textarea
+        name="textarea"
+        value={form.textarea}
+        onChange={handleChange}
+        rows={4}
+      /&gt;
+
+      {/* Select */}
+      &lt;select name="select" value={form.select} onChange={handleChange}&gt;
+        &lt;option value="opcao1"&gt;Opção 1&lt;/option&gt;
+        &lt;option value="opcao2"&gt;Opção 2&lt;/option&gt;
+        &lt;option value="opcao3"&gt;Opção 3&lt;/option&gt;
+      &lt;/select&gt;
+
+      {/* Checkbox */}
+      &lt;input
+        type="checkbox"
+        name="checkbox"
+        checked={form.checkbox}   {/* usa "checked", não "value" */}
+        onChange={handleChange}
+      /&gt;
+
+      {/* Radio buttons */}
+      {["sim", "nao", "talvez"].map((opcao) => (
+        &lt;label key={opcao}&gt;
+          &lt;input
+            type="radio"
+            name="radio"
+            value={opcao}
+            checked={form.radio === opcao}  {/* compara com o estado */}
+            onChange={handleChange}
+          /&gt;
+          {opcao}
+        &lt;/label&gt;
+      ))}
+
+      {/* Range slider */}
+      &lt;input
+        type="range"
+        name="range"
+        value={form.range}
+        onChange={handleChange}
+        min={0}
+        max={100}
+      /&gt;
+      &lt;span&gt;{form.range}%&lt;/span&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Validação em Tempo Real
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            A grande vantagem dos formulários controlados é poder validar a cada
+            keystroke e mostrar feedback imediato ao usuário:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/InputComValidacao.jsx</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+function InputComValidacao() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [tocado, setTocado] = useState({ email: false, senha: false });
+
+  // Funções de validação puras
+  const validarEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const validarSenha = (v) => v.length >= 8;
+
+  // Erros computados a partir do estado — sem estado extra!
+  const erros = {
+    email: tocado.email &amp;&amp; !validarEmail(email)
+      ? "Digite um email válido"
+      : "",
+    senha: tocado.senha &amp;&amp; !validarSenha(senha)
+      ? "A senha precisa ter pelo menos 8 caracteres"
+      : "",
+  };
+
+  const formularioValido = validarEmail(email) &amp;&amp; validarSenha(senha);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Marca todos os campos como tocados para mostrar todos os erros
+    setTocado({ email: true, senha: true });
+    if (!formularioValido) return;
+    alert("Login realizado com sucesso! ✅");
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;div&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => setTocado((prev) => ({ ...prev, email: true }))}
+          style={{ borderColor: erros.email ? "red" : "" }}
+        /&gt;
+        {erros.email &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.email}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label&gt;Senha&lt;/label&gt;
+        &lt;input
+          type="password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          onBlur={() => setTocado((prev) => ({ ...prev, senha: true }))}
+          style={{ borderColor: erros.senha ? "red" : "" }}
+        /&gt;
+        {erros.senha &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.senha}&lt;/p&gt;}
+
+        {/* Indicador de força da senha */}
+        {senha &amp;&amp; (
+          &lt;div&gt;
+            &lt;span&gt;Força: &lt;/span&gt;
+            {senha.length &lt; 6  &amp;&amp; &lt;span style={{ color: "red"    }}&gt;Fraca&lt;/span&gt;}
+            {senha.length &gt;= 6  &amp;&amp; senha.length &lt; 10 &amp;&amp; &lt;span style={{ color: "orange" }}&gt;Média&lt;/span&gt;}
+            {senha.length &gt;= 10 &amp;&amp; &lt;span style={{ color: "green"  }}&gt;Forte&lt;/span&gt;}
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+
+      &lt;button type="submit" disabled={!formularioValido}&gt;
+        Entrar
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default InputComValidacao;</code></pre>
+          </div>
+
+          <div
+            class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-purple-300">
+              💡 <strong>Padrão "tocado" (touched):</strong> Só exibir erros
+              depois que o usuário interagiu com o campo (no
+              <code class="bg-purple-500/20 px-2 py-1 rounded">onBlur</code>)
+              evita mostrar erros imediatamente ao abrir o formulário. É o
+              padrão usado por bibliotecas como Formik e React Hook Form.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Formatação Automática em Tempo Real
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Com formulários controlados você pode formatar o valor enquanto o
+            usuário digita — como aplicar máscara de telefone ou CPF:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Máscaras de formatação automática</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+// Formata (11) 99999-9999
+const formatarTelefone = (valor) => {
+  const numeros = valor.replace(/\D/g, "").slice(0, 11);
+  if (numeros.length &lt;= 2)  return numeros;
+  if (numeros.length &lt;= 7)  return `(${numeros.slice(0,2)}) ${numeros.slice(2)}`;
+  return `(${numeros.slice(0,2)}) ${numeros.slice(2,7)}-${numeros.slice(7)}`;
+};
+
+// Formata 999.999.999-99
+const formatarCPF = (valor) => {
+  const numeros = valor.replace(/\D/g, "").slice(0, 11);
+  if (numeros.length &lt;= 3)  return numeros;
+  if (numeros.length &lt;= 6)  return `${numeros.slice(0,3)}.${numeros.slice(3)}`;
+  if (numeros.length &lt;= 9)  return `${numeros.slice(0,3)}.${numeros.slice(3,6)}.${numeros.slice(6)}`;
+  return `${numeros.slice(0,3)}.${numeros.slice(3,6)}.${numeros.slice(6,9)}-${numeros.slice(9)}`;
+};
+
+function FormComMascara() {
+  const [telefone, setTelefone] = useState("");
+  const [cpf, setCpf]           = useState("");
+
+  return (
+    &lt;form&gt;
+      &lt;div&gt;
+        &lt;label&gt;Telefone&lt;/label&gt;
+        &lt;input
+          value={telefone}
+          onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
+          placeholder="(11) 99999-9999"
+          inputMode="numeric"
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label&gt;CPF&lt;/label&gt;
+        &lt;input
+          value={cpf}
+          onChange={(e) => setCpf(formatarCPF(e.target.value))}
+          placeholder="999.999.999-99"
+          inputMode="numeric"
+        /&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormComMascara;</code></pre>
+          </div>
+
+          <div
+            class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-green-300">
+              ✅ <strong>O segredo da máscara:</strong> A função de formatação
+              recebe o valor bruto digitado, remove tudo que não for número com
+              <code class="bg-green-500/20 px-2 py-1 rounded"
+                >.replace(/\D/g, "")</code
+              >, limita o tamanho com
+              <code class="bg-green-500/20 px-2 py-1 rounded">.slice()</code>
+              e aplica a máscara com template literals. O resultado formatado
+              vai direto para o estado — e o input exibe sempre o valor
+              formatado.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Select Múltiplo e Checkboxes em Grupo
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Selects com múltipla seleção e grupos de checkboxes requerem um
+            tratamento especial com arrays no estado:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>Select múltiplo e grupo de checkboxes</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const HABILIDADES = ["React", "Vue", "Angular", "Node", "Python", "SQL"];
+const IDIOMAS     = ["Português", "Inglês", "Espanhol", "Francês"];
+
+function FormHabilidades() {
+  const [habilidades, setHabilidades] = useState([]);  // checkboxes
+  const [idiomas, setIdiomas]         = useState([]);  // select múltiplo
+
+  // Toggle de checkbox em grupo
+  const toggleHabilidade = (habilidade) => {
+    setHabilidades((prev) =>
+      prev.includes(habilidade)
+        ? prev.filter((h) => h !== habilidade)  // remove se já existe
+        : [...prev, habilidade]                  // adiciona se não existe
+    );
+  };
+
+  // Select múltiplo — e.target.options é uma HTMLCollection
+  const handleIdiomas = (e) => {
+    const selecionados = Array.from(e.target.options)
+      .filter((opt) => opt.selected)
+      .map((opt) => opt.value);
+    setIdiomas(selecionados);
+  };
+
+  return (
+    &lt;form&gt;
+      {/* Grupo de checkboxes */}
+      &lt;fieldset&gt;
+        &lt;legend&gt;Habilidades ({habilidades.length} selecionadas)&lt;/legend&gt;
+        {HABILIDADES.map((h) => (
+          &lt;label key={h}&gt;
+            &lt;input
+              type="checkbox"
+              checked={habilidades.includes(h)}
+              onChange={() => toggleHabilidade(h)}
+            /&gt;
+            {h}
+          &lt;/label&gt;
+        ))}
+      &lt;/fieldset&gt;
+
+      {/* Select múltiplo */}
+      &lt;div&gt;
+        &lt;label&gt;Idiomas (Ctrl+Click para selecionar vários)&lt;/label&gt;
+        &lt;select multiple value={idiomas} onChange={handleIdiomas} size={4}&gt;
+          {IDIOMAS.map((idioma) => (
+            &lt;option key={idioma} value={idioma}&gt;{idioma}&lt;/option&gt;
+          ))}
+        &lt;/select&gt;
+        &lt;p&gt;Selecionados: {idiomas.join(", ") || "nenhum"}&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Exemplo Completo: Formulário de Cadastro com Validação
+          </h2>
+
+          <p class="text-slate-300 leading-relaxed mb-6">
+            Vamos unir tudo em um formulário de cadastro real — com validação em
+            tempo real, campo de força de senha, máscara de telefone e feedback
+            visual completo:
+          </p>
+
+          <div class="codebox">
+            <div class="codebox-header bg-slate-800 text-slate-300">
+              <span>src/components/FormCadastro.jsx — completo</span>
+              <button
+                class="copy-btn bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                onclick="copyCode(this)"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre><code class="language-jsx">import { useState } from 'react';
+
+const INICIAL = { nome: "", email: "", telefone: "", senha: "", confirmar: "" };
+
+const formatarTel = (v) => {
+  const n = v.replace(/\D/g, "").slice(0, 11);
+  if (n.length &lt;= 2) return n;
+  if (n.length &lt;= 7) return `(${n.slice(0,2)}) ${n.slice(2)}`;
+  return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
+};
+
+function FormCadastro() {
+  const [form, setForm]       = useState(INICIAL);
+  const [tocado, setTocado]   = useState({});
+  const [enviado, setEnviado] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "telefone" ? formatarTel(value) : value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    setTocado((prev) => ({ ...prev, [e.target.name]: true }));
+  };
+
+  // Regras de validação
+  const erros = {
+    nome:      !form.nome.trim()                        ? "Nome obrigatório" : "",
+    email:     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) ? "Email inválido" : "",
+    telefone:  form.telefone.replace(/\D/g, "").length &lt; 10    ? "Telefone incompleto" : "",
+    senha:     form.senha.length &lt; 8                    ? "Mínimo 8 caracteres" : "",
+    confirmar: form.confirmar !== form.senha            ? "Senhas não conferem" : "",
+  };
+
+  const forcaSenha = () => {
+    const s = form.senha;
+    if (!s) return null;
+    let pontos = 0;
+    if (s.length &gt;= 8)  pontos++;
+    if (s.length &gt;= 12) pontos++;
+    if (/[A-Z]/.test(s)) pontos++;
+    if (/[0-9]/.test(s)) pontos++;
+    if (/[^A-Za-z0-9]/.test(s)) pontos++;
+    if (pontos &lt;= 1) return { label: "Fraca",  cor: "#ef4444", pct: 25  };
+    if (pontos &lt;= 2) return { label: "Média",  cor: "#f97316", pct: 50  };
+    if (pontos &lt;= 3) return { label: "Boa",    cor: "#eab308", pct: 75  };
+    return               { label: "Forte",  cor: "#22c55e", pct: 100 };
+  };
+
+  const forca = forcaSenha();
+  const tudoValido = Object.values(erros).every((e) => !e);
+
+  const mostrarErro = (campo) => tocado[campo] &amp;&amp; erros[campo];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const todosTocados = Object.fromEntries(Object.keys(INICIAL).map((k) => [k, true]));
+    setTocado(todosTocados);
+    if (!tudoValido) return;
+    setEnviado(true);
+  };
+
+  if (enviado) {
+    return (
+      &lt;div&gt;
+        &lt;h2&gt;🎉 Cadastro realizado!&lt;/h2&gt;
+        &lt;p&gt;Bem-vindo, {form.nome}!&lt;/p&gt;
+        &lt;button onClick={() => { setForm(INICIAL); setTocado({}); setEnviado(false); }}&gt;
+          Novo cadastro
+        &lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;h2&gt;Criar conta&lt;/h2&gt;
+
+      {/* Nome */}
+      &lt;div&gt;
+        &lt;label&gt;Nome completo *&lt;/label&gt;
+        &lt;input name="nome" value={form.nome} onChange={handleChange} onBlur={handleBlur} /&gt;
+        {mostrarErro("nome") &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.nome}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      {/* Email */}
+      &lt;div&gt;
+        &lt;label&gt;Email *&lt;/label&gt;
+        &lt;input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur} /&gt;
+        {mostrarErro("email") &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.email}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      {/* Telefone com máscara */}
+      &lt;div&gt;
+        &lt;label&gt;Telefone *&lt;/label&gt;
+        &lt;input name="telefone" value={form.telefone} onChange={handleChange} onBlur={handleBlur} inputMode="numeric" placeholder="(11) 99999-9999" /&gt;
+        {mostrarErro("telefone") &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.telefone}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      {/* Senha com força */}
+      &lt;div&gt;
+        &lt;label&gt;Senha *&lt;/label&gt;
+        &lt;input name="senha" type="password" value={form.senha} onChange={handleChange} onBlur={handleBlur} /&gt;
+        {mostrarErro("senha") &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.senha}&lt;/p&gt;}
+        {forca &amp;&amp; (
+          &lt;div&gt;
+            &lt;div style={{ height: 4, background: "#334155", borderRadius: 2, marginTop: 4 }}&gt;
+              &lt;div style={{ height: "100%", width: `${forca.pct}%`, background: forca.cor, borderRadius: 2, transition: "all 0.3s" }} /&gt;
+            &lt;/div&gt;
+            &lt;span style={{ color: forca.cor, fontSize: "0.8rem" }}&gt;{forca.label}&lt;/span&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+
+      {/* Confirmar senha */}
+      &lt;div&gt;
+        &lt;label&gt;Confirmar senha *&lt;/label&gt;
+        &lt;input name="confirmar" type="password" value={form.confirmar} onChange={handleChange} onBlur={handleBlur} /&gt;
+        {mostrarErro("confirmar") &amp;&amp; &lt;p style={{ color: "red" }}&gt;{erros.confirmar}&lt;/p&gt;}
+      &lt;/div&gt;
+
+      &lt;button type="submit"&gt;
+        {tudoValido ? "✅ Cadastrar" : "Preencha todos os campos"}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormCadastro;</code></pre>
+          </div>
+
+          <div
+            class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6 mt-4"
+          >
+            <p class="text-orange-300">
+              🔥 <strong>Tudo junto:</strong> objeto de estado com handler
+              genérico, padrão "tocado" para mostrar erros só após interação,
+              máscara de telefone em tempo real, indicador de força de senha com
+              barra visual, confirmação de senha e botão que reflete a validade
+              do formulário — tudo com React puro, sem bibliotecas externas!
+            </p>
+          </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="mb-12" id="conclusion">
+          <div
+            class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-8"
+          >
+            <h2 class="text-3xl font-bold text-white mb-4">🎉 Parabéns!</h2>
+            <p class="text-slate-200 text-lg leading-relaxed mb-4">
+              Você dominou os formulários controlados no React! Você aprendeu:
+            </p>
+            <ul class="text-slate-200 space-y-2 list-disc list-inside">
+              <li>
+                A diferença entre formulários controlados e não controlados
+              </li>
+              <li>
+                Como controlar todos os tipos de input: texto, checkbox, radio,
+                select, range
+              </li>
+              <li>
+                O handler genérico que trata qualquer tipo com
+                <code class="bg-white/10 px-1 rounded text-xs"
+                  >type === "checkbox" ? checked : value</code
+                >
+              </li>
+              <li>Validação em tempo real com o padrão "tocado" (touched)</li>
+              <li>Formatação automática com máscaras de CPF e telefone</li>
+              <li>
+                Checkboxes em grupo e select múltiplo com arrays no estado
+              </li>
+              <li>Um formulário completo com barra de força de senha</li>
+            </ul>
+            <p class="text-slate-300 mt-4">
+              No próximo capítulo, vamos aprender sobre
+              <strong>Lifting State Up</strong>
+              — como compartilhar estado entre componentes irmãos elevando-o
+              para o ancestral comum!
+            </p>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div
+          class="flex justify-between items-center pt-8 border-t border-white/10"
+        >
+          <a
+            href="capitulo-12.html"
+            class="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+          >
+            ← Capítulo Anterior
+          </a>
+          <a
+            href="react-course.html"
+            class="px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all border border-blue-500/30"
+          >
+            Voltar ao índice
+          </a>
+          <a
+            href="capitulo-14.html"
+            class="btn-next px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-semibold transition-all"
+          >
+            Próximo capítulo →
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- Floating Complete Button -->
+    <div id="completeButtonContainer" class="complete-btn-container hidden">
+      <button id="completeButton" class="complete-btn">
+        <span id="completeIcon">✓</span>
+        <span id="completeText">Concluir Capítulo</span>
+      </button>
+    </div>
+
+    <script>
+      hljs.highlightAll();
+
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      let isDark = true;
+
+      themeToggle.addEventListener("click", () => {
+        isDark = !isDark;
+        if (isDark) {
+          body.className =
+            "bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen";
+          themeToggle.innerHTML = '<span class="text-lg">🌙</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-slate-900/80 border-white/10";
+        } else {
+          body.className =
+            "bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen light-theme";
+          themeToggle.innerHTML = '<span class="text-lg">☀️</span>';
+          document.querySelector("nav").className =
+            "sticky top-0 z-50 backdrop-blur-xl border-b bg-white/80 border-gray-200";
+        }
+      });
+
+      function copyCode(button) {
+        const codeBlock = button.closest(".codebox").querySelector("code");
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "Copiado!";
+          button.classList.add("bg-green-500/30", "text-green-300");
+          button.classList.remove("bg-blue-500/20", "text-blue-300");
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-500/30", "text-green-300");
+            button.classList.add("bg-blue-500/20", "text-blue-300");
+          }, 2000);
+        });
+      }
+    </script>
+
+    <script>
+      const CHAPTER_ID = 13;
+      const STORAGE_KEY = "completedChapters";
+
+      const completeButtonContainer = document.getElementById(
+        "completeButtonContainer",
+      );
+      const completeButton = document.getElementById("completeButton");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+      const statusBadge = document.getElementById("statusBadge");
+
+      function isChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return completed.includes(CHAPTER_ID);
+      }
+
+      function markChapterCompleted() {
+        const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!completed.includes(CHAPTER_ID)) {
+          completed.push(CHAPTER_ID);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+          updateCompletedUI();
+          showSuccessMessage();
+        }
+      }
+
+      function updateCompletedUI() {
+        completeButton.classList.add("completed");
+        completeIcon.textContent = "✓";
+        completeText.textContent = "Capítulo Concluído";
+        statusBadge.classList.remove("hidden");
+      }
+
+      function showSuccessMessage() {
+        const message = document.createElement("div");
+        message.className =
+          "fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-pulse";
+        message.innerHTML = `
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Progresso salvo!</span>
+          </div>
+        `;
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+      }
+
+      function hasReachedConclusion() {
+        const conclusion = document.getElementById("conclusion");
+        if (!conclusion) return false;
+        const rect = conclusion.getBoundingClientRect();
+        return rect.top < window.innerHeight * 0.8;
+      }
+
+      function init() {
+        if (isChapterCompleted()) updateCompletedUI();
+
+        window.addEventListener("scroll", () => {
+          if (hasReachedConclusion()) {
+            completeButtonContainer.classList.remove("hidden");
+          } else {
+            completeButtonContainer.classList.add("hidden");
+          }
+        });
+
+        completeButton.addEventListener("click", () => {
+          if (!isChapterCompleted()) markChapterCompleted();
+        });
+
+        if (hasReachedConclusion())
+          completeButtonContainer.classList.remove("hidden");
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>
